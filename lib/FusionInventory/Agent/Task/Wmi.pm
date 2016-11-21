@@ -57,11 +57,13 @@ sub run {
         }
     }
 
-    getAntivirus($self->{WMIService});
+    $self->getAntivirus($self->{WMIService});
 }
 
 sub getAntivirus {
-    my ($service) = @_;
+    my ($self, $service) = @_;
+
+    my $seen;
     foreach my $instance (qw/SecurityCenter SecurityCenter2/) {
         my $moniker = "winmgmts:{impersonationLevel=impersonate,(security)}!//./root/$instance";
 
