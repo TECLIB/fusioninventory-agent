@@ -93,7 +93,10 @@ sub _getWMIObjects {
         @_
     );
 
-    my $WMIService = Win32::OLE->GetObject($params{moniker});
+    my $WMIService =
+            $params{WMIService}
+        ? $params{WMIService}
+        : Win32::OLE->GetObject( $params{moniker} );
 
     # Support alternate moniker if provided and main failed to open
     unless (defined($WMIService)) {
