@@ -7,6 +7,9 @@ use UNIVERSAL::require;
 use English qw(-no_match_vars);
 use Data::Dumper;
 use Win32::OLE qw(in);
+
+use FusionInventory::Agent::Tools::Win32;
+
 $| = 1;
 
 Win32::OLE->Option(Warn => 9);
