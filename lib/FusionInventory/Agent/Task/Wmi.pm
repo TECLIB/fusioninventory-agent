@@ -100,7 +100,7 @@ sub getAntivirus {
             }
 
             # avoid duplicates
-            next if $seen->{$antivirus->{NAME}}->{$antivirus->{VERSION} || '_undef_'}++;
+#            next if $seen->{$antivirus->{NAME}}->{$antivirus->{VERSION} || '_undef_'}++;
 
             my $dd = Data::Dumper->new([$antivirus]);
             my $output = $dd->Dump;
