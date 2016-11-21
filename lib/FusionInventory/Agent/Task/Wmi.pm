@@ -7,6 +7,8 @@ use UNIVERSAL::require;
 use English qw(-no_match_vars);
 use Data::Dumper;
 
+our $VERSION = '0.1';
+
 sub isEnabled {
     my ($self) = @_;
 
