@@ -193,6 +193,7 @@ sub getMemories {
             / ]
     )) {
         # Ignore ROM storages (BIOS ROM)
+        next unless $object->{MemoryType};
         my $type = $memoryTypeVal[$object->{MemoryType}];
         next if $type && $type eq 'ROM';
         next if $type && $type eq 'Flash';
