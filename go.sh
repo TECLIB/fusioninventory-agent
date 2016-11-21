@@ -1,0 +1,1 @@
+perl bin/fusioninventory-agent --debug --debug --logger=file --logfile=debug.log --wmi_host=172.28.220.167 --wmi_user=teclib --wmi_pass=teclib --local=..
