@@ -125,7 +125,7 @@ sub run {
     }
 
     $self->getAntivirus($self->{WMIService});
-    my $memories = getMemories($self->{WMIService});
+    my $memories = getMemories($self->{WMIService}, $self->{logger});
 
     my $dd = Data::Dumper->new([$memories]);
     $self->{logger}->debug2($dd->Dump);
@@ -179,7 +179,7 @@ sub getAntivirus {
 
 
 sub getMemories {
-    my ($service) = @_;
+    my ($service, $logger) = @_;
 
     my $cpt = 0;
     my @memories;
@@ -192,6 +192,8 @@ sub getMemories {
             SerialNumber
             / ]
     )) {
+        my $dd = Data::Dumper->new([$object]);
+        $logger->debug2($dd->Dump);
         # Ignore ROM storages (BIOS ROM)
         next unless $object->{MemoryType};
         my $type = $memoryTypeVal[$object->{MemoryType}];
