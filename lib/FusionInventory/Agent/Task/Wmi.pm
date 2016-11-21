@@ -10,12 +10,6 @@ use Data::Dumper;
 sub isEnabled {
     my ($self) = @_;
 
-    DBD::WMI->require();
-    if ($EVAL_ERROR) {
-        $self->{logger}->debug("cannot launch task WMI") if $self->{logger};
-        return 0;
-    }
-
     return 1
 }
 
