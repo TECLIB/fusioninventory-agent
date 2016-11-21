@@ -16,6 +16,70 @@ Win32::OLE->Option(Warn => 9);
 
 our $VERSION = '0.1';
 
+my @formFactorVal = qw/
+    Unknown
+    Other
+    SIP
+    DIP
+    ZIP
+    SOJ
+    Proprietary
+    SIMM
+    DIMM
+    TSOP
+    PGA
+    RIMM
+    SODIMM
+    SRIMM
+    SMD
+    SSMP
+    QFP
+    TQFP
+    SOIC
+    LCC
+    PLCC
+    BGA
+    FPBGA
+    LGA
+    /;
+
+my @memoryTypeVal = qw/
+    Unknown
+    Other
+    DRAM
+    Synchronous DRAM
+    Cache DRAM
+    EDO
+    EDRAM
+    VRAM
+    SRAM
+    RAM
+    ROM
+    Flash
+    EEPROM
+    FEPROM
+    EPROM
+    CDRAM
+    3DRAM
+    SDRAM
+    SGRAM
+    RDRAM
+    DDR
+    DDR-2
+    /;
+
+my @memoryErrorProtection = (
+    undef,
+    'Other',
+    undef,
+    'None',
+    'Parity',
+    'Single-bit ECC',
+    'Multi-bit ECC',
+    'CRC',
+);
+
+
 sub isEnabled {
     my ($self) = @_;
 
@@ -61,6 +125,10 @@ sub run {
     }
 
     $self->getAntivirus($self->{WMIService});
+    my $memories = _getMemories();
+
+    my $dd = Data::Dumper([$memories]);
+    $self->{logger}->debug2($dd->Dump);
 }
 
 sub getAntivirus {
@@ -108,5 +176,66 @@ sub getAntivirus {
         }
     }
 }
+
+
+sub _getMemories {
+
+    my $cpt = 0;
+    my @memories;
+
+    foreach my $object (getWMIObjects(
+        class      => 'Win32_PhysicalMemory',
+        properties => [ qw/
+            Capacity Caption Description FormFactor Removable Speed MemoryType
+            SerialNumber
+            / ]
+    )) {
+        # Ignore ROM storages (BIOS ROM)
+        my $type = $memoryTypeVal[$object->{MemoryType}];
+        next if $type && $type eq 'ROM';
+        next if $type && $type eq 'Flash';
+
+        my $capacity;
+        $capacity = $object->{Capacity} / (1024 * 1024)
+            if $object->{Capacity};
+
+        push @memories, {
+                CAPACITY     => $capacity,
+                CAPTION      => $object->{Caption},
+                DESCRIPTION  => $object->{Description},
+                FORMFACTOR   => $formFactorVal[$object->{FormFactor}],
+                REMOVABLE    => $object->{Removable} ? 1 : 0,
+                SPEED        => $object->{Speed},
+                TYPE         => $memoryTypeVal[$object->{MemoryType}],
+                NUMSLOTS     => $cpt++,
+                SERIALNUMBER => $object->{SerialNumber}
+            }
+    }
+
+    foreach my $object (getWMIObjects(
+        class      => 'Win32_PhysicalMemoryArray',
+        properties => [ qw/
+            MemoryDevices SerialNumber PhysicalMemoryCorrection
+            / ]
+    )) {
+
+        my $memory = $memories[$object->{MemoryDevices} - 1];
+        if (!$memory->{SERIALNUMBER}) {
+            $memory->{SERIALNUMBER} = $object->{SerialNumber};
+        }
+
+        if ($object->{PhysicalMemoryCorrection}) {
+            $memory->{MEMORYCORRECTION} =
+                $memoryErrorProtection[$object->{PhysicalMemoryCorrection}];
+        }
+
+        if ($memory->{MEMORYCORRECTION}) {
+            $memory->{DESCRIPTION} .= " (".$memory->{MEMORYCORRECTION}.")";
+        }
+    }
+
+    return @memories;
+}
+
 
 1;
