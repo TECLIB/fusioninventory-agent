@@ -125,7 +125,7 @@ sub run {
     }
 
     $self->getAntivirus($self->{WMIService});
-    my $memories = _getMemories();
+    my $memories = getMemories($self->{WMIService});
 
     my $dd = Data::Dumper->new([$memories]);
     $self->{logger}->debug2($dd->Dump);
@@ -178,12 +178,14 @@ sub getAntivirus {
 }
 
 
-sub _getMemories {
+sub getMemories {
+    my ($service) = @_;
 
     my $cpt = 0;
     my @memories;
 
     foreach my $object (getWMIObjects(
+        WMIService => $service,
         class      => 'Win32_PhysicalMemory',
         properties => [ qw/
             Capacity Caption Description FormFactor Removable Speed MemoryType
