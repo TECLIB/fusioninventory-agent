@@ -127,7 +127,7 @@ sub run {
     $self->getAntivirus($self->{WMIService});
     my $memories = _getMemories();
 
-    my $dd = Data::Dumper([$memories]);
+    my $dd = Data::Dumper->new([$memories]);
     $self->{logger}->debug2($dd->Dump);
 }
 
