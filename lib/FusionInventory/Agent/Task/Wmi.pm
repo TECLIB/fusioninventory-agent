@@ -184,14 +184,17 @@ sub getMemories {
     my $cpt = 0;
     my @memories;
 
-    foreach my $object (getWMIObjects(
-        WMIService => $service,
-        class      => 'Win32_PhysicalMemory',
-        properties => [ qw/
-            Capacity Caption Description FormFactor Removable Speed MemoryType
-            SerialNumber
-            / ]
-    )) {
+    my $colItems = $objWMIService->ExecQuery("SELECT * FROM Win32_PhysicalMemory");
+
+#    foreach my $object (getWMIObjects(
+#        WMIService => $service,
+#        class      => 'Win32_PhysicalMemory',
+#        properties => [ qw/
+#            Capacity Caption Description FormFactor Removable Speed MemoryType
+#            SerialNumber
+#            / ]
+#    )) {
+    foreach my $object ( in(@$colItems)) {
         my $dd = Data::Dumper->new([$object]);
         $logger->debug2(ref $object);
         $logger->debug2($dd->Dump);
