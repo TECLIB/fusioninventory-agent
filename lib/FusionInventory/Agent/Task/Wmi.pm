@@ -190,8 +190,7 @@ sub getMemories {
     my $cpt = 0;
     my @memories;
 
-    my $colItems = $service->ExecQuery("SELECT * FROM Win32_PhysicalMemory", "WQL",
-        wbemFlagReturnImmediately);
+    my @colItems = in($service->ExecQuery("SELECT * FROM Win32_PhysicalMemory"));
 
 #    my $colItems = $service->InstancesOf('Win32_PhysicalMemory');
 
@@ -203,7 +202,7 @@ sub getMemories {
  #            SerialNumber
  #            / ]
  #    )) {
-    foreach my $object ( in($colItems) ) {
+    foreach my $object ( @colItems ) {
         my $dd = Data::Dumper->new( [$object] );
         $logger->debug2( 'Win32_PhysicalMemory : ' . ref $object );
         #        $logger->debug2($dd->Dump);
