@@ -13,6 +13,8 @@ use FusionInventory::Agent::Tools::Win32;
 $| = 1;
 
 Win32::OLE->Option( Warn => 9 );
+use constant wbemFlagReturnImmediately => 0x10;
+use constant wbemFlagForwardOnly => 0x20;
 
 our $VERSION = '0.1';
 
@@ -188,7 +190,8 @@ sub getMemories {
     my $cpt = 0;
     my @memories;
 
-    my $colItems = $service->ExecQuery("SELECT * FROM Win32_PhysicalMemory");
+    my $colItems = $service->ExecQuery("SELECT * FROM Win32_PhysicalMemory", "WQL",
+        wbemFlagReturnImmediately | wbemFlagForwardOnly);
 
 #    my $colItems = $service->InstancesOf('Win32_PhysicalMemory');
 
