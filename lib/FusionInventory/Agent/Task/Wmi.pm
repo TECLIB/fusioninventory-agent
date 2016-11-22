@@ -324,7 +324,7 @@ sub getMemories {
             $memory->{SERIALNUMBER} = $object->{SerialNumber};
         }
 
-        if ( defined $object->{PhysicalMemoryCorrection} ) {
+        if ( exists $object->{PhysicalMemoryCorrection} ) {
             $memory->{MEMORYCORRECTION} =
               $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
         }
