@@ -191,7 +191,7 @@ sub getMemories {
     my @memories;
 
     my $colItems = $service->ExecQuery("SELECT * FROM Win32_PhysicalMemory", "WQL",
-        wbemFlagReturnImmediately | wbemFlagForwardOnly);
+        wbemFlagReturnImmediately);
 
 #    my $colItems = $service->InstancesOf('Win32_PhysicalMemory');
 
