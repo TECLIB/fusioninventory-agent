@@ -315,18 +315,8 @@ sub getMemories {
           };
     }
 
-    foreach my $object (
-        getWMIObjects(
-            WMIService => $service,
-            class      => 'Win32_PhysicalMemoryArray',
-            properties => [
-                qw/
-                  MemoryDevices SerialNumber PhysicalMemoryCorrection
-                  /
-            ]
-        )
-      )
-    {
+    @colItems = in($service->ExecQuery("SELECT * FROM Win32_PhysicalMemoryArray"));
+    foreach my $object (@colItems) {
 
         my $memory = $memories[ $object->{MemoryDevices} - 1 ];
         if ( !$memory->{SERIALNUMBER} ) {
