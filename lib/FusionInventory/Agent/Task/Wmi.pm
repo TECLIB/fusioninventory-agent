@@ -235,32 +235,32 @@ sub getMemories {
           };
     }
 
-    foreach my $object (
-        getWMIObjects(
-            class      => 'Win32_PhysicalMemoryArray',
-            properties => [
-                qw/
-                  MemoryDevices SerialNumber PhysicalMemoryCorrection
-                  /
-            ]
-        )
-      )
-    {
-
-        my $memory = $memories[ $object->{MemoryDevices} - 1 ];
-        if ( !$memory->{SERIALNUMBER} ) {
-            $memory->{SERIALNUMBER} = $object->{SerialNumber};
-        }
-
-        if ( $object->{PhysicalMemoryCorrection} ) {
-            $memory->{MEMORYCORRECTION} =
-              $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
-        }
-
-        if ( $memory->{MEMORYCORRECTION} ) {
-            $memory->{DESCRIPTION} .= " (" . $memory->{MEMORYCORRECTION} . ")";
-        }
-    }
+#    foreach my $object (
+#        getWMIObjects(
+#            class      => 'Win32_PhysicalMemoryArray',
+#            properties => [
+#                qw/
+#                  MemoryDevices SerialNumber PhysicalMemoryCorrection
+#                  /
+#            ]
+#        )
+#      )
+#    {
+#
+#        my $memory = $memories[ $object->{MemoryDevices} - 1 ];
+#        if ( !$memory->{SERIALNUMBER} ) {
+#            $memory->{SERIALNUMBER} = $object->{SerialNumber};
+#        }
+#
+#        if ( $object->{PhysicalMemoryCorrection} ) {
+#            $memory->{MEMORYCORRECTION} =
+#              $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
+#        }
+#
+#        if ( $memory->{MEMORYCORRECTION} ) {
+#            $memory->{DESCRIPTION} .= " (" . $memory->{MEMORYCORRECTION} . ")";
+#        }
+#    }
 
     return @memories;
 }
