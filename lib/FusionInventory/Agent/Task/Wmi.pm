@@ -327,10 +327,10 @@ sub getMemories {
 #        my $properties = $object->{properties};
         my $dd = Data::Dumper->new([keys %{$object->{Properties_}}]);
         $logger->debug2('properties : ' . $dd->Dump);
-        if ( defined($object->{PhysicalMemoryCorrection}) ) {
-            $memory->{MEMORYCORRECTION} =
-              $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
-        }
+#        if ( $object->{PhysicalMemoryCorrection} ) {
+#            $memory->{MEMORYCORRECTION} =
+#              $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
+#        }
 
         if ( $memory->{MEMORYCORRECTION} ) {
             $memory->{DESCRIPTION} .= " (" . $memory->{MEMORYCORRECTION} . ")";
