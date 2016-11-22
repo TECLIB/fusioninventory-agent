@@ -324,6 +324,9 @@ sub getMemories {
             $memory->{SERIALNUMBER} = $object->{SerialNumber};
         }
 
+        my $properties = $object->{properties};
+        my $dd = Data::Dumper->new([$properties]);
+        $logger->debug2('properties : ' . $dd->Dump);
         if ( defined($object->{PhysicalMemoryCorrection}) ) {
             $memory->{MEMORYCORRECTION} =
               $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
