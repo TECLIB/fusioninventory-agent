@@ -193,6 +193,7 @@ sub getMemories {
             / ]
     )) {
         my $dd = Data::Dumper->new([$object]);
+        $logger->debug2(ref $object);
         $logger->debug2($dd->Dump);
         # Ignore ROM storages (BIOS ROM)
         next unless $object->{MemoryType};
