@@ -316,7 +316,7 @@ sub getMemories {
     }
 
     @colItems = in($service->ExecQuery("SELECT * FROM Win32_PhysicalMemoryArray"));
-    @colItems = in($service->InstancesOf("Win32_PhysicalMemoryArray"));
+#    @colItems = in($service->InstancesOf("Win32_PhysicalMemoryArray"));
     foreach my $object (@colItems) {
 
         my $memory = $memories[ $object->{MemoryDevices} - 1 ];
@@ -324,7 +324,7 @@ sub getMemories {
             $memory->{SERIALNUMBER} = $object->{SerialNumber};
         }
 
-        if ( exists $object->{PhysicalMemoryCorrection} ) {
+        if ( defined($object->{PhysicalMemoryCorrection}) ) {
             $memory->{MEMORYCORRECTION} =
               $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
         }
