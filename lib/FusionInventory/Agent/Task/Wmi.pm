@@ -184,7 +184,9 @@ sub getMemories {
     my $cpt = 0;
     my @memories;
 
-    my $colItems = $service->ExecQuery("SELECT * FROM Win32_PhysicalMemory");
+#    my $colItems = $service->ExecQuery("SELECT * FROM Win32_PhysicalMemory");
+
+    my $colItems = $service->InstancesOf('Win32_PhysicalMemory');
 
 #    foreach my $object (getWMIObjects(
 #        WMIService => $service,
