@@ -189,15 +189,15 @@ sub getMemoriesUsingToolsFunction {
 
     my $cpt = 0;
     my @memories;
-    #     foreach my $object (getWMIObjects(
-    #         WMIService => $service,
-    #         class      => 'Win32_PhysicalMemory',
-    #         properties => [ qw/
-    #             Capacity Caption Description FormFactor Removable Speed MemoryType
-    #             SerialNumber
-    #             / ]
-    #     )) {
-    foreach my $object ( @colItems ) {
+    foreach my $object (getWMIObjects(
+        WMIService => $service,
+        class      => 'Win32_PhysicalMemory',
+        properties => [ qw/
+            Capacity Caption Description FormFactor Removable Speed MemoryType
+            SerialNumber
+            / ]
+    )) {
+        #    foreach my $object ( @colItems ) {
         my $dd = Data::Dumper->new( [$object] );
         $logger->debug2( 'Win32_PhysicalMemory : ' . ref $object );
         #        $logger->debug2($dd->Dump);
