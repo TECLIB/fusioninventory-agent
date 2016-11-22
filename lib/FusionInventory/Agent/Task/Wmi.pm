@@ -204,12 +204,13 @@ sub getMemories {
  #            / ]
  #    )) {
     foreach my $object ( in($colItems) ) {
-#        my $dd = Data::Dumper->new( [$object] );
+        my $dd = Data::Dumper->new( [$object] );
         $logger->debug2( 'Win32_PhysicalMemory : ' . ref $object );
         #        $logger->debug2($dd->Dump);
         # Ignore ROM storages (BIOS ROM)
         $logger->debug2( join ( ' - ', keys %$object));
         $logger->debug2($dd->Dump);
+
         next unless $object->{MemoryType};
         my $type = $memoryTypeVal[ $object->{MemoryType} ];
         next if $type && $type eq 'ROM';
