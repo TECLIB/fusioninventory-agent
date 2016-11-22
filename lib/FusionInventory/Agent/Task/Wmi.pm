@@ -93,7 +93,7 @@ sub _connectToService {
         warn;
     my $service = $locator->ConnectServer(
         $hostname,
-        "root\cimv2",
+        "root\\cimv2",
         "domain\\" . $user,
         $pass
     );
