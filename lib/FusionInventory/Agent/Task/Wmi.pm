@@ -210,10 +210,11 @@ sub getMemories {
         $logger->debug2( join ( ' - ', keys %$object));
         $logger->debug2($object->{Name});
         $logger->debug2($object->{MemoryType});
-        $logger->debug2($dd->Dump);
+#        $logger->debug2($dd->Dump);
 
         next unless $object->{MemoryType};
         my $type = $memoryTypeVal[ $object->{MemoryType} ];
+        $logger->debug2('type : ' . $type);
         next if $type && $type eq 'ROM';
         next if $type && $type eq 'Flash';
 
