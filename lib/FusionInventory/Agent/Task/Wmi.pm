@@ -316,6 +316,7 @@ sub getMemories {
     }
 
     @colItems = in($service->ExecQuery("SELECT * FROM Win32_PhysicalMemoryArray"));
+    @colItems = in($service->InstancesOf("Win32_PhysicalMemoryArray"));
     foreach my $object (@colItems) {
 
         my $memory = $memories[ $object->{MemoryDevices} - 1 ];
