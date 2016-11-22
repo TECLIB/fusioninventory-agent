@@ -186,18 +186,18 @@ sub getMemories {
 
     my $colItems = $service->ExecQuery("SELECT * FROM Win32_PhysicalMemory");
 
-    foreach my $object (getWMIObjects(
-        WMIService => $service,
-        class      => 'Win32_PhysicalMemory',
-        properties => [ qw/
-            Capacity Caption Description FormFactor Removable Speed MemoryType
-            SerialNumber
-            / ]
-    )) {
-#    foreach my $object ( in($colItems)) {
+#    foreach my $object (getWMIObjects(
+#        WMIService => $service,
+#        class      => 'Win32_PhysicalMemory',
+#        properties => [ qw/
+#            Capacity Caption Description FormFactor Removable Speed MemoryType
+#            SerialNumber
+#            / ]
+#    )) {
+    foreach my $object ( in($colItems)) {
         my $dd = Data::Dumper->new([$object]);
-        $logger->debug2(ref $object);
-        $logger->debug2($dd->Dump);
+        $logger->debug2('Win32_PhysicalMemory : ' . ref $object);
+#        $logger->debug2($dd->Dump);
         # Ignore ROM storages (BIOS ROM)
         next unless $object->{MemoryType};
         my $type = $memoryTypeVal[$object->{MemoryType}];
