@@ -206,7 +206,7 @@ sub getMemories {
 
         #        $logger->debug2($dd->Dump);
         # Ignore ROM storages (BIOS ROM)
-        $logger->debug2( join ( ' - ', keys $object));
+        $logger->debug2( join ( ' - ', keys %$object));
         next unless $object->{MemoryType};
         my $type = $memoryTypeVal[ $object->{MemoryType} ];
         next if $type && $type eq 'ROM';
