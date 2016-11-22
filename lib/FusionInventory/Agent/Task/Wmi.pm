@@ -184,7 +184,7 @@ sub getMemories {
     my $cpt = 0;
     my @memories;
 
-    my $colItems = $objWMIService->ExecQuery("SELECT * FROM Win32_PhysicalMemory");
+    my $colItems = $service->ExecQuery("SELECT * FROM Win32_PhysicalMemory");
 
 #    foreach my $object (getWMIObjects(
 #        WMIService => $service,
@@ -194,7 +194,7 @@ sub getMemories {
 #            SerialNumber
 #            / ]
 #    )) {
-    foreach my $object ( in(@$colItems)) {
+    foreach my $object ( in($colItems)) {
         my $dd = Data::Dumper->new([$object]);
         $logger->debug2(ref $object);
         $logger->debug2($dd->Dump);
