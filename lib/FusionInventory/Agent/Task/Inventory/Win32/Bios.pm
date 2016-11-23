@@ -38,60 +38,7 @@ sub doInventory {
         ))
     };
 
-    foreach my $object (getWMIObjects(
-        class      => 'Win32_Bios',
-        properties => [ qw/
-            SerialNumber Version Manufacturer SMBIOSBIOSVersion BIOSVersion ReleaseDate
-        / ]
-    )) {
-        $bios->{BIOSSERIAL}    = $object->{SerialNumber};
-        $bios->{SSN}           = $object->{SerialNumber};
-        $bios->{BMANUFACTURER} = $object->{Manufacturer};
-        $bios->{BVERSION}      = $object->{SMBIOSBIOSVersion} ||
-                                 $object->{BIOSVersion}       ||
-                                 $object->{Version};
-        $bios->{BDATE}         = _dateFromIntString($object->{ReleaseDate});
-    }
-
-    foreach my $object (getWMIObjects(
-        class      => 'Win32_ComputerSystem',
-        properties => [ qw/
-            Manufacturer Model
-        / ]
-    )) {
-        $bios->{SMANUFACTURER} = $object->{Manufacturer};
-        $bios->{SMODEL}        = $object->{Model};
-    }
-
-    foreach my $object (getWMIObjects(
-            class      => 'Win32_SystemEnclosure',
-            properties => [ qw/
-                SerialNumber SMBIOSAssetTag
-            / ]
-    )) {
-        $bios->{ENCLOSURESERIAL} = $object->{SerialNumber} ;
-        $bios->{SSN}             = $object->{SerialNumber} unless $bios->{SSN};
-        $bios->{ASSETTAG}        = $object->{SMBIOSAssetTag};
-    }
-
-    foreach my $object (getWMIObjects(
-            class => 'Win32_BaseBoard',
-            properties => [ qw/
-                SerialNumber Product Manufacturer
-            / ]
-    )) {
-        $bios->{MSN}             = $object->{SerialNumber};
-        $bios->{MMODEL}          = $object->{Product};
-        $bios->{SSN}             = $object->{SerialNumber}
-            unless $bios->{SSN};
-        $bios->{SMANUFACTURER}   = $object->{Manufacturer}
-            unless $bios->{SMANUFACTURER};
-
-    }
-
-    foreach (keys %$bios) {
-        $bios->{$_} =~ s/\s+$// if $bios->{$_};
-    }
+    $bios = appendBiosDataFromWMI($bios);
 
     $inventory->setBios($bios);
 
@@ -127,6 +74,72 @@ sub doInventory {
         }
     }
 
+}
+
+sub appendBiosDataFromWMI {
+    my ($bios) = @_;
+
+    if (!defined($bios)) {
+        $bios = {};
+    }
+
+    foreach my $object (getWMIObjects(
+        class      => 'Win32_Bios',
+        properties => [ qw/
+            SerialNumber Version Manufacturer SMBIOSBIOSVersion BIOSVersion ReleaseDate
+            / ],
+        @_
+    )) {
+        $bios->{BIOSSERIAL}    = $object->{SerialNumber};
+        $bios->{SSN}           = $object->{SerialNumber};
+        $bios->{BMANUFACTURER} = $object->{Manufacturer};
+        $bios->{BVERSION}      = $object->{SMBIOSBIOSVersion} ||
+            $object->{BIOSVersion}       ||
+            $object->{Version};
+        $bios->{BDATE}         = _dateFromIntString($object->{ReleaseDate});
+    }
+
+    foreach my $object (getWMIObjects(
+        class      => 'Win32_ComputerSystem',
+        properties => [ qw/
+            Manufacturer Model
+            / ]
+    )) {
+        $bios->{SMANUFACTURER} = $object->{Manufacturer};
+        $bios->{SMODEL}        = $object->{Model};
+    }
+
+    foreach my $object (getWMIObjects(
+        class      => 'Win32_SystemEnclosure',
+        properties => [ qw/
+            SerialNumber SMBIOSAssetTag
+            / ]
+    )) {
+        $bios->{ENCLOSURESERIAL} = $object->{SerialNumber} ;
+        $bios->{SSN}             = $object->{SerialNumber} unless $bios->{SSN};
+        $bios->{ASSETTAG}        = $object->{SMBIOSAssetTag};
+    }
+
+    foreach my $object (getWMIObjects(
+        class => 'Win32_BaseBoard',
+        properties => [ qw/
+            SerialNumber Product Manufacturer
+            / ]
+    )) {
+        $bios->{MSN}             = $object->{SerialNumber};
+        $bios->{MMODEL}          = $object->{Product};
+        $bios->{SSN}             = $object->{SerialNumber}
+            unless $bios->{SSN};
+        $bios->{SMANUFACTURER}   = $object->{Manufacturer}
+            unless $bios->{SMANUFACTURER};
+
+    }
+
+    foreach (keys %$bios) {
+        $bios->{$_} =~ s/\s+$// if $bios->{$_};
+    }
+
+    return $bios;
 }
 
 1;
