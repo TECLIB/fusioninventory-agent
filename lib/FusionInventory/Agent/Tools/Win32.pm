@@ -95,17 +95,10 @@ sub _getWMIObjects {
 
     Win32::OLE->use('in');
     my $WMIService;
-    my @instances;
     if ($params{WMIService}) {
         $WMIService = $params{WMIService};
-        my $req = "SELECT * FROM " . $params{class};
-        @instances = in(
-            $WMIService->ExecQuery( $req )
-        );
-        $params{logger}->debug2('ExecQuery : ' . $req) if $params{logger};
     } else {
         $WMIService = Win32::OLE->GetObject( $params{moniker} );
-
         # Support alternate moniker if provided and main failed to open
         unless (defined($WMIService)) {
             if ($params{altmoniker}) {
@@ -113,13 +106,15 @@ sub _getWMIObjects {
             }
             return unless (defined($WMIService));
         }
-        @instances = in(
-            $WMIService->InstancesOf( $params{class} )
-        );
     }
 
     my @objects;
-    foreach my $instance (@instances) {
+    foreach my $instance (
+        in(
+                $params{query} ?
+                $WMIService->ExecQuery(@{$params{query}}) :
+                $WMIService->InstancesOf($params{class})
+        )) {
         my $object;
         foreach my $property (@{$params{properties}}) {
             if (defined $instance->{$property} && !ref($instance->{$property})) {

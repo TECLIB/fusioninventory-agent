@@ -191,12 +191,14 @@ sub getMemoriesUsingToolsFunction {
     my @memories;
     foreach my $object (getWMIObjects(
         WMIService => $service,
-        class      => 'Win32_PhysicalMemory',
+        query      => (
+            "SELECT * FROM Win32_PhysicalMemory", "WQL",
+            wbemFlagReturnImmediately | wbemFlagForwardOnly ## no critic (ProhibitBitwise)
+        ),
         properties => [ qw/
             Capacity Caption Description FormFactor Removable Speed MemoryType
             SerialNumber
-            / ],
-        logger => $logger
+            / ]
     )) {
         #    foreach my $object ( @colItems ) {
         my $dd = Data::Dumper->new( [$object] );
