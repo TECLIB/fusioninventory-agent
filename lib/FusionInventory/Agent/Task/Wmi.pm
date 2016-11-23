@@ -106,7 +106,7 @@ sub run {
         return;
     }
 
-    my @memories = getMemoriesUsingToolsFunction( $config->{wmi_hostname}, $config->{wmi_user}, $config->{wmi_pass} );
+    my @memories = getMemoriesUsingToolsFunction( $config->{wmi_hostname}, $config->{wmi_user}, $config->{wmi_pass}, $self->{logger} );
 #    my @memories = getMemories( $self->{WMIService}, $self->{logger} );
     my $dd = Data::Dumper->new( [\@memories] );
     $self->{logger}->debug2( $dd->Dump );
