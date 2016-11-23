@@ -8,6 +8,7 @@ use English qw(-no_match_vars);
 use Data::Dumper;
 
 use FusionInventory::Agent::Tools::Win32;
+use FusionInventory::Agent::Task::Inventory::Win32::Memory;
 
 our $VERSION = '0.1';
 
@@ -168,9 +169,7 @@ sub run {
 sub getMemoriesUsingToolsFunction {
     my ( $host, $user, $pass, $logger ) = @_;
 
-    my $cpt = 0;
-    my @memories;
-    foreach my $object (getWMIObjects(
+    my @list1 = getWMIObjects(
         WMIService => {
             hostname => $host,
             user => $user,
@@ -183,77 +182,24 @@ sub getMemoriesUsingToolsFunction {
             Capacity Caption Description FormFactor Removable Speed MemoryType
             SerialNumber
             / ]
-    )) {
-        #    foreach my $object ( @colItems ) {
-        my $dd = Data::Dumper->new( [$object] );
-        $logger->debug2( 'Win32_PhysicalMemory : ' . ref $object );
-        #        $logger->debug2($dd->Dump);
-        # Ignore ROM storages (BIOS ROM)
-        $logger->debug2( join ( ' - ', keys %$object));
-        $logger->debug2($object->{Name});
-        $logger->debug2($object->{MemoryType});
-        $logger->debug2($dd->Dump);
+    );
+    my @list2 = getWMIObjects(
+        WMIService => {
+            hostname => $host,
+            user => $user,
+            pass => $pass
+        },
+        class      => 'Win32_PhysicalMemoryArray',
+        properties => [
+            qw/
+                MemoryDevices SerialNumber PhysicalMemoryCorrection
+                /
+        ]
+    );
 
-        next unless $object->{MemoryType};
-        my $type = $memoryTypeVal[ $object->{MemoryType} ];
-        $logger->debug2('type : ' . $type);
-        next if $type && $type eq 'ROM';
-        next if $type && $type eq 'Flash';
-
-        my $capacity;
-        $capacity = $object->{Capacity} / ( 1024 * 1024 )
-            if $object->{Capacity};
-
-        push @memories,
-            {
-                CAPACITY     => $capacity,
-                CAPTION      => $object->{Caption},
-                DESCRIPTION  => $object->{Description},
-                FORMFACTOR   => $formFactorVal[ $object->{FormFactor} ],
-                REMOVABLE    => $object->{Removable} ? 1 : 0,
-                SPEED        => $object->{Speed},
-                TYPE         => $memoryTypeVal[ $object->{MemoryType} ],
-                NUMSLOTS     => $cpt++,
-                SERIALNUMBER => $object->{SerialNumber}
-            };
-    }
-
-    if (2 == 1) {
-    foreach my $object (
-        getWMIObjects(
-            WMIService => {
-                hostname => $host,
-                user => $user,
-                pass => $pass
-            },
-            class      => 'Win32_PhysicalMemoryArray',
-            properties => [
-                qw/
-                    MemoryDevices SerialNumber PhysicalMemoryCorrection
-                    /
-            ]
-        )
-    )
-    {
-
-        my $memory = $memories[ $object->{MemoryDevices} - 1 ];
-        if ( !$memory->{SERIALNUMBER} ) {
-            $memory->{SERIALNUMBER} = $object->{SerialNumber};
-        }
-
-        if ( $object->{PhysicalMemoryCorrection} ) {
-            $memory->{MEMORYCORRECTION} =
-                $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
-        }
-
-        if ( $memory->{MEMORYCORRECTION} ) {
-            $memory->{DESCRIPTION} .= " (" . $memory->{MEMORYCORRECTION} . ")";
-        }
-    }
-    }
+    my @memories = FusionInventory::Agent::Task::Inventory::Win32::Memory::extractMemoriesFromWMIObjects(\@list1, \@list2);
 
     return @memories;
-
 }
 
 #sub getMemories {
