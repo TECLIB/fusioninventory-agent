@@ -9,6 +9,7 @@ use Data::Dumper;
 
 use FusionInventory::Agent::Tools::Win32;
 use FusionInventory::Agent::Task::Inventory::Win32::Memory;
+use FusionInventory::Agent::Task::Inventory::Win32::Antivirus;
 
 our $VERSION = '0.1';
 
@@ -104,6 +105,10 @@ sub run {
     );
     my @memories = FusionInventory::Agent::Task::Inventory::Win32::Memory::getMemories(%wmiParams);
     my $dd = Data::Dumper->new( [\@memories] );
+    $self->{logger}->debug2( $dd->Dump );
+
+    my @antiviruses = FusionInventory::Agent::Task::Inventory::Win32::AntiVirus::getAntivirusesFromWMI(%wmiParams);
+    $dd = Data::Dumper->new( [\@antiviruses] );
     $self->{logger}->debug2( $dd->Dump );
 }
 

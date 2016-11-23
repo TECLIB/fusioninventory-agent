@@ -21,18 +21,35 @@ sub doInventory {
 
     my $inventory = $params{inventory};
 
-    # Doesn't works on Win2003 Server
-    # On Win7, we need to use SecurityCenter2
+    my @antiviruses = getAntivirusesFromWMI();
+    foreach my $antivirus (@antiviruses) {
+        # McAfee data
+        if ($antivirus->{NAME} =~ /McAfee/i) {
+            my $info = _getMcAfeeInfo($logger);
+            $antivirus->{$_} = $info->{$_} foreach keys %$info;
+        }
+
+        $inventory->addEntry(
+            section => 'ANTIVIRUS',
+            entry   => $antivirus
+        );
+    }
+}
+
+# Doesn't works on Win2003 Server
+# On Win7, we need to use SecurityCenter2
+sub getAntivirusesFromWMI {
+    my @antiviruses;
     foreach my $instance (qw/SecurityCenter SecurityCenter2/) {
         my $moniker = "winmgmts:{impersonationLevel=impersonate,(security)}!//./root/$instance";
 
         foreach my $object (getWMIObjects(
-                moniker    => $moniker,
-                class      => "AntiVirusProduct",
-                properties => [ qw/
-                    companyName displayName instanceGuid onAccessScanningEnabled
-                    productUptoDate versionNumber productState
-               / ]
+            moniker    => $moniker,
+            class      => "AntiVirusProduct",
+            properties => [ qw/
+                companyName displayName instanceGuid onAccessScanningEnabled
+                productUptoDate versionNumber productState
+                / ]
         )) {
             next unless $object;
 
@@ -47,28 +64,21 @@ sub doInventory {
 
             if ($object->{productState}) {
                 my $bin = sprintf( "%b\n", $object->{productState});
-# http://blogs.msdn.com/b/alejacma/archive/2008/05/12/how-to-get-antivirus-information-with-wmi-vbscript.aspx?PageIndex=2#comments
+                # http://blogs.msdn.com/b/alejacma/archive/2008/05/12/how-to-get-antivirus-information-with-wmi-vbscript.aspx?PageIndex=2#comments
                 if ($bin =~ /(\d)\d{5}(\d)\d{6}(\d)\d{5}$/) {
                     $antivirus->{UPTODATE} = $1 || $2;
-                    $antivirus->{ENABLED}  = $3 ? 0 : 1;
+                    $antivirus->{ENABLED} = $3 ? 0 : 1;
                 }
             }
 
             # avoid duplicates
-            next if $seen->{$antivirus->{NAME}}->{$antivirus->{VERSION}||'_undef_'}++;
+            next if $seen->{$antivirus->{NAME}}->{$antivirus->{VERSION} || '_undef_'}++;
 
-            # McAfee data
-            if ($antivirus->{NAME} =~ /McAfee/i) {
-                my $info = _getMcAfeeInfo($logger);
-                $antivirus->{$_} = $info->{$_} foreach keys %$info;
-            }
-
-            $inventory->addEntry(
-                section => 'ANTIVIRUS',
-                entry   => $antivirus
-            );
+            push @antiviruses, $antivirus;
         }
     }
+
+    return $antiviruses;
 }
 
 sub _getMcAfeeInfo {
