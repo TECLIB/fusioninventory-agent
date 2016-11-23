@@ -195,7 +195,8 @@ sub getMemoriesUsingToolsFunction {
         properties => [ qw/
             Capacity Caption Description FormFactor Removable Speed MemoryType
             SerialNumber
-            / ]
+            / ],
+        logger => $logger
     )) {
         #    foreach my $object ( @colItems ) {
         my $dd = Data::Dumper->new( [$object] );
