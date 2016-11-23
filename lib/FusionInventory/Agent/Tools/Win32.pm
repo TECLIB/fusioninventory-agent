@@ -96,7 +96,19 @@ sub _getWMIObjects {
     Win32::OLE->use('in');
     my $WMIService;
     if ($params{WMIService}) {
-        $WMIService = $params{WMIService};
+        if (
+            $params{WMIService}->{hostname}
+            && $params{WMIService}->{user}
+            && $params{WMIService}->{pass}
+        ) {
+            $WMIService = _connectToService(
+                $params{WMIService}->{hostname},
+                $params{WMIService}->{user},
+                $params{WMIService}->{pass}
+            );
+        } else {
+            return;
+        }
     } else {
         $WMIService = Win32::OLE->GetObject( $params{moniker} );
         # Support alternate moniker if provided and main failed to open
@@ -104,9 +116,9 @@ sub _getWMIObjects {
             if ($params{altmoniker}) {
                 $WMIService = Win32::OLE->GetObject( $params{altmoniker} );
             }
-            return unless (defined($WMIService));
         }
     }
+    return unless (defined($WMIService));
 
     my @objects;
     foreach my $instance (
@@ -571,6 +583,18 @@ sub getUsersFromRegistry {
         $params{logger}->debug2('getUsersFromRegistry() : retrieved ' . scalar(keys %$userList) . ' users');
     }
     return $userList;
+}
+
+sub _connectToService {
+    my ( $hostname, $user, $pass ) = @_;
+
+    my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
+        or warn;
+    my $service =
+        $locator->ConnectServer( $hostname, "root\\cimv2", "domain\\" . $user,
+            $pass );
+
+    return $service;
 }
 
 END {
