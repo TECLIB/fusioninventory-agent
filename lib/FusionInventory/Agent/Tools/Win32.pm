@@ -98,9 +98,11 @@ sub _getWMIObjects {
     my @instances;
     if ($params{WMIService}) {
         $WMIService = $params{WMIService};
+        my $req = "SELECT * FROM " . $params{class};
         @instances = in(
-            $WMIService->ExecQuery( "SELECT * FROM " . $params{class} )
+            $WMIService->ExecQuery( $req )
         );
+        $params{logger}->debug2('ExecQuery : ' . $req) if $params{logger};
     } else {
         $WMIService = Win32::OLE->GetObject( $params{moniker} );
 
