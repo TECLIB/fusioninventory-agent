@@ -125,8 +125,8 @@ sub run {
     }
 
     $self->getAntivirus( $self->{WMIService} );
-    my @memories = getMemoriesUsingToolsFunction( $self->{WMIService}, $self->{logger} );
-
+#    my @memories = getMemoriesUsingToolsFunction( $self->{WMIService}, $self->{logger} );
+    my @memories = getMemories( $self->{WMIService}, $self->{logger} );
     my $dd = Data::Dumper->new( [\@memories] );
     $self->{logger}->debug2( $dd->Dump );
 }
