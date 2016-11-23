@@ -11,6 +11,7 @@ use FusionInventory::Agent::Tools::Win32;
 use FusionInventory::Agent::Task::Inventory::Win32::Memory;
 use FusionInventory::Agent::Task::Inventory::Win32::Antivirus;
 use FusionInventory::Agent::Task::Inventory::Win32::Bios;
+use FusionInventory::Agent::Task::Inventory::Win32::Chassis;
 
 our $VERSION = '0.1';
 
