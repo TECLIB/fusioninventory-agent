@@ -10,7 +10,7 @@ use Data::Dumper;
 use FusionInventory::Agent::Tools::Win32;
 use FusionInventory::Agent::Task::Inventory::Win32::Memory;
 use FusionInventory::Agent::Task::Inventory::Win32::Antivirus;
-FusionInventory::Agent::Task::Inventory::Win32::Bios;
+use FusionInventory::Agent::Task::Inventory::Win32::Bios;
 
 our $VERSION = '0.1';
 
