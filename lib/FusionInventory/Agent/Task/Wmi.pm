@@ -76,18 +76,6 @@ sub isEnabled {
     return 1;
 }
 
-#sub _connectToService {
-#    my ( $hostname, $user, $pass ) = @_;
-#
-#    my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
-#      or warn;
-#    my $service =
-#      $locator->ConnectServer( $hostname, "root\\cimv2", "domain\\" . $user,
-#        $pass );
-#
-#    return $service;
-#}
-
 sub run {
     my ( $self, %params ) = @_;
 
@@ -202,81 +190,6 @@ sub getMemoriesUsingToolsFunction {
     return @memories;
 }
 
-#sub getMemories {
-#    my ( $service, $logger ) = @_;
-#
-#    my $cpt = 0;
-#    my @memories;
-#
-#    my @colItems = in($service->ExecQuery("SELECT * FROM Win32_PhysicalMemory"));
-#
-##    my $colItems = $service->InstancesOf('Win32_PhysicalMemory');
-#
-##     foreach my $object (getWMIObjects(
-##         WMIService => $service,
-##         class      => 'Win32_PhysicalMemory',
-##         properties => [ qw/
-##             Capacity Caption Description FormFactor Removable Speed MemoryType
-##             SerialNumber
-##             / ]
-##     )) {
-#    foreach my $object ( @colItems ) {
-#        my $dd = Data::Dumper->new( [$object] );
-#        $logger->debug2( 'Win32_PhysicalMemory : ' . ref $object );
-#        #        $logger->debug2($dd->Dump);
-#        # Ignore ROM storages (BIOS ROM)
-#        $logger->debug2( join ( ' - ', keys %$object));
-#        $logger->debug2($object->{Name});
-#        $logger->debug2($object->{MemoryType});
-##        $logger->debug2($dd->Dump);
-#
-#        next unless $object->{MemoryType};
-#        my $type = $memoryTypeVal[ $object->{MemoryType} ];
-#        $logger->debug2('type : ' . $type);
-#        next if $type && $type eq 'ROM';
-#        next if $type && $type eq 'Flash';
-#
-#        my $capacity;
-#        $capacity = $object->{Capacity} / ( 1024 * 1024 )
-#          if $object->{Capacity};
-#
-#        push @memories,
-#          {
-#            CAPACITY     => $capacity,
-#            CAPTION      => $object->{Caption},
-#            DESCRIPTION  => $object->{Description},
-#            FORMFACTOR   => $formFactorVal[ $object->{FormFactor} ],
-#            REMOVABLE    => $object->{Removable} ? 1 : 0,
-#            SPEED        => $object->{Speed},
-#            TYPE         => $memoryTypeVal[ $object->{MemoryType} ],
-#            NUMSLOTS     => $cpt++,
-#            SERIALNUMBER => $object->{SerialNumber}
-#          };
-#    }
-#
-#    @colItems = in($service->ExecQuery("SELECT * FROM Win32_PhysicalMemoryArray"));
-##    @colItems = in($service->InstancesOf("Win32_PhysicalMemoryArray"));
-#    foreach my $object (@colItems) {
-#
-#        my $memory = $memories[ $object->{MemoryDevices} - 1 ];
-#        if ( !$memory->{SERIALNUMBER} ) {
-#            $memory->{SERIALNUMBER} = $object->{SerialNumber};
-#        }
-#
-##        my $properties = $object->{properties};
-#        my $dd = Data::Dumper->new([keys %{$object->{Properties_}}]);
-#        $logger->debug2('properties : ' . $dd->Dump);
-##        if ( $object->{PhysicalMemoryCorrection} ) {
-##            $memory->{MEMORYCORRECTION} =
-##              $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
-##        }
-#
-#        if ( $memory->{MEMORYCORRECTION} ) {
-#            $memory->{DESCRIPTION} .= " (" . $memory->{MEMORYCORRECTION} . ")";
-#        }
-#    }
-#
-#    return @memories;
-#}
+
 
 1;
