@@ -97,22 +97,22 @@ sub run {
         return;
     }
 
-    my %wmiParams = (
+    my %params = (
         WMIService => {
             hostname => $config->{wmi_hostname},
             user => $config->{wmi_user},
             pass => $config->{wmi_pass}
         }
     );
-    my @memories = FusionInventory::Agent::Task::Inventory::Win32::Memory::getMemories(%wmiParams);
+    my @memories = FusionInventory::Agent::Task::Inventory::Win32::Memory::getMemories(%params);
     my $dd = Data::Dumper->new( [\@memories] );
     $self->{logger}->debug2( $dd->Dump );
 
-    my @antiviruses = FusionInventory::Agent::Task::Inventory::Win32::AntiVirus::getAntivirusesFromWMI(%wmiParams);
+    my @antiviruses = FusionInventory::Agent::Task::Inventory::Win32::AntiVirus::getAntivirusesFromWMI(%params);
     $dd = Data::Dumper->new( [\@antiviruses] );
     $self->{logger}->debug2( $dd->Dump );
 
-    my $bios = FusionInventory::Agent::Task::Inventory::Win32::Bios::appendBiosDataFromWMI(%wmiParams);
+    my $bios = FusionInventory::Agent::Task::Inventory::Win32::Bios::appendBiosDataFromWMI(%params);
     $dd = Data::Dumper->new( [$bios] );
     $self->{logger}->debug2( $dd->Dump );
 }

@@ -38,7 +38,7 @@ sub doInventory {
         ))
     };
 
-    $bios = appendBiosDataFromWMI($bios);
+    $bios = appendBiosDataFromWMI(bios => $bios);
 
     $inventory->setBios($bios);
 
@@ -77,18 +77,16 @@ sub doInventory {
 }
 
 sub appendBiosDataFromWMI {
-    my ($bios) = @_;
+    my (%params) = @_;
 
-    if (!defined($bios)) {
-        $bios = {};
-    }
+    my $bios = $params{bios} ? $params{bios} : {};
 
     foreach my $object (getWMIObjects(
         class      => 'Win32_Bios',
         properties => [ qw/
             SerialNumber Version Manufacturer SMBIOSBIOSVersion BIOSVersion ReleaseDate
             / ],
-        @_
+        %params
     )) {
         $bios->{BIOSSERIAL}    = $object->{SerialNumber};
         $bios->{SSN}           = $object->{SerialNumber};
