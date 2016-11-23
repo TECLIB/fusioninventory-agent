@@ -49,7 +49,8 @@ sub getAntivirusesFromWMI {
             properties => [ qw/
                 companyName displayName instanceGuid onAccessScanningEnabled
                 productUptoDate versionNumber productState
-                / ]
+                / ],
+            @_
         )) {
             next unless $object;
 
@@ -78,7 +79,7 @@ sub getAntivirusesFromWMI {
         }
     }
 
-    return $antiviruses;
+    return @antiviruses;
 }
 
 sub _getMcAfeeInfo {
