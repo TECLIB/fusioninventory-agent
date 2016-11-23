@@ -101,7 +101,8 @@ sub appendBiosDataFromWMI {
         class      => 'Win32_ComputerSystem',
         properties => [ qw/
             Manufacturer Model
-            / ]
+            / ],
+        %params
     )) {
         $bios->{SMANUFACTURER} = $object->{Manufacturer};
         $bios->{SMODEL}        = $object->{Model};
@@ -111,7 +112,8 @@ sub appendBiosDataFromWMI {
         class      => 'Win32_SystemEnclosure',
         properties => [ qw/
             SerialNumber SMBIOSAssetTag
-            / ]
+            / ],
+        %params
     )) {
         $bios->{ENCLOSURESERIAL} = $object->{SerialNumber} ;
         $bios->{SSN}             = $object->{SerialNumber} unless $bios->{SSN};
@@ -122,7 +124,8 @@ sub appendBiosDataFromWMI {
         class => 'Win32_BaseBoard',
         properties => [ qw/
             SerialNumber Product Manufacturer
-            / ]
+            / ],
+        %params
     )) {
         $bios->{MSN}             = $object->{SerialNumber};
         $bios->{MMODEL}          = $object->{Product};
