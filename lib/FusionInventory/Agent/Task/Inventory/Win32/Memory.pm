@@ -82,7 +82,7 @@ sub doInventory {
 
     my $inventory = $params{inventory};
 
-    foreach my $memory (_getMemories()) {
+    foreach my $memory (getMemories()) {
         $inventory->addEntry(
             section => 'MEMORIES',
             entry   => $memory
@@ -90,12 +90,19 @@ sub doInventory {
     }
 }
 
-sub extractMemoriesFromWMIObjects {
-    my ($list1, $list2) = @_;
+sub getMemories {
 
     my $cpt = 0;
     my @memories;
-    foreach my $object (@$list1) {
+
+    foreach my $object (getWMIObjects(
+        class      => 'Win32_PhysicalMemory',
+        properties => [ qw/
+            Capacity Caption Description FormFactor Removable Speed MemoryType
+            SerialNumber
+        / ],
+        @_
+    )) {
         # Ignore ROM storages (BIOS ROM)
         my $type = $memoryTypeVal[$object->{MemoryType}];
         next if $type && $type eq 'ROM';
@@ -118,7 +125,12 @@ sub extractMemoriesFromWMIObjects {
         }
     }
 
-    foreach my $object (@$list2) {
+    foreach my $object (getWMIObjects(
+        class      => 'Win32_PhysicalMemoryArray',
+        properties => [ qw/
+            MemoryDevices SerialNumber PhysicalMemoryCorrection
+        / ]
+    )) {
 
         my $memory = $memories[$object->{MemoryDevices} - 1];
         if (!$memory->{SERIALNUMBER}) {
@@ -134,25 +146,6 @@ sub extractMemoriesFromWMIObjects {
             $memory->{DESCRIPTION} .= " (".$memory->{MEMORYCORRECTION}.")";
         }
     }
-    return @memories;
-}
-
-sub _getMemories {
-
-    my @list1 = getWMIObjects(
-        class      => 'Win32_PhysicalMemory',
-        properties => [ qw/
-            Capacity Caption Description FormFactor Removable Speed MemoryType
-            SerialNumber
-            / ]
-    );
-    my @list2 = getWMIObjects(
-        class      => 'Win32_PhysicalMemoryArray',
-        properties => [ qw/
-            MemoryDevices SerialNumber PhysicalMemoryCorrection
-            / ]
-    );
-    my @memories = extractMemoriesFromWMIObjects(\@list1, \@list2);
 
     return @memories;
 }

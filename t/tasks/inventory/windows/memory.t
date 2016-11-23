@@ -132,7 +132,7 @@ foreach my $test (keys %tests) {
         mockGetWMIObjects($test)
     );
 
-    my @memories = FusionInventory::Agent::Task::Inventory::Win32::Memory::_getMemories();
+    my @memories = FusionInventory::Agent::Task::Inventory::Win32::Memory::getMemories();
     cmp_deeply(
         \@memories,
         $tests{$test},
