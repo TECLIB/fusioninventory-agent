@@ -231,6 +231,7 @@ sub getMemoriesUsingToolsFunction {
             };
     }
 
+    if (2 == 1) {
     foreach my $object (
         getWMIObjects(
             WMIService => $service,
@@ -257,6 +258,7 @@ sub getMemoriesUsingToolsFunction {
         if ( $memory->{MEMORYCORRECTION} ) {
             $memory->{DESCRIPTION} .= " (" . $memory->{MEMORYCORRECTION} . ")";
         }
+    }
     }
 
     return @memories;
