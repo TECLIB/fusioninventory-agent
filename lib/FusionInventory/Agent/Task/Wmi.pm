@@ -115,6 +115,10 @@ sub run {
     my $bios = FusionInventory::Agent::Task::Inventory::Win32::Bios::appendBiosDataFromWMI(%wmiParams);
     $dd = Data::Dumper->new( [$bios] );
     $self->{logger}->debug2( $dd->Dump );
+
+    my $chassis = FusionInventory::Agent::Task::Inventory::Win32::Chassis::getChassis(%wmiParams);
+    $dd = Data::Dumper->new( [$chassis] );
+    $self->{logger}->debug2( $dd->Dump );
 }
 
 #sub getAntivirus {

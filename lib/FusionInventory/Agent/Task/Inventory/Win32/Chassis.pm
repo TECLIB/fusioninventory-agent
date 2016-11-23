@@ -43,18 +43,19 @@ sub doInventory {
     my $inventory = $params{inventory};
 
     $inventory->setHardware({
-        CHASSIS_TYPE => _getChassis(logger => $params{logger})
+        CHASSIS_TYPE => getChassis(logger => $params{logger})
     });
 }
 
-sub _getChassis {
+sub getChassis {
     my (%params) = @_;
 
     my $chassis;
 
     foreach my $object (getWMIObjects(
         class      => 'Win32_SystemEnclosure',
-        properties => [ qw/ChassisTypes/ ]
+        properties => [ qw/ChassisTypes/ ],
+        %params
     )) {
         $chassis = $chassisType[$object->{ChassisTypes}->[0]];
     }
