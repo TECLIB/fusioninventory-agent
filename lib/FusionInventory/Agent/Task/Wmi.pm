@@ -249,10 +249,10 @@ sub getMemoriesUsingToolsFunction {
             $memory->{SERIALNUMBER} = $object->{SerialNumber};
         }
 
-        if ( $object->{PhysicalMemoryCorrection} ) {
-            $memory->{MEMORYCORRECTION} =
-                $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
-        }
+#        if ( $object->{PhysicalMemoryCorrection} ) {
+#            $memory->{MEMORYCORRECTION} =
+#                $memoryErrorProtection[ $object->{PhysicalMemoryCorrection} ];
+#        }
 
         if ( $memory->{MEMORYCORRECTION} ) {
             $memory->{DESCRIPTION} .= " (" . $memory->{MEMORYCORRECTION} . ")";
