@@ -95,14 +95,14 @@ sub run {
         return;
     }
 
-    my @memories = FusionInventory::Agent::Task::Inventory::Win32::Memory::getMemories(
+    my %wmiParams = (
         WMIService => {
             hostname => $config->{wmi_hostname},
             user => $config->{wmi_user},
             pass => $config->{wmi_pass}
         }
     );
-#    my @memories = getMemories( $self->{WMIService}, $self->{logger} );
+    my @memories = FusionInventory::Agent::Task::Inventory::Win32::Memory::getMemories(%wmiParams);
     my $dd = Data::Dumper->new( [\@memories] );
     $self->{logger}->debug2( $dd->Dump );
 }
