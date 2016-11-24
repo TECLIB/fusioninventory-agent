@@ -175,7 +175,7 @@ sub extractAllPropertiesFromWMIObjects {
             }
             $obj->{$prop->Name} = $value;
         }
-        push @objects, $cpu;
+        push @objects, $obj;
     }
 
     return @objects;
