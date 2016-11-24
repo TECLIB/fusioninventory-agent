@@ -129,8 +129,10 @@ sub run {
 sub getCPUs {
     my ( %wmiParams ) = @_;
 
+    my $p = $wmiParams{WMIService};
+
     my @cpus = ();
-    my $service = FusionInventory::Agent::Tools::Win32::_connectToService($wmiParams{hostname}, $wmiParams{user}, $wmiParams{pass});
+    my $service = FusionInventory::Agent::Tools::Win32::_connectToService($p->{hostname}, $p->{user}, $p->{pass});
     foreach my $object (in($service->InstancesOf('Win32_Processor'))) {
         my $cpu = {};
         foreach my $prop (in $object->Properties_) {
