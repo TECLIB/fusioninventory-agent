@@ -153,32 +153,33 @@ sub _getWMIObjects {
     return @objects;
 }
 
-#sub extractAllPropertiesFromWMIObjects {
-#    my ($instances) = @_;
-#
-#    my @objects = ();
-#    foreach my $obj (in($instances)) {
-#        my $obj = {};
-#        foreach my $prop (in $obj->Properties_) {
-#            my $value;
-#            if (!($prop->Value)) {
-#                $value = 'NULL';
-#            } elsif ($prop->IsArray == 1) {
-#                my @values = ();
-#                foreach my $i ($prop) {
-#                    push @values, $prop->Value( $i );
-#                }
-#                $value = join (' -|- ', @values);
-#            } else {
-#                $value = $prop->Value;
-#            }
-#            $obj->{$prop->Name} = $value;
-#        }
-#        push @objects, $cpu;
-#    }
-#
-#    return @objects;
-#}
+sub extractAllPropertiesFromWMIObjects {
+    my ($instances) = @_;
+
+    Win32::OLE->use('in');
+    my @objects = ();
+    foreach my $instance (in($instances)) {
+        my $obj = {};
+        foreach my $prop (in $instance->Properties_) {
+            my $value;
+            if (!($prop->Value)) {
+                $value = 'NULL';
+            } elsif ($prop->IsArray == 1) {
+                my @values = ();
+                foreach my $i ($prop) {
+                    push @values, $prop->Value( $i );
+                }
+                $value = join (' -|- ', @values);
+            } else {
+                $value = $prop->Value;
+            }
+            $obj->{$prop->Name} = $value;
+        }
+        push @objects, $cpu;
+    }
+
+    return @objects;
+}
 
 sub getRegistryValue {
     my (%params) = @_;
