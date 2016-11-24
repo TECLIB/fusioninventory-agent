@@ -121,11 +121,15 @@ sub _getWMIObjects {
     return unless (defined($WMIService));
 
     my @objects;
+    my $instances = $params{query} ?
+        $WMIService->ExecQuery(@{$params{query}}) :
+        $WMIService->InstancesOf($params{class});
+
+    # eventually return
+    return $instances if $params{returnTrueWMIObjects};
     foreach my $instance (
         in(
-                $params{query} ?
-                $WMIService->ExecQuery(@{$params{query}}) :
-                $WMIService->InstancesOf($params{class})
+            $instances
         )) {
         my $object;
         foreach my $property (@{$params{properties}}) {
