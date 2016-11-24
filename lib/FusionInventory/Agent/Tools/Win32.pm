@@ -588,6 +588,7 @@ sub getUsersFromRegistry {
 sub _connectToService {
     my ( $hostname, $user, $pass ) = @_;
 
+    Win32::OLE->use('CreateObject');
     my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
         or warn;
     my $service =
