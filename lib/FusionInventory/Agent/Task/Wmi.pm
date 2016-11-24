@@ -13,6 +13,7 @@ use FusionInventory::Agent::Task::Inventory::Win32::Antivirus;
 use FusionInventory::Agent::Task::Inventory::Win32::Bios;
 use FusionInventory::Agent::Task::Inventory::Win32::Chassis;
 use FusionInventory::Agent::Task::Inventory::Win32::Drives;
+use FusionInventory::Agent::Task::Inventory::Win32::Environment;
 
 our $VERSION = '0.1';
 
@@ -72,7 +73,10 @@ sub run {
     $dd = Data::Dumper->new( [@drives, @volumes] );
     $self->{logger}->debug2( $dd->Dump );
 
-    my @
+    my @envVars = FusionInventory::Agent::Task::Inventory::Win32::Environment::getEnvironmentValues(%wmiParams);
+    $dd = Data::Dumper->new( [@envVars] );
+    $self->{logger}->debug2( $dd->Dump );
+
 }
 
 sub getCPU {
