@@ -121,11 +121,15 @@ sub _getWMIObjects {
     return unless (defined($WMIService));
 
     my @objects;
+    my $instances = $params{query} ?
+        $WMIService->ExecQuery(@{$params{query}}) :
+        $WMIService->InstancesOf($params{class});
+
+    # eventually return
+    return $instances if $params{returnTrueWMIObjects};
     foreach my $instance (
         in(
-                $params{query} ?
-                $WMIService->ExecQuery(@{$params{query}}) :
-                $WMIService->InstancesOf($params{class})
+            $instances
         )) {
         my $object;
         foreach my $property (@{$params{properties}}) {
@@ -144,6 +148,33 @@ sub _getWMIObjects {
             }
         }
         push @objects, $object;
+    }
+
+    return @objects;
+}
+
+sub extractAllPropertiesFromWMIObjects {
+    my ($instances) = @_;
+
+    my @objects = ();
+    foreach my $obj (in($instances)) {
+        my $obj = {};
+        foreach my $prop (in $obj->Properties_) {
+            my $value;
+            if (!($prop->Value)) {
+                $value = 'NULL';
+            } elsif ($prop->IsArray == 1) {
+                my @values = ();
+                foreach my $i ($prop) {
+                    push @values, $prop->Value( $i );
+                }
+                $value = join (' -|- ', @values);
+            } else {
+                $value = $prop->Value;
+            }
+            $obj->{$prop->Name} = $value;
+        }
+        push @objects, $cpu;
     }
 
     return @objects;

@@ -132,26 +132,12 @@ sub getCPUs {
     my $p = $wmiParams{WMIService};
 
     my @cpus = ();
-    my $service = FusionInventory::Agent::Tools::Win32::_connectToService($p->{hostname}, $p->{user}, $p->{pass});
-    foreach my $object (in($service->InstancesOf('Win32_Processor'))) {
-        my $cpu = {};
-        foreach my $prop (in $object->Properties_) {
-            my $value;
-            if (!($prop->Value)) {
-                $value = 'NULL';
-            } elsif ($prop->IsArray == 1) {
-                my @values = ();
-                foreach my $i ($prop) {
-                    push @values, $prop->Value($i);
-                }
-                $value = join (' -|- ', @values);
-            } else {
-                $value = $prop->Value;
-            }
-            $cpu->{$prop->Name} = $value;
-        }
-        push @cpus, $cpu;
-    }
+    my $instances = FusionInventory::Agent::Tools::Win32::getWMIObjects(
+        class      => 'Win32_Processor',
+        returnTrueWMIObjects => 1,
+        %wmiParams
+    );
+    my @cpus = FusionInventory::Agent::Tools::Win32::extractAllPropertiesFromWMIObjects($instances);
 
     return @cpus;
 }
