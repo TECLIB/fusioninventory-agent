@@ -74,7 +74,7 @@ sub run {
     $self->{logger}->debug2( $dd->Dump );
 
     my @envVars = FusionInventory::Agent::Task::Inventory::Win32::Environment::getEnvironmentValues(%wmiParams);
-    $dd = Data::Dumper->new( [@envVars] );
+    $dd = Data::Dumper->new( [\@envVars] );
     $self->{logger}->debug2( $dd->Dump );
 
 }
