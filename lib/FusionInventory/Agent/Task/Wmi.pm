@@ -120,60 +120,42 @@ sub run {
     my $chassis = FusionInventory::Agent::Task::Inventory::Win32::Chassis::getChassis(%wmiParams);
     $dd = Data::Dumper->new( [$chassis] );
     $self->{logger}->debug2( $dd->Dump );
+
+    my $cpus = getCPUs(%wmiParams);
+    $dd = Data::Dumper->new( [$cpus] );
+    $self->{logger}->debug2( $dd->Dump );
 }
 
-#sub getAntivirus {
-#    my ( $self, $service ) = @_;
-#
-#    my $seen;
-#    foreach my $instance (qw/SecurityCenter SecurityCenter2/) {
-#        my $moniker =
-#"winmgmts:{impersonationLevel=impersonate,(security)}!//./root/$instance";
-#
-#        foreach my $object (
-#            getWMIObjects(
-#                WMIService => $service,
-#                moniker    => $moniker,
-#                class      => "AntiVirusProduct",
-#                properties => [
-#                    qw/
-#                      companyName displayName instanceGuid onAccessScanningEnabled
-#                      productUptoDate versionNumber productState
-#                      /
-#                ]
-#            )
-#          )
-#        {
-#            next unless $object;
-#
-#            my $antivirus = {
-#                COMPANY  => $object->{companyName},
-#                NAME     => $object->{displayName},
-#                GUID     => $object->{instanceGuid},
-#                VERSION  => $object->{versionNumber},
-#                ENABLED  => $object->{onAccessScanningEnabled},
-#                UPTODATE => $object->{productUptoDate}
-#            };
-#
-#            if ( $object->{productState} ) {
-#                my $bin = sprintf( "%b\n", $object->{productState} );
-#
-## http://blogs.msdn.com/b/alejacma/archive/2008/05/12/how-to-get-antivirus-information-with-wmi-vbscript.aspx?PageIndex=2#comments
-#                if ( $bin =~ /(\d)\d{5}(\d)\d{6}(\d)\d{5}$/ ) {
-#                    $antivirus->{UPTODATE} = $1 || $2;
-#                    $antivirus->{ENABLED} = $3 ? 0 : 1;
-#                }
-#            }
-#
-## avoid duplicates
-##            next if $seen->{$antivirus->{NAME}}->{$antivirus->{VERSION} || '_undef_'}++;
-#
-#            my $dd = Data::Dumper->new( [$antivirus] );
-#            my $output = $dd->Dump;
-#            $self->{logger}->debug2($output);
-#        }
-#    }
-#}
+sub getCPUs {
+    my ( %wmiParams ) = @_;
+
+    my @cpus = ();
+    foreach my $object (getWMIObjects(
+        class      => 'Win32_Processor',
+        properties => [ qw/NumberOfCores NumberOfLogicalProcessors ProcessorId MaxClockSpeed/ ],
+        %wmiParams
+    )) {
+        my $cpu = {};
+        foreach my $prop (in $object->Properties_) {
+            my $value;
+            if (!($prop->Value)) {
+                $value = 'NULL';
+            } elsif ($prop->IsArray == 1) {
+                my @values = ();
+                foreach my $i ($prop) {
+                    push @values, $prop->Value($i);
+                }
+                $value = join (' -|- ', @values);
+            } else {
+                $value = $prop->Value;
+            }
+            $cpu->{$prop->Name} = $value;
+        }
+        push @cpus, $cpu;
+    }
+
+    return @cpus;
+}
 
 sub getMemoriesUsingToolsFunction {
     my ( $host, $user, $pass, $logger ) = @_;
