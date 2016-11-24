@@ -121,8 +121,8 @@ sub run {
     $dd = Data::Dumper->new( [$chassis] );
     $self->{logger}->debug2( $dd->Dump );
 
-    my $cpus = getCPU(%wmiParams);
-    $dd = Data::Dumper->new( [$cpus] );
+    my @cpus = getCPU(%wmiParams);
+    $dd = Data::Dumper->new( [@cpus] );
     $self->{logger}->debug2( $dd->Dump );
 
 }
