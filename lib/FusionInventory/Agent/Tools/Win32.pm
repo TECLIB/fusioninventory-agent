@@ -156,7 +156,7 @@ sub _getWMIObjects {
 sub extractAllPropertiesFromWMIObjects {
     my ($instances) = @_;
 
-    Win32::OLE->use('in');
+    Win32::OLE->use;
     my @objects = ();
     foreach my $instance (in($instances)) {
         my $obj = {};
