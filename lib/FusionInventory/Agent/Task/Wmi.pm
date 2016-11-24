@@ -128,8 +128,9 @@ sub run {
 }
 
 sub getCPU {
-    my @cpus = FusionInventory::Agent::Tools::Win32::getAllDataFromWMI(
+    my @cpus = FusionInventory::Agent::Tools::Win32::getWMIObjects(
         class      => 'Win32_Processor',
+        returnAllPropertiesValues => 1,
         @_
     );
 

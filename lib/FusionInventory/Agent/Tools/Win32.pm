@@ -125,8 +125,9 @@ sub _getWMIObjects {
         $WMIService->ExecQuery(@{$params{query}}) :
         $WMIService->InstancesOf($params{class});
 
-    # eventually return
-    return $instances if $params{returnTrueWMIObjects};
+    # eventually return all properties
+    return extractAllPropertiesFromWMIObjects($instances) if $params{returnAllPropertiesValues};
+
     foreach my $instance (
         in(
             $instances
@@ -627,15 +628,6 @@ sub _connectToService {
             $pass );
 
     return $service;
-}
-
-sub getAllDataFromWMI {
-    my $instances = getWMIObjects(
-        returnTrueWMIObjects => 1,
-        @_
-    );
-    my @objects = extractAllPropertiesFromWMIObjects($instances);
-    return @objects;
 }
 
 END {
