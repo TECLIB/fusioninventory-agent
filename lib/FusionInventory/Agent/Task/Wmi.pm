@@ -125,6 +125,10 @@ sub run {
     $dd = Data::Dumper->new( [@cpus] );
     $self->{logger}->debug2( $dd->Dump );
 
+    my (@drives, @volumes) = FusionInventory::Agent::Task::Inventory::Win32::Drives::getDrives(%wmiParams);
+    $dd = Data::Dumper->new( [@drives, @volumes] );
+    $self->{logger}->debug2( $dd->Dump );
+
 }
 
 sub getCPU {

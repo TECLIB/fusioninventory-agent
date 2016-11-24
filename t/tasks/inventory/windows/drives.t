@@ -324,7 +324,7 @@ foreach my $test (sort keys %tests) {
         mockGetWMIObjects($test)
     );
 
-    my @drives = FusionInventory::Agent::Task::Inventory::Win32::Drives::_getDrives();
+    my @drives = FusionInventory::Agent::Task::Inventory::Win32::Drives::getDrives();
     cmp_deeply(
         \@drives,
         $tests{$test},

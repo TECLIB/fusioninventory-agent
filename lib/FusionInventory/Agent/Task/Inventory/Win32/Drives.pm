@@ -26,7 +26,7 @@ sub doInventory {
 
     my $inventory = $params{inventory};
 
-    foreach my $drive (_getDrives(
+    foreach my $drive (getDrives(
         logger  => $params{logger},
     )) {
         $inventory->addEntry(
@@ -36,13 +36,14 @@ sub doInventory {
     }
 }
 
-sub _getDrives {
+sub getDrives {
     my (%params) = @_;
 
     my $systemDrive;
     foreach my $object (getWMIObjects(
         class      => 'Win32_OperatingSystem',
-        properties => [ qw/SystemDrive/ ]
+        properties => [ qw/SystemDrive/ ],
+        %params
     )) {
         $systemDrive = lc($object->{SystemDrive});
     }
@@ -56,7 +57,8 @@ sub _getDrives {
         properties => [ qw/
             InstallDate Description FreeSpace FileSystem VolumeName Caption
             VolumeSerialNumber DeviceID Size DriveType VolumeName ProviderName
-        / ]
+        / ],
+        %params
     )) {
 
         $object->{FreeSpace} = int($object->{FreeSpace} / (1024 * 1024))
@@ -99,7 +101,8 @@ sub _getDrives {
         properties => [ qw/
             InstallDate Description FreeSpace FileSystem Name Caption DriveLetter
             SerialNumber Capacity DriveType Label
-        / ]
+        / ],
+        %params
     )) {
         # Skip volume already seen as instance of Win32_LogicalDisk class
         if (@drives && exists($object->{DriveLetter}) && $object->{DriveLetter}) {
