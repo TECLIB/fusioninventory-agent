@@ -120,6 +120,20 @@ sub run {
     my $chassis = FusionInventory::Agent::Task::Inventory::Win32::Chassis::getChassis(%wmiParams);
     $dd = Data::Dumper->new( [$chassis] );
     $self->{logger}->debug2( $dd->Dump );
+
+    my $cpus = getCPU(%wmiParams);
+    $dd = Data::Dumper->new( [$cpus] );
+    $self->{logger}->debug2( $dd->Dump );
+
+}
+
+sub getCPU {
+    my @cpus = FusionInventory::Agent::Tools::Win32::getAllDataFromWMI(
+        class      => 'Win32_Processor',
+        @_
+    );
+
+    return @cpus;
 }
 
 #sub getAntivirus {
