@@ -129,15 +129,10 @@ sub run {
 sub getCPUs {
     my ( %wmiParams ) = @_;
 
-    my $p = $wmiParams{WMIService};
-
-    my @cpus = ();
-    my $instances = FusionInventory::Agent::Tools::Win32::getWMIObjects(
+    my @cpus = FusionInventory::Agent::Tools::Win32::getAllDataFromWMI(
         class      => 'Win32_Processor',
-        returnTrueWMIObjects => 1,
         %wmiParams
     );
-    my @cpus = FusionInventory::Agent::Tools::Win32::extractAllPropertiesFromWMIObjects($instances);
 
     return @cpus;
 }

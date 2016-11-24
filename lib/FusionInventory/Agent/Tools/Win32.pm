@@ -629,6 +629,15 @@ sub _connectToService {
     return $service;
 }
 
+sub getAllDataFromWMI {
+    my $instances = getWMIObjects(
+        returnTrueWMIObjects => 1,
+        @_
+    );
+    my @objects = extractAllPropertiesFromWMIObjects($instances);
+    return @objects;
+}
+
 END {
     # Just detach worker
     $worker->detach() if (defined($worker) && !$worker->is_detached());
