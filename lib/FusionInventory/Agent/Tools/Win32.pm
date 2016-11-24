@@ -160,7 +160,7 @@ sub extractAllPropertiesFromWMIObjects {
     my @objects = ();
     foreach my $instance (in($instances)) {
         my $obj = {};
-        foreach my $prop (in $instance->Properties_) {
+        foreach my $prop (in($instance->Properties_)) {
             my $value;
             if (!($prop->Value)) {
                 $value = 'NULL';
