@@ -121,15 +121,11 @@ sub _getWMIObjects {
     return unless (defined($WMIService));
 
     my @objects;
-    my $instances = $params{query} ?
-        $WMIService->ExecQuery(@{$params{query}}) :
-        $WMIService->InstancesOf($params{class});
-
-    # eventually return
-    return $instances if $params{returnTrueWMIObjects};
     foreach my $instance (
         in(
-            $instances
+                $params{query} ?
+                $WMIService->ExecQuery(@{$params{query}}) :
+                $WMIService->InstancesOf($params{class})
         )) {
         my $object;
         foreach my $property (@{$params{properties}}) {
@@ -148,33 +144,6 @@ sub _getWMIObjects {
             }
         }
         push @objects, $object;
-    }
-
-    return @objects;
-}
-
-sub extractAllPropertiesFromWMIObjects {
-    my ($instances) = @_;
-
-    my @objects = ();
-    foreach my $obj (in($instances)) {
-        my $obj = {};
-        foreach my $prop (in $obj->Properties_) {
-            my $value;
-            if (!($prop->Value)) {
-                $value = 'NULL';
-            } elsif ($prop->IsArray == 1) {
-                my @values = ();
-                foreach my $i ($prop) {
-                    push @values, $prop->Value( $i );
-                }
-                $value = join (' -|- ', @values);
-            } else {
-                $value = $prop->Value;
-            }
-            $obj->{$prop->Name} = $value;
-        }
-        push @objects, $cpu;
     }
 
     return @objects;
@@ -619,7 +588,6 @@ sub getUsersFromRegistry {
 sub _connectToService {
     my ( $hostname, $user, $pass ) = @_;
 
-    Win32::OLE->use('CreateObject');
     my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
         or warn;
     my $service =
@@ -627,15 +595,6 @@ sub _connectToService {
             $pass );
 
     return $service;
-}
-
-sub getAllDataFromWMI {
-    my $instances = getWMIObjects(
-        returnTrueWMIObjects => 1,
-        @_
-    );
-    my @objects = extractAllPropertiesFromWMIObjects($instances);
-    return @objects;
 }
 
 END {
