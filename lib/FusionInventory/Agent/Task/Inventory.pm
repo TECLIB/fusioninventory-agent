@@ -273,6 +273,9 @@ sub _runModule {
 sub _feedInventory {
     my ($self, $inventory, $disabled) = @_;
 
+    my $hasWmi = $inventory->{WMIService} ? 'YEAH' : 'NO';
+    $self->{logger}->debug2('Has inventory wmiParams ? ' . $hasWmi);
+
     my $begin = time();
     my @modules =
         grep { $self->{modules}->{$_}->{enabled} }
