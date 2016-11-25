@@ -23,6 +23,8 @@ sub doInventory {
     my $wmiParams = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     $logger->debug2('working with wmiParams ' . __PACKAGE__) if $logger && $wmiParams;
     my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
+    my $dd = Data::Dumper->new([\@antiviruses]);
+    $logger->debug2($dd->Dump);
     foreach my $antivirus (@antiviruses) {
         # McAfee data
         if (!$wmiParams && $antivirus->{NAME} =~ /McAfee/i) {
