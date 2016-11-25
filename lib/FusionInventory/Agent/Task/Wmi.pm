@@ -26,7 +26,7 @@ sub isEnabled {
 sub getModules {
     my ($class, $prefix) = @_;
 
-    return getModules(SUPER, 'Win32');
+    return $self->SUPER::getModules('Win32');
 }
 
 sub run {
