@@ -23,6 +23,12 @@ sub isEnabled {
     return 1;
 }
 
+sub getModules {
+    my ($class, $prefix) = @_;
+
+    return getModules(SUPER, 'Win32');
+}
+
 sub run {
     my ( $self, %params ) = @_;
 
