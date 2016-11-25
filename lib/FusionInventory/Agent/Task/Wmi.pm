@@ -26,7 +26,7 @@ sub isEnabled {
 sub getModules {
     my ($class, $prefix) = @_;
 
-    return getModules(SUPER, 'Win32');
+    return getModules('FusionInventory::Agent::Task::Inventory::Win32');
 }
 
 sub run {
