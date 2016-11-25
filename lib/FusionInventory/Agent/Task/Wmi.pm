@@ -30,6 +30,8 @@ sub getModules {
 sub run {
     my ( $self, %params ) = @_;
 
+    $self->{logger}->debug2('running Wmi');
+
     my $inventory = FusionInventory::Agent::Inventory->new(
         statedir => $self->{target}->getStorage()->getDirectory(),
         logger   => $self->{logger},
