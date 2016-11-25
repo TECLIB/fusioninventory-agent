@@ -19,7 +19,7 @@ sub doInventory {
     my (%params) = @_;
 
     my $logger;
-    $logger = $params{logggetAntivirusesFromWMIer};
+    $logger = $params{logger};
 
     my $inventory = $params{inventory};
     my $wmiParams = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
