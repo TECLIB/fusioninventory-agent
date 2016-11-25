@@ -26,7 +26,7 @@ sub isEnabled {
 sub getModules {
     my ($class, $prefix) = @_;
 
-    return @modules = grep { $_ =~ /^FusionInventory::Agent::Task::Inventory::Win32::/ } FusionInventory::Agent::Task::Inventory->getModules('Win32');
+    return grep { $_ =~ /^FusionInventory::Agent::Task::Inventory::Win32::/ } FusionInventory::Agent::Task::Inventory->getModules('Win32');
 }
 
 sub run {
