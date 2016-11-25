@@ -1,7 +1,7 @@
 package FusionInventory::Agent::Task::Wmi;
 use strict;
 use warnings FATAL => 'all';
-use base 'FusionInventory::Agent::Task';
+use base 'FusionInventory::Agent::Task::Inventory';
 
 use UNIVERSAL::require;
 use English qw(-no_match_vars);
