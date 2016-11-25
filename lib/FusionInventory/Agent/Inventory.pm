@@ -134,6 +134,8 @@ sub new {
     $self->setTag($params{tag});
     $self->{last_state_file} = $params{statedir} . '/last_state'
         if $params{statedir};
+    $self->{WMIService} = $params{WMIService}
+        if $params{WMIService};
 
     return $self;
 }
