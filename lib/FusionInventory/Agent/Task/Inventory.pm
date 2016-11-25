@@ -64,7 +64,7 @@ sub run {
     my %disabled = map { $_ => 1 } @{$self->{config}->{'no-category'}};
 
     $self->_initModulesList(\%disabled);
-    $self->_feedInventory($inventory, \%disabled);
+    __PACKAGE__->_feedInventory($inventory, \%disabled);
 
     if ($self->{target}->isa('FusionInventory::Agent::Target::Local')) {
         my $path   = $self->{target}->getPath();
@@ -270,12 +270,12 @@ sub _runModule {
 }
 
 sub _feedInventory {
-    my ($self, $inventory, $disabled) = @_;
+    my ($class, $inventory, $disabled) = @_;
 
     my $begin = time();
     my @modules =
-        grep { $self->{modules}->{$_}->{enabled} }
-        keys %{$self->{modules}};
+        grep { $class->{modules}->{$_}->{enabled} }
+        keys %{$class->{modules}};
 
     foreach my $module (sort @modules) {
         $self->_runModule($module, $inventory, $disabled);
