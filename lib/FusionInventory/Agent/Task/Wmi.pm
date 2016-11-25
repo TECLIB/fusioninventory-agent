@@ -30,7 +30,7 @@ sub getModules {
 sub run {
     my ( $self, %params ) = @_;
 
-    FusionInventory::Agent::Inventory->new(
+    my $inventory = FusionInventory::Agent::Inventory->new(
         statedir => $self->{target}->getStorage()->getDirectory(),
         logger   => $self->{logger},
         tag      => $self->{config}->{'tag'},
@@ -40,6 +40,7 @@ sub run {
             pass     => $self->{config}->{wmi_pass}
         }
     );
+    $params{inventory} = $inventory;
     $self->SUPER::run(%params);
 
     if (2==1) {
