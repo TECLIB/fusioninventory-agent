@@ -21,7 +21,7 @@ sub doInventory {
 
     my $inventory = $params{inventory};
     my $wmiParams = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
-
+    $logger->debug2('working with wmiParams ' . __PACKAGE__) if $logger && $wmiParams;
     my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
     foreach my $antivirus (@antiviruses) {
         # McAfee data
