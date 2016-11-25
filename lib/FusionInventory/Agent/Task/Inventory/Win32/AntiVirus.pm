@@ -20,11 +20,12 @@ sub doInventory {
     $logger = $params{logger};
 
     my $inventory = $params{inventory};
+    my $wmiParams = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
 
-    my @antiviruses = getAntivirusesFromWMI();
+    my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
     foreach my $antivirus (@antiviruses) {
         # McAfee data
-        if ($antivirus->{NAME} =~ /McAfee/i) {
+        if (!$wmiParams && $antivirus->{NAME} =~ /McAfee/i) {
             my $info = _getMcAfeeInfo($logger);
             $antivirus->{$_} = $info->{$_} foreach keys %$info;
         }
