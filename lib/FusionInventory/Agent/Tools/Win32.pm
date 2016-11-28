@@ -104,7 +104,8 @@ sub _getWMIObjects {
             $WMIService = _connectToService(
                 $params{WMIService}->{hostname},
                 $params{WMIService}->{user},
-                $params{WMIService}->{pass}
+                $params{WMIService}->{pass},
+                "root\\cimv2"
             );
         } else {
             return;
@@ -197,6 +198,15 @@ sub getRegistryValue {
         return;
     }
 
+    if ($params{WMIService}) {
+        return getRegistryValueFromWMI(
+            root => $root,
+            keyName => $keyName,
+            valueName => $valueName,
+            %params
+        );
+    }
+
     my $key = _getRegistryKey(
         logger  => $params{logger},
         root    => $root,
@@ -215,6 +225,27 @@ sub getRegistryValue {
     } else {
         return $params{withtype} ? [$key->GetValue($valueName)] : $key->{"/$valueName"} ;
     }
+}
+
+sub getRegistryValueFromWMI {
+    my (%params) = @_;
+
+    my $hkey;
+    if ($params{root} eq 'HKEY_LOCAL_MACHINE') {
+        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
+    }
+
+    my $WMIService = _connectToService(
+        $params{WMIService}->{hostname},
+        $params{WMIService}->{user},
+        $params{WMIService}->{pass},
+        "root\\default"
+    );
+    my $objReg = $WMIService->Get("StdRegProv");
+    my $result = Variant(VT_BYREF|VT_BSTR,0);
+    my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
+
+    return $result;
 }
 
 sub getRegistryKey {
@@ -619,12 +650,12 @@ sub getUsersFromRegistry {
 }
 
 sub _connectToService {
-    my ( $hostname, $user, $pass ) = @_;
+    my ( $hostname, $user, $pass, $root ) = @_;
 
     my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
         or warn;
     my $service =
-        $locator->ConnectServer( $hostname, "root\\cimv2", "domain\\" . $user,
+        $locator->ConnectServer( $hostname, $root, "domain\\" . $user,
             $pass );
 
     return $service;
