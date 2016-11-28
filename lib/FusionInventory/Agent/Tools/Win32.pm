@@ -246,7 +246,9 @@ sub getRegistryValueFromWMI {
     my $objReg = $WMIService->Get("StdRegProv");
     my $result = Variant(VT_BYREF|VT_BSTR,0);
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
-
+    if ($return != 0) {
+        $result = undef;
+    }
     return $result;
 }
 
