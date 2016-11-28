@@ -19,7 +19,8 @@ sub doInventory {
     my $logger = $params{logger};
 
     my $inventory = $params{inventory};
-    my $wmiParams = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
     foreach my $antivirus (@antiviruses) {
         # McAfee data
