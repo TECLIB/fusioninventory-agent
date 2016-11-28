@@ -238,6 +238,7 @@ sub getRegistryValueFromWMI {
 
     Win32::OLE->use();
     Win32::OLE::Variant->use();
+    Win32::Registry->use();
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
