@@ -254,10 +254,18 @@ sub getRegistryValueFromWMI {
 }
 
 sub isDefinedRemoteRegistryKey {
+    my $win32_ole_dependent_api = {
+        array => 1,
+        funct => '_isDefinedRemoteRegistryKey',
+        args  => \@_
+    };
+
+    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+}
+
+sub _isDefinedRemoteRegistryKey {
     my (%params) = @_;
 
-    Win32::OLE->use();
-    Win32::OLE::Variant->use();
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
