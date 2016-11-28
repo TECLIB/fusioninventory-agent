@@ -236,9 +236,9 @@ sub getRegistryValueFromWMI {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
     }
 
-    Win32::OLE->use();
-    Win32::OLE::Variant->use();
-    Win32::Registry->use();
+    Win32::OLE->import();
+    Win32::OLE::Variant->import();
+    Win32::Registry->import();
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
