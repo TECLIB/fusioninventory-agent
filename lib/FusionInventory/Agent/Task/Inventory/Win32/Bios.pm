@@ -33,10 +33,12 @@ sub doInventory {
 
     my $bios = {
         BDATE => _dateFromIntString(getRegistryValue(
-            path   => "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate",
-            logger => $logger
-        ))
+                path   => "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate",
+                logger => $logger,
+                %params
+            ))
     };
+    $logger->debug2('value retrieved in remote registry : BDATE = ' . $bios->{BDATE});
 
     $bios = appendBiosDataFromWMI(bios => $bios);
 
