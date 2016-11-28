@@ -44,6 +44,7 @@ our @EXPORT = qw(
     runCommand
     FileTimeToSystemTime
     getUsersFromRegistry
+    isDefinedRemoteRegistryKey
 );
 
 sub is64bit {
@@ -250,6 +251,38 @@ sub getRegistryValueFromWMI {
         $result = undef;
     }
     return $result;
+}
+
+sub isDefinedRemoteRegistryKey {
+    my (%params) = @_;
+
+    Win32::OLE->use();
+    Win32::OLE::Variant->use();
+    my $WMIService = _connectToService(
+        $params{WMIService}->{hostname},
+        $params{WMIService}->{user},
+        $params{WMIService}->{pass},
+        "root\\default"
+    );
+    my $objReg = $WMIService->Get("StdRegProv");
+    my $arr = Variant( VT_ARRAY | VT_VARIANT | VT_BYREF  , [1,1] );
+    my ($root, $keyName, $valueName);
+    if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
+        $root      = $1;
+        $keyName   = $2;
+        $valueName = $3;
+    }
+    my $hkey;
+    if ($params{root} eq 'HKEY_LOCAL_MACHINE') {
+        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
+    }
+    return 0 unless $hkey;
+    my $return = $objReg->EnumKey($hkey,
+        $keyName . '/' . $valueName, $arr); # or die "Cannot fetch registry key :",
+
+    my $defined = ($return == 0) ? 1 : 0;
+
+    return $defined;
 }
 
 sub getRegistryKey {

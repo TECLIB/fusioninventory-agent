@@ -23,7 +23,7 @@ sub doInventory {
     my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
     foreach my $antivirus (@antiviruses) {
         # McAfee data
-        if (!$wmiParams && $antivirus->{NAME} =~ /McAfee/i) {
+        if ($antivirus->{NAME} =~ /McAfee/i) {
             my $info = _getMcAfeeInfo($logger);
             $antivirus->{$_} = $info->{$_} foreach keys %$info;
         }
@@ -82,10 +82,19 @@ sub getAntivirusesFromWMI {
 }
 
 sub _getMcAfeeInfo {
-    my ($logger) = @_;
+    my (%params) = @_;
 
     my $path;
-    if (is64bit() && defined getRegistryKey(path => 'HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/McAfee/AVEngine')) {
+    if (
+        is64bit()
+            && ((
+            $params{WMIService} && isDefinedRemoteRegistryKey(
+                path => 'HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/McAfee/AVEngine',
+                %params
+            ))
+            || defined getRegistryKey(path => 'HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/McAfee/AVEngine')
+        )
+    ) {
         $path = 'HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/McAfee/AVEngine';
     } else {
         $path = 'HKEY_LOCAL_MACHINE/SOFTWARE/McAfee/AVEngine';
@@ -102,8 +111,14 @@ sub _getMcAfeeInfo {
     # major.minor versions properties
     foreach my $property (keys %properties) {
         my $keys = $properties{$property};
-        my $major = getRegistryValue(path => $path . '/' . $keys->[0]);
-        my $minor = getRegistryValue(path => $path . '/' . $keys->[1]);
+        my $major = getRegistryValue(
+            path => $path . '/' . $keys->[0],
+            %params
+        );
+        my $minor = getRegistryValue(
+            path => $path . '/' . $keys->[1],
+            %params
+        );
         $info->{$property} = sprintf("%04d.%04d", hex($major), hex($minor))
             if defined $major && defined $major;
     }
