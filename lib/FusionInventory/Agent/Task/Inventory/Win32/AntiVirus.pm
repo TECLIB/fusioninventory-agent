@@ -5,8 +5,6 @@ use warnings;
 
 use FusionInventory::Agent::Tools::Win32;
 
-use Data::Dumper;
-
 my $seen;
 
 sub isEnabled {
@@ -18,17 +16,11 @@ sub isEnabled {
 sub doInventory {
     my (%params) = @_;
 
-    my $logger;
-    $logger = $params{logger};
+    my $logger = $params{logger};
 
     my $inventory = $params{inventory};
     my $wmiParams = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
-    $logger->debug2('working with wmiParams ' . __PACKAGE__) if $logger && $wmiParams;
-    my $dd = Data::Dumper->new([$wmiParams]);
-    $logger->debug2('wmi Params : ' . $dd->Dump);
     my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
-    $dd = Data::Dumper->new([\@antiviruses]);
-    $logger->debug2($dd->Dump);
     foreach my $antivirus (@antiviruses) {
         # McAfee data
         if (!$wmiParams && $antivirus->{NAME} =~ /McAfee/i) {
