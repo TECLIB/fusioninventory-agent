@@ -87,7 +87,7 @@ sub _getMcAfeeInfo {
 
     my $path;
     if (
-        is64bit()
+        is64bit(%params)
             && ((
             $params{WMIService} && isDefinedRemoteRegistryKey(
                 path => 'HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/McAfee/AVEngine',

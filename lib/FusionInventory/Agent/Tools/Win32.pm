@@ -51,7 +51,8 @@ sub is64bit {
     return
         any { $_->{AddressWidth} eq 64 }
         getWMIObjects(
-            class => 'Win32_Processor', properties => [ qw/AddressWidth/ ]
+            class => 'Win32_Processor', properties => [ qw/AddressWidth/ ],
+            @_
         );
 }
 
