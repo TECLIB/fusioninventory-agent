@@ -229,6 +229,16 @@ sub getRegistryValue {
 }
 
 sub getRegistryValueFromWMI {
+    my $win32_ole_dependent_api = {
+        array => 1,
+        funct => '_getRegistryValueFromWMI',
+        args  => \@_
+    };
+
+    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+}
+
+sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
     my $hkey;
@@ -236,8 +246,6 @@ sub getRegistryValueFromWMI {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
     }
 
-    use Win32::OLE;
-    use Win32::OLE::Variant;
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
