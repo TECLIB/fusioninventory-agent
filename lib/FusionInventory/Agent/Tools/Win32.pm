@@ -200,7 +200,7 @@ sub getRegistryValue {
     }
 
     if ($params{WMIService}) {
-        return getRegistryValueFromWMI(
+        return _getRegistryValueFromWMI(
             root => $root,
             keyName => $keyName,
             valueName => $valueName,
