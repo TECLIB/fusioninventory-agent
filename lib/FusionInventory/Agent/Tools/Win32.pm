@@ -240,7 +240,7 @@ sub getRegistryValueFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
-    Win32::OLE::Variant->use('VT_BYREF');
+    Win32::OLE::Variant->use();
     my $hkey;
     if ($params{root} eq 'HKEY_LOCAL_MACHINE') {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
