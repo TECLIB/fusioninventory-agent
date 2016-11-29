@@ -11,6 +11,8 @@ use threads::shared;
 
 use UNIVERSAL::require();
 
+use Data::Dumper;
+
 use constant KEY_WOW64_64 => 0x100;
 use constant KEY_WOW64_32 => 0x200;
 
