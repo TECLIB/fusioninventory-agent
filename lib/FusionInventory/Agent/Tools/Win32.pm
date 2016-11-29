@@ -198,14 +198,14 @@ sub getRegistryValue {
         return;
     }
 
-    if ($params{WMIService}) {
-        return getRegistryValueFromWMI(
-            root => $root,
-            keyName => $keyName,
-            valueName => $valueName,
-            %params
-        );
-    }
+#    if ($params{WMIService}) {
+#        return getRegistryValueFromWMI(
+#            root => $root,
+#            keyName => $keyName,
+#            valueName => $valueName,
+#            %params
+#        );
+#    }
 
     my $key = _getRegistryKey(
         logger  => $params{logger},
