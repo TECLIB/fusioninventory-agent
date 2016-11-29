@@ -252,7 +252,6 @@ sub _getRegistryValueFromWMI {
         "root\\default"
     );
     my $objReg = $WMIService->Get("StdRegProv");
-    Win32::OLE::Variant->import('VT_BYREF');
     my $result = Variant(VT_BYREF()|VT_BSTR(),0);
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     if ($return != 0) {
@@ -281,7 +280,7 @@ sub _isDefinedRemoteRegistryKey {
         "root\\default"
     );
     my $objReg = $WMIService->Get("StdRegProv");
-    my $arr = Variant( VT_ARRAY | VT_VARIANT | VT_BYREF  , [1,1] );
+    my $arr = Variant( VT_ARRAY() | VT_VARIANT() | VT_BYREF()  , [1,1] );
     my ($root, $keyName, $valueName);
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $root      = $1;
