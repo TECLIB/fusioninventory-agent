@@ -240,8 +240,6 @@ sub getRegistryValueFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
-    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
-
     my $hkey;
     if ($params{root} eq 'HKEY_LOCAL_MACHINE') {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
@@ -254,7 +252,7 @@ sub _getRegistryValueFromWMI {
         "root\\default"
     );
     my $objReg = $WMIService->Get("StdRegProv");
-    my $result = Win32::OLE::Variant(Win32::OLE::Variant::VT_BYREF|VT_BSTR,0);
+    my $result = Win32::OLE::Variant(VT_BYREF|VT_BSTR,0);
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     if ($return != 0) {
         $result = undef;
@@ -572,6 +570,7 @@ sub _win32_ole_worker {
     # Load Win32::OLE as late as possible in a dedicated worker
     Win32::OLE->require() or return;
     Win32::OLE::Variant->require() or return;
+    Win32::OLE::Variant->import() or return;
     Win32::OLE->Option(CP => Win32::OLE::CP_UTF8());
 
     while (1) {
