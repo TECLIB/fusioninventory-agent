@@ -198,14 +198,14 @@ sub getRegistryValue {
         return;
     }
 
-#    if ($params{WMIService}) {
-#        return getRegistryValueFromWMI(
-#            root => $root,
-#            keyName => $keyName,
-#            valueName => $valueName,
-#            %params
-#        );
-#    }
+    if ($params{WMIService}) {
+        return getRegistryValueFromWMI(
+            root => $root,
+            keyName => $keyName,
+            valueName => $valueName,
+            %params
+        );
+    }
 
     my $key = _getRegistryKey(
         logger  => $params{logger},
@@ -240,6 +240,7 @@ sub getRegistryValueFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
+    Win32::OLE::Variant->use('VT_BYREF');
     my $hkey;
     if ($params{root} eq 'HKEY_LOCAL_MACHINE') {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
