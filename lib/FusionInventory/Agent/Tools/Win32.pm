@@ -241,10 +241,14 @@ sub getRegistryValueFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
+    FusionInventory::Agent::Logger::File->require();
+
     my $hkey;
     if ($params{root} eq 'HKEY_LOCAL_MACHINE') {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
     }
+    my $dd = Data::Dumper->new([\%params]);
+    $params{logger}->debug2($dd->Dump) if $params{logger};
 
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
@@ -258,7 +262,6 @@ sub _getRegistryValueFromWMI {
 #    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
 #    Win32::OLE::Variant->require();
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
-    FusionInventory::Agent::Logger::File->require();
     $params{logger}->debug2('result variant created') if $params{logger};
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     return $result;
