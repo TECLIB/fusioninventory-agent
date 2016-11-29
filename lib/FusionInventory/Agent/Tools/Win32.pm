@@ -200,7 +200,7 @@ sub getRegistryValue {
     }
 
     if ($params{WMIService}) {
-        return _getRegistryValueFromWMI(
+        return getRegistryValueFromWMI(
             root => $root,
             keyName => $keyName,
             valueName => $valueName,
@@ -422,7 +422,7 @@ sub getInterfaces {
             }
         }
 
-        $configurations[$object->{Index}] = $configuration;
+        $configurations[$objectnew->{Index}] = $configuration;
     }
 
     my @interfaces;
