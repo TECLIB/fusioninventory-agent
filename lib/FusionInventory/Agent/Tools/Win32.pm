@@ -253,7 +253,7 @@ sub _getRegistryValueFromWMI {
         "root\\default"
     );
     my $objReg = $WMIService->Get("StdRegProv");
-    my $result = Variant(Win32::OLE::Variant::VT_BYREF|Win32::OLE::Variant::VT_BSTR,0);
+    my $result = Variant(VT_BYREF|VT_BSTR,0);
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     if ($return != 0) {
         $result = undef;
@@ -274,6 +274,7 @@ sub isDefinedRemoteRegistryKey {
 sub _isDefinedRemoteRegistryKey {
     my (%params) = @_;
 
+    Win32::OLE::Variant->use();
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
