@@ -254,7 +254,7 @@ sub _getRegistryValueFromWMI {
     my $objReg = $WMIService->Get("StdRegProv");
     Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
     Win32::OLE::Variant->require();
-    my $result = Win32::OLE::Variant(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
+    my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     if ($return != 0) {
         $result = undef;
