@@ -159,7 +159,6 @@ sub _getWMIObjects {
 sub extractAllPropertiesFromWMIObjects {
     my ($instances) = @_;
 
-    use Win32::OLE;
     my @objects = ();
     foreach my $instance (in($instances)) {
         my $obj = {};
@@ -274,7 +273,6 @@ sub isDefinedRemoteRegistryKey {
 sub _isDefinedRemoteRegistryKey {
     my (%params) = @_;
 
-    Win32::OLE::Variant->use();
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
@@ -571,6 +569,7 @@ sub start_Win32_OLE_Worker {
 sub _win32_ole_worker {
     # Load Win32::OLE as late as possible in a dedicated worker
     Win32::OLE->require() or return;
+    Win32::OLE::Variant->require() or return;
     Win32::OLE->Option(CP => Win32::OLE::CP_UTF8());
 
     while (1) {
