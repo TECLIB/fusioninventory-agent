@@ -257,7 +257,7 @@ sub _getRegistryValueFromWMI {
     return if !$objReg;
 #    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
 #    Win32::OLE::Variant->require();
-    my $result = Win32::OLE::Variant(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
+    my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
     FusionInventory::Agent::Logger::File->require();
     $params{logger}->debug2('result variant created') if $params{logger};
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
