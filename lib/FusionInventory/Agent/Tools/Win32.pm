@@ -246,8 +246,9 @@ sub _getRegistryValueFromWMI {
     FusionInventory::Agent::Logger::File->require();
 
     my $hkey;
-    if ($params{root} eq 'HKEY_LOCAL_MACHINE') {
-        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
+    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
+        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
+        $params{keyName} = $1 . '\/' . $params{keyName};
     }
     my $dd = Data::Dumper->new([\%params]);
     $params{logger}->debug2($dd->Dump) if $params{logger};
