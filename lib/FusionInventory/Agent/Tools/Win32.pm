@@ -423,7 +423,7 @@ sub getInterfaces {
             }
         }
 
-        $configurations[$objectnew->{Index}] = $configuration;
+        $configurations[$object->{Index}] = $configuration;
     }
 
     my @interfaces;
