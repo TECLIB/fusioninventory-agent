@@ -252,7 +252,7 @@ sub _getRegistryValueFromWMI {
         "root\\default"
     );
     my $objReg = $WMIService->Get("StdRegProv");
-#    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
+    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
     my $result = Win32::OLE::Variant(VT_BYREF()|VT_BSTR(),0);
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     if ($return != 0) {
