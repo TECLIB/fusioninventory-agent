@@ -248,7 +248,7 @@ sub _getRegistryValueFromWMI {
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
-        $params{keyName} = $1 . '\/' . $params{keyName};
+        $params{keyName} = $1 . '/' . $params{keyName};
     }
     my $dd = Data::Dumper->new([\%params]);
     $params{logger}->debug2($dd->Dump) if $params{logger};
