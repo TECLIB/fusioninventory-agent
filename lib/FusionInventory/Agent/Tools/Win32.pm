@@ -260,7 +260,7 @@ sub _getRegistryValueFromWMI {
     FusionInventory::Agent::Logger::File->require();
     $params{logger}->debug2('result variant created') if $params{logger};
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
-    if ($return != 0) {
+    if (!$return || $return != 0) {
         $result = undef;
     }
     return $result;
