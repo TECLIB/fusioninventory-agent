@@ -240,7 +240,6 @@ sub getRegistryValueFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
-    Win32::OLE::Variant->use();
     my $hkey;
     if ($params{root} eq 'HKEY_LOCAL_MACHINE') {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
@@ -253,6 +252,7 @@ sub _getRegistryValueFromWMI {
         "root\\default"
     );
     my $objReg = $WMIService->Get("StdRegProv");
+    Win32::OLE::Variant->require();
     my $result = Variant(VT_BYREF|VT_BSTR,0);
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     if ($return != 0) {
