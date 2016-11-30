@@ -42,8 +42,10 @@ sub doInventory {
 
     my $inventory = $params{inventory};
 
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     $inventory->setHardware({
-        CHASSIS_TYPE => getChassis(logger => $params{logger})
+        CHASSIS_TYPE => getChassis(logger => $params{logger}, %$wmiParams)
     });
 }
 
