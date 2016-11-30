@@ -21,8 +21,9 @@ sub doInventory {
 
     my $inventory = $params{inventory};
     my $logger    = $params{logger};
-
-    my @cpus = _getCPUs($logger);
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    my @cpus = _getCPUs(logger => $logger, %$wmiParams);
 
     foreach my $cpu (@cpus) {
         $inventory->addEntry(
@@ -39,15 +40,16 @@ sub doInventory {
 }
 
 sub _getCPUs {
-    my ($logger) = @_;
+    my (%params) = @_;
 
+    my $logger = $params{logger};
     my @dmidecodeInfos = Win32::GetOSName() eq 'Win2003' ?
         () : getCpusFromDmidecode();
 
     # the CPU description in WMI is false, we use the registry instead
     my $registryInfos = getRegistryKey(
         path   => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor",
-        logger => $logger
+        %params
     );
 
     my $cpuId = 0;
@@ -55,7 +57,8 @@ sub _getCPUs {
 
     foreach my $object (getWMIObjects(
         class      => 'Win32_Processor',
-        properties => [ qw/NumberOfCores NumberOfLogicalProcessors ProcessorId MaxClockSpeed/ ]
+        properties => [ qw/NumberOfCores NumberOfLogicalProcessors ProcessorId MaxClockSpeed/ ],
+        %params
     )) {
 
         my $dmidecodeInfo = $dmidecodeInfos[$cpuId];
