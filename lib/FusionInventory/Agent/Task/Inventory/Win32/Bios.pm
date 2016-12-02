@@ -18,7 +18,7 @@ sub isEnabled {
 sub _dateFromIntString {
     my ($string, $logger) = @_;
 
-    $logger->debug2('_dateFromIntString() param : ' . $string);
+    $logger->debug2('_dateFromIntString() param : ' . $string) if $string;
     if ($string && $string =~ /^(\d{4})(\d{2})(\d{2})/) {
         return "$2/$3/$1";
     } elsif ($string && $string =~ /^(\d{2})\/(\d{2})\/(\d{4})/) {
@@ -40,6 +40,7 @@ sub doInventory {
     my $path = "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate";
     my $value;
     if ($wmiParams->{WMIService}) {
+        $logger->debug2('WMIService');
         $logger->debug2(ref(getRegistryValueFromWMI(
             path => $path,
             logger => $logger,
