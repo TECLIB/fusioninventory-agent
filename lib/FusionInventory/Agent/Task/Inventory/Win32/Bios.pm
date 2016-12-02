@@ -20,6 +20,8 @@ sub _dateFromIntString {
 
     if ($string && $string =~ /^(\d{4})(\d{2})(\d{2})/) {
         return "$2/$3/$1";
+    } elsif ($string && $string =~ /^(\d{2})\/(\d{2})\/(\d{4})/) {
+        return $1 . '/' . $2 . '/' . $3;
     }
 
     return $string;
