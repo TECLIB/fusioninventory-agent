@@ -1,4 +1,4 @@
-package Win32WMI;
+package FusionInventory::Agent::Tools::Win32WMI;
 use strict;
 use warnings;
 
