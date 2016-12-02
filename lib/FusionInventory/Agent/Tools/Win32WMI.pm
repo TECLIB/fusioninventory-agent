@@ -25,7 +25,7 @@ sub getRegistryValueFromWMI {
     my $dd = Data::Dumper->new([\%params, \$hkey]);
     $params{logger}->debug2($dd->Dump) if $params{logger};
 
-    my $WMIService = _connectToService(
+    my $WMIService = connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
         $params{WMIService}->{pass},
