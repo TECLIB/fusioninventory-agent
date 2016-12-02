@@ -21,7 +21,7 @@ use Encode;
 use English qw(-no_match_vars);
 use File::Temp qw(:seekable tempfile);
 use File::Basename qw(basename);
-use Win32WMI;
+use FusionInventory::Agent::Tools::Win32WMI;
 use Win32::Job;
 use Win32::TieRegistry (
     Delimiter   => '/',
