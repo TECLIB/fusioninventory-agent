@@ -16,7 +16,7 @@ our @EXPORT = qw(
     connectToService
     );
 
-sub getRegistryValueFromWMI {
+sub getValueFromRemoteRegistry {
     my (%params) = @_;
 
 #    FusionInventory::Agent::Logger::File->require();
