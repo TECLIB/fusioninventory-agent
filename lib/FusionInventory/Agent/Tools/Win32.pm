@@ -249,12 +249,12 @@ sub _getRegistryValueFromWMI {
 
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
-        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
+        $hkey = &HKEY_LOCAL_MACHINE;
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     }
-    my $dd = Data::Dumper->new([\%params]);
+    my $dd = Data::Dumper->new([\%params, \$hkey]);
     $params{logger}->debug2($dd->Dump) if $params{logger};
 
     my $WMIService = _connectToService(
