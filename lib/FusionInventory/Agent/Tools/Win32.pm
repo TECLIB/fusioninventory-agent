@@ -253,7 +253,7 @@ sub _getRegistryValueFromWMI {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     }
-    my $dd = Data::Dumper->new([\%params]);
+    my $dd = Data::Dumper->new([\%params, $hkey]);
     $params{logger}->debug2($dd->Dump) if $params{logger};
 
     my $WMIService = _connectToService(
@@ -262,9 +262,15 @@ sub _getRegistryValueFromWMI {
         $params{WMIService}->{pass},
         "root\\default"
     );
-    return if !$WMIService;
+    if (!$WMIService) {
+        $params{logger}->debug2('WMIService is not defined!') if $params{logger};
+        return;
+    }
     my $objReg = $WMIService->Get("StdRegProv");
-    return if !$objReg;
+    if (!$objReg) {
+        $params{logger}->debug2('objReg is not defined!') if $params{logger};
+        return;
+    }
 #    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
 #    Win32::OLE::Variant->require();
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
