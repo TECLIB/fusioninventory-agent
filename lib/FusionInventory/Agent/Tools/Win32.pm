@@ -27,7 +27,6 @@ use Win32::TieRegistry (
     ArrayValues => 0,
     qw/KEY_READ/
 );
-use Win32::Registry qw/HKEY_LOCAL_MACHINE/;
 
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Network;
@@ -246,7 +245,7 @@ sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
     FusionInventory::Agent::Logger::File->require();
-    Win32::Registry->require();
+#    Win32::Registry->require();
 
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
