@@ -106,7 +106,7 @@ sub _getWMIObjects {
             && $params{WMIService}->{user}
             && $params{WMIService}->{pass}
         ) {
-            $WMIService = Win32WMI::connectToService(
+            $WMIService = connectToService(
                 $params{WMIService}->{hostname},
                 $params{WMIService}->{user},
                 $params{WMIService}->{pass},
@@ -235,7 +235,7 @@ sub getRegistryValue {
 sub getRegistryValueFromWMI {
     my $win32_ole_dependent_api = {
         array => 1,
-        funct => Win32WMI::getRegistryValueFromWMI,
+        funct => getRegistryValueFromWMI,
         args  => \@_
     };
 
@@ -255,7 +255,7 @@ sub isDefinedRemoteRegistryKey {
 sub _isDefinedRemoteRegistryKey {
     my (%params) = @_;
 
-    my $WMIService = Win32WMI::connectToService(
+    my $WMIService = connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
         $params{WMIService}->{pass},
