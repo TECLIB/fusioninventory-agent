@@ -5,6 +5,9 @@ use warnings FATAL => 'all';
 use Win32::OLE::Variant;
 use Win32::Registry;
 
+use FusionInventory::Agent::Logger::File;
+
+use Data::Dumper;
 
 sub getRegistryValueFromWMI {
     my (%params) = @_;
