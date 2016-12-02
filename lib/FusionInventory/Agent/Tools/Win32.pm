@@ -254,7 +254,7 @@ sub _getRegistryValueFromWMI {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     }
-    my $dd = Data::Dumper->new([\%params, $hkey]);
+    my $dd = Data::Dumper->new([\%params, $hkey, (defined $hkey)]);
     $params{logger}->debug2($dd->Dump) if $params{logger};
 
     my $WMIService = _connectToService(
