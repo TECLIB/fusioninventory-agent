@@ -19,7 +19,7 @@ our @EXPORT = qw(
 sub getValueFromRemoteRegistry {
     my (%params) = @_;
 
-#    FusionInventory::Agent::Logger::File->require();
+    FusionInventory::Agent::Logger::File->require();
 
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
@@ -28,8 +28,8 @@ sub getValueFromRemoteRegistry {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     }
-#    my $dd = Data::Dumper->new([\%params, \$hkey]);
-#    $params{logger}->debug2($dd->Dump) if $params{logger};
+    my $dd = Data::Dumper->new([\%params, \$hkey]);
+    $params{logger}->debug2($dd->Dump) if $params{logger};
 
     my $WMIService = connectToService(
         $params{WMIService}->{hostname},
@@ -38,18 +38,18 @@ sub getValueFromRemoteRegistry {
         "root\\default"
     );
     if (!$WMIService) {
-#        $params{logger}->debug2('WMIService is not defined!') if $params{logger};
+        $params{logger}->debug2('WMIService is not defined!') if $params{logger};
         return;
     }
     my $objReg = $WMIService->Get("StdRegProv");
     if (!$objReg) {
-#        $params{logger}->debug2('objReg is not defined!') if $params{logger};
+        $params{logger}->debug2('objReg is not defined!') if $params{logger};
         return;
     }
     #    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
     #    Win32::OLE::Variant->require();
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
-#    $params{logger}->debug2('result variant created') if $params{logger};
+    $params{logger}->debug2('result variant created') if $params{logger};
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     return $result;
 }
