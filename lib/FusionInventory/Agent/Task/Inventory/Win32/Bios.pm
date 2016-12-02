@@ -45,7 +45,12 @@ sub doInventory {
             logger => $logger,
             %$wmiParams
         )));
-#        $value = $values[0];
+        my @values = getRegistryValueFromWMI(
+            path => $path,
+            logger => $logger,
+            %$wmiParams
+        );
+        $value = $values[0];
     } else {
         $value = getRegistryValue(
             path   => $path,
