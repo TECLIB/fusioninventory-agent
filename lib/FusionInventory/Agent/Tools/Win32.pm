@@ -22,6 +22,7 @@ use English qw(-no_match_vars);
 use File::Temp qw(:seekable tempfile);
 use File::Basename qw(basename);
 use Win32::Job;
+use Win32::Registry;
 use Win32::TieRegistry (
     Delimiter   => '/',
     ArrayValues => 0,
