@@ -228,7 +228,20 @@ sub getRegistryValue {
 }
 
 sub getRegistryValueFromWMI {
+    my $win32_ole_dependent_api = {
+        array => 1,
+        funct => '_getRegistryValueFromWMI',
+        args  => \@_
+    };
+
+    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+}
+
+sub _getRegistryValueFromWMI {
     my (%params) = @_;
+
+    FusionInventory::Agent::Logger::File->require();
+#    Win32::Registry->require();
 
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $params{root}      = $1;
@@ -240,22 +253,6 @@ sub getRegistryValueFromWMI {
         ) if $params{logger};
         return;
     }
-    my $dd = Data::Dumper->new([\%params]);
-    $params{logger}->debug2($dd->Dump);
-    my $win32_ole_dependent_api = {
-        array => 1,
-        funct => '_getRegistryValueFromWMI',
-        args  => \%params
-    };
-
-    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
-}
-
-sub _getRegistryValueFromWMI {
-    my (%params) = @_;
-
-    FusionInventory::Agent::Logger::File->require();
-#    Win32::Registry->require();
 
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
