@@ -35,20 +35,15 @@ sub doInventory {
 
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    my $bDate = _dateFromIntString(getRegistryValue(
+            path   => "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate",
+            logger => $logger,
+            %$wmiParams
+        ));
+    $logger->debug2( $bDate );
     my $bios = {
-        BDATE => _dateFromIntString(getRegistryValue(
-                path   => "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate",
-                logger => $logger,
-                %$wmiParams
-            ))
+        BDATE => $bDate
     };
-    my $valueRetrieved;
-    if ($bios->{BDATE}) {
-        $valueRetrieved = $bios->{BDATE};
-    } else {
-        $valueRetrieved = 'NULL';
-    }
-    $logger->debug2( 'value retrieved in remote registry : BDATE = ' . $valueRetrieved );
 
     $bios = appendBiosDataFromWMI(bios => $bios);
 
