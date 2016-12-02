@@ -246,10 +246,11 @@ sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
     FusionInventory::Agent::Logger::File->require();
+    Win32::Registry->require();
 
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
-        $hkey = &HKEY_LOCAL_MACHINE;
+        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
@@ -276,7 +277,7 @@ sub _getRegistryValueFromWMI {
 #    Win32::OLE::Variant->require();
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
     $params{logger}->debug2('result variant created') if $params{logger};
-    my $return = $objReg->GetStringValue(undef, $params{keyName}, $params{valueName}, $result);
+    my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     return $result;
 }
 
