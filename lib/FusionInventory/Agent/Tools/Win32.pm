@@ -106,7 +106,7 @@ sub _getWMIObjects {
             && $params{WMIService}->{user}
             && $params{WMIService}->{pass}
         ) {
-            $WMIService = _connectToService(
+            $WMIService = Win32WMI::connectToService(
                 $params{WMIService}->{hostname},
                 $params{WMIService}->{user},
                 $params{WMIService}->{pass},
@@ -255,7 +255,7 @@ sub isDefinedRemoteRegistryKey {
 sub _isDefinedRemoteRegistryKey {
     my (%params) = @_;
 
-    my $WMIService = _connectToService(
+    my $WMIService = Win32WMI::connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
         $params{WMIService}->{pass},
@@ -685,17 +685,6 @@ sub getUsersFromRegistry {
     return $userList;
 }
 
-sub _connectToService {
-    my ( $hostname, $user, $pass, $root ) = @_;
-
-    my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
-        or warn;
-    my $service =
-        $locator->ConnectServer( $hostname, $root, "domain\\" . $user,
-            $pass );
-
-    return $service;
-}
 
 END {
     # Just detach worker

@@ -2,6 +2,7 @@ package Win32WMI;
 use strict;
 use warnings FATAL => 'all';
 
+use Win32::OLE;
 use Win32::OLE::Variant;
 use Win32::Registry;
 
@@ -45,6 +46,18 @@ sub getRegistryValueFromWMI {
     $params{logger}->debug2('result variant created') if $params{logger};
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     return $result;
+}
+
+sub connectToService {
+    my ( $hostname, $user, $pass, $root ) = @_;
+
+    my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
+        or warn;
+    my $service =
+        $locator->ConnectServer( $hostname, $root, "domain\\" . $user,
+            $pass );
+
+    return $service;
 }
 
 1;
