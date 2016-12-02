@@ -202,6 +202,7 @@ sub getRegistryValue {
     }
 
     if ($params{WMIService}) {
+        $params{logger}->debug2('getRegistryValueFromWMI params ' . $root . ' - ' . $keyName . ' - ' . $valueName);
         return getRegistryValueFromWMI(
             root => $root,
             keyName => $keyName,
