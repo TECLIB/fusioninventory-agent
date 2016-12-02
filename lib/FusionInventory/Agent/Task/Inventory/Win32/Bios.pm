@@ -37,11 +37,22 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     $logger->debug2('call of getRegistryValue');
-    my $bDate = _dateFromIntString(getRegistryValue(
-            path   => "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate",
+    my $path = "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate";
+    my $value;
+    if ($wmiParams->{WMIService}) {
+        $value = getRegistryValueFromWMI(
+            path => $path,
+            logger => $logger,
+            %params
+        );
+    } else {
+        $value = getRegistryValue(
+            path   => $path,
             logger => $logger,
             %$wmiParams
-        ), $logger);
+        );
+    }
+    my $bDate = _dateFromIntString($value, $logger);
     $logger->debug2( 'bDate now' );
     $logger->debug2( $bDate );
     $logger->debug2( 'bDate end' );

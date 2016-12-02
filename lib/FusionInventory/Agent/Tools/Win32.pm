@@ -22,7 +22,6 @@ use English qw(-no_match_vars);
 use File::Temp qw(:seekable tempfile);
 use File::Basename qw(basename);
 use Win32::Job;
-use Win32::Registry qw(HKEY_LOCAL_MACHINE);
 use Win32::TieRegistry (
     Delimiter   => '/',
     ArrayValues => 0,
@@ -190,6 +189,10 @@ sub extractAllPropertiesFromWMIObjects {
 sub getRegistryValue {
     my (%params) = @_;
 
+    if ($params{WMIService}) {
+        return getRegistryValueFromWMI(%params);
+    }
+
     my ($root, $keyName, $valueName);
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $root      = $1;
@@ -202,15 +205,6 @@ sub getRegistryValue {
         return;
     }
 
-    if ($params{WMIService}) {
-        $params{logger}->debug2('getRegistryValueFromWMI params ' . $root . ' - ' . $keyName . ' - ' . $valueName);
-        return getRegistryValueFromWMI(
-            root => $root,
-            keyName => $keyName,
-            valueName => $valueName,
-            %params
-        );
-    }
 
     my $key = _getRegistryKey(
         logger  => $params{logger},
@@ -244,6 +238,18 @@ sub getRegistryValueFromWMI {
 
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
+
+    my ($root, $keyName, $valueName);
+    if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
+        $root      = $1;
+        $keyName   = $2;
+        $valueName = $3;
+    } else {
+        $params{logger}->error(
+            "Failed to parse '$params{path}'. Does it start with HKEY_?"
+        ) if $params{logger};
+        return;
+    }
 
     FusionInventory::Agent::Logger::File->require();
 #    Win32::Registry->require();
