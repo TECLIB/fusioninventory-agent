@@ -240,7 +240,8 @@ sub getRegistryValueFromWMI {
         ) if $params{logger};
         return;
     }
-
+    my $dd = Data::Dumper->new([\%params]);
+    $params{logger}->debug2($dd->Dump);
     my $win32_ole_dependent_api = {
         array => 1,
         funct => '_getRegistryValueFromWMI',
