@@ -59,7 +59,7 @@ sub doInventory {
             %$wmiParams
         );
     }
-    my $bDate = _dateFromIntString($value, $logger) if $value && $logger;
+    my $bDate = _dateFromIntString($value, $logger) if ($value && $logger);
     $logger->debug2( 'bDate now' );
     $logger->debug2( $bDate );
     $logger->debug2( 'bDate end' );
