@@ -27,6 +27,7 @@ use Win32::TieRegistry (
     ArrayValues => 0,
     qw/KEY_READ/
 );
+use Win32::Registry;
 
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Network;
