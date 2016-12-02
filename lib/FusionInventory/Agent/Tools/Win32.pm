@@ -276,7 +276,7 @@ sub _getRegistryValueFromWMI {
 #    Win32::OLE::Variant->require();
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
     $params{logger}->debug2('result variant created') if $params{logger};
-    my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
+    my $return = $objReg->GetStringValue(undef, $params{keyName}, $params{valueName}, $result);
     return $result;
 }
 
