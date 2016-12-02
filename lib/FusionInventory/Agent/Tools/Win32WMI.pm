@@ -1,6 +1,6 @@
 package Win32WMI;
 use strict;
-use warnings FATAL => 'all';
+use warnings;
 
 use Win32::OLE;
 use Win32::OLE::Variant;
