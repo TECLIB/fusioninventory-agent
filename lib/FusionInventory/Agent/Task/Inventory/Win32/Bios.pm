@@ -40,11 +40,11 @@ sub doInventory {
     my $path = "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate";
     my $value;
     if ($wmiParams->{WMIService}) {
-        $value = ref(getRegistryValueFromWMI(
+        $value = getRegistryValueFromWMI(
             path => $path,
             logger => $logger,
             %$wmiParams
-        ));
+        );
     } else {
         $value = getRegistryValue(
             path   => $path,

@@ -643,7 +643,7 @@ sub _call_win32_ole_dependent_api {
 
     FusionInventory::Agent::Logger::File->require();
     my $logger = FusionInventory::Agent::Logger::File->new(config => {
-            logfile => 'debug.log'
+            logfile => 'debug2.log'
         });
 
     if (defined($worker)) {
