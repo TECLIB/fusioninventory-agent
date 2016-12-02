@@ -240,6 +240,8 @@ sub getRegistryValueFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
+    FusionInventory::Agent::Logger::File->require();
+
     my ($root, $keyName, $valueName);
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $root      = $1;
@@ -252,7 +254,6 @@ sub _getRegistryValueFromWMI {
         return;
     }
 
-    FusionInventory::Agent::Logger::File->require();
 #    Win32::Registry->require();
 
     my $hkey;
