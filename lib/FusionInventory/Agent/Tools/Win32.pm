@@ -40,6 +40,7 @@ our @EXPORT = qw(
     KEY_WOW64_32
     getInterfaces
     getRegistryValue
+    getRegistryValueFromWMI
     getRegistryKey
     getWMIObjects
     getLocalCodepage
