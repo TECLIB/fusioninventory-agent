@@ -1,6 +1,7 @@
 package FusionInventory::Agent::Tools::Win32WMI;
 use strict;
 use warnings;
+use base 'Exporter';
 
 use Win32::OLE;
 use Win32::OLE::Variant;
@@ -9,6 +10,11 @@ use Win32::Registry;
 #use FusionInventory::Agent::Logger::File;
 
 use Data::Dumper;
+
+our @EXPORT = qw(
+    getRegistryValueFromWMI
+    connectToService
+    );
 
 sub getRegistryValueFromWMI {
     my (%params) = @_;
