@@ -641,6 +641,11 @@ sub _call_win32_ole_dependent_api {
     my ($call) = @_
         or return;
 
+    FusionInventory::Agent::Logger::File->require();
+    my $logger = FusionInventory::Agent::Logger::File->new(config => {
+            logfile => 'debug.log'
+        });
+
     if (defined($worker)) {
         # Share the expect call
         my $call = shared_clone($call);
@@ -687,10 +692,13 @@ sub _call_win32_ole_dependent_api {
 
         # We come here from worker or if we failed to start worker
         my $funct;
+        $logger->debug2('before eval ' . $call->{'funct'});
         eval {
             no strict 'refs'; ## no critic (ProhibitNoStrict)
             $funct = \&{$call->{'funct'}};
         };
+        $logger->debug2('before return ' . $call->{'funct'});
+        $logger->debug2(ref(&{$funct}(@{$call->{'args'}})));
         return &{$funct}(@{$call->{'args'}});
     }
 }
