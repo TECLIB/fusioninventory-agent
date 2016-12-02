@@ -12,7 +12,7 @@ use Win32::Registry;
 use Data::Dumper;
 
 our @EXPORT = qw(
-    getRegistryValueFromWMI
+    getValueFromRemoteRegistry
     connectToService
     );
 
