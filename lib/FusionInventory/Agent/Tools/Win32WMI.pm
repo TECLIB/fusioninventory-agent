@@ -3,8 +3,6 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-use Win32::OLE;
-use Win32::OLE::Variant;
 use Win32::Registry;
 
 #use FusionInventory::Agent::Logger::File;
@@ -48,6 +46,7 @@ sub getValueFromRemoteRegistry {
     }
     #    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
     #    Win32::OLE::Variant->require();
+    Win32::OLE::Variant->require() or return;
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
     $params{logger}->debug2('result variant created') if $params{logger};
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
@@ -57,6 +56,7 @@ sub getValueFromRemoteRegistry {
 sub connectToService {
     my ( $hostname, $user, $pass, $root ) = @_;
 
+    Win32::OLE->require() or return;
     my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
         or warn;
     my $service =
