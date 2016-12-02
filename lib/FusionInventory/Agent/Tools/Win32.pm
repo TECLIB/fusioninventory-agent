@@ -27,7 +27,7 @@ use Win32::TieRegistry (
     ArrayValues => 0,
     qw/KEY_READ/
 );
-use Win32::Registry;
+use Win32::Registry qw/HKEY_LOCAL_MACHINE/;
 
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Network;
@@ -254,7 +254,7 @@ sub _getRegistryValueFromWMI {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     }
-    my $dd = Data::Dumper->new([\%params, $hkey, (defined $hkey)]);
+    my $dd = Data::Dumper->new([\%params]);
     $params{logger}->debug2($dd->Dump) if $params{logger};
 
     my $WMIService = _connectToService(
