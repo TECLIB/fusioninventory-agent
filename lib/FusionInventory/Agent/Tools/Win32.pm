@@ -229,7 +229,6 @@ sub getRegistryValue {
 
 sub getRegistryValueFromWMI {
     my $win32_ole_dependent_api = {
-        array => 1,
         funct => '_getRegistryValueFromWMI',
         args  => \@_
     };
@@ -642,9 +641,6 @@ sub _call_win32_ole_dependent_api {
         or return;
 
     FusionInventory::Agent::Logger::File->require();
-    my $logger = FusionInventory::Agent::Logger::File->new(config => {
-            logfile => 'debug2.log'
-        });
 
     if (defined($worker)) {
         # Share the expect call
