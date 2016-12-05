@@ -54,7 +54,10 @@ sub doInventory {
         BDATE => _dateFromIntString($value)
     };
 
-    $bios = appendBiosDataFromWMI(bios => $bios);
+    $bios = appendBiosDataFromWMI(
+        bios => $bios,
+        %$wmiParams
+    );
 
     $inventory->setBios($bios);
 
