@@ -52,6 +52,7 @@ sub doInventory {
             %$wmiParams
         );
     }
+    $value = 'UNDEF' if !$value;
     my $bDate = _dateFromIntString($value, $logger);
     $logger->debug2( 'bDate now' );
     $logger->debug2( $bDate );
