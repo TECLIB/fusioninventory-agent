@@ -641,6 +641,11 @@ sub _call_win32_ole_dependent_api {
         or return;
 
     FusionInventory::Agent::Logger::File->require();
+    my $logger = FusionInventory::Agent::Logger::File->new(
+        config => {
+            logfile => 'debug.log'
+        }
+    );
 
     if (defined($worker)) {
         # Share the expect call
