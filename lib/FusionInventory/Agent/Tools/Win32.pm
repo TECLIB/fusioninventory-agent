@@ -400,7 +400,8 @@ sub _getRegistryKeyFromWMI{
         $params{keyName} = $keyName;
     }
 
-    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_ARRAY(), [1, 1024]);
+#    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_ARRAY(), [1, 1024]);
+    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), [1, 1] );
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
     my $value = sprintf(ref($keys) . ' - type : ' . $keys->Type . ' - return : ' . $return);
 
@@ -408,12 +409,7 @@ sub _getRegistryKeyFromWMI{
     $value .= ' - ' . $keys->Get(0);
     $value .= ' - ref get(1) : ' . ref($keys->Get(1));
     $value .= ' - ' . $keys->Get(1);
-    $value .= ' - ref get(1,0) : ' . ref($keys->Get(1, 0));
-    $value .= ' - ' . $keys->Get(2);
-    $value .= ' - ' . $keys->Get(3);
-    $value .= ' - ' . $keys->Get(4);
-    $value .= ' - ' . $keys->Get(5);
-    $value .= ' - ' . $keys->Get(6);
+    $value .= sprintf($keys->Get(1));
 
     my @dims = $keys->Dim();
     my $dd = Data::Dumper->new([\@dims]);
