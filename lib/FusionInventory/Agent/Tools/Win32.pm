@@ -402,6 +402,8 @@ sub _getRegistryKeyFromWMI{
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
     my $value = sprintf(ref($keys) . ' _ ' . $return);
 
+    $value .= $keys->Get(0);
+
     return $value;
 }
 
