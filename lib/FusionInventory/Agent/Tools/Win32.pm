@@ -405,6 +405,8 @@ sub _getRegistryKeyFromWMI{
     my $value = sprintf(ref($keys) . ' _ ' . $return);
 
     $value .= ' - ref get(1) : ' . ref($keys->Get(1));
+    $value .= ' - ' . $keys->Get(1);
+    $value .= ' - ref get(1) : ' . ref($keys->Get(1, 0));
     $value .= ' - ' . $keys->Get(2);
     $value .= ' - ' . $keys->Get(3);
     $value .= ' - ' . $keys->Get(4);
