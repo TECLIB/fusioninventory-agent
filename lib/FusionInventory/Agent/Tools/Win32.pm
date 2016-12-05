@@ -405,7 +405,7 @@ sub _getRegistryKeyFromWMI{
         $params{keyName} = $keyName;
     }
 
-    my $keys = Win32::OLE::Variant->new(VT_BYREF|VT_VARIANT);
+    my $keys = Win32::OLE::Variant->new(VT_BYREF()|VT_VARIANT());
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
     my $value = sprintf(ref($keys));
     $logger->debug2('ma super valeur : ' . $value);
