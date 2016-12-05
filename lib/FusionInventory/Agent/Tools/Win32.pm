@@ -400,36 +400,17 @@ sub _getRegistryKeyFromWMI{
         $params{keyName} = $keyName;
     }
 
-    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_ARRAY(), 1);
-#    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_BSTR() , [1, 1] );
-    my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
-    my $value = sprintf(ref($keys) . ' - type : ' . $keys->Type . ' - return : ' . $return);
-
-    $value .= ' - ref get(0) : ' . ref($keys->Get(0));
-    $value .= ' - ' . $keys->Get(0);
-    $value .= ' - ref get(1) : ' . ref($keys->Get(1));
-    $value .= ' - ' . $keys->Get(1);
-    $value .= sprintf($keys->Get(1));
-
-    my @dims = $keys->Dim();
-    my $dd = Data::Dumper->new([\@dims, $keys]);
-    $value .= ' - ' . $dd->Dump;
-
     $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_VARIANT());
 
     $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
     my @dim = $keys->Dim;
+    my $subKeys = [];
     for ($dim[0][0] .. $dim[0][1]) {
         my $key = $keys->Get($_);
-        $value .= ' # ' . $_ . ' => ' . $key;
-    }
-    my $i = 0;
-    while ($keys->Get($i)) {
-        $value .= ' # found key at index ' . $i . ' : ' . $keys->Get($i);
-        $i++;
+        push @$subKeys, $key;
     }
 
-    return $value;
+    return $subKeys;
 }
 
 sub runCommand {

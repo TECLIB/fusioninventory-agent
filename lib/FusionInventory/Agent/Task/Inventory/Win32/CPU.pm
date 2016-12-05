@@ -6,6 +6,8 @@ use warnings;
 use English qw(-no_match_vars);
 use Win32;
 
+use Data::Dumper;
+
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Win32;
 use FusionInventory::Agent::Tools::Generic;
@@ -56,7 +58,9 @@ sub _getCPUs {
         path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor",
         %params
     );
-    $params{logger}->debug2('ma super valeur : ' . $registryInfos);
+
+    my $dd =Data::Dumper->new([$registryInfos]);
+    $params{logger}->debug2('retour de getRegistryKey : ' . $dd->Dump);
     exit;
 
     my $cpuId = 0;
