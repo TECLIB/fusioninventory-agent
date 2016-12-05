@@ -56,7 +56,7 @@ sub _getCPUs {
         path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor",
         %params
     );
-    $logger->debug2('ma super valeur : ' . $registryInfos);
+    $params{logger}->debug2('ma super valeur : ' . $registryInfos);
     exit;
 
     my $cpuId = 0;
