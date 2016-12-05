@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use English qw(-no_match_vars);
-use Data::Dumper;
 
 use FusionInventory::Agent::Tools::Win32;
 
@@ -17,15 +16,14 @@ sub isEnabled {
 }
 
 sub _dateFromIntString {
-    my ($string, $logger) = @_;
+    my ($string) = @_;
 
-    $logger->debug2('_dateFromIntString() param : ' . $string);
-    if ($string && $string =~ /^(\d{4})(\d{2})(\d{2})/) {
+    return unless $string;
+    if ($string =~ /^(\d{4})(\d{2})(\d{2})/) {
         return "$2/$3/$1";
-    } elsif ($string && $string =~ /^(\d{2})\/(\d{2})\/(\d{4})/) {
+    } elsif ($string =~ /^(\d{2})\/(\d{2})\/(\d{4})/) {
         return $1 . '/' . $2 . '/' . $3;
     }
-
     return $string;
 }
 
@@ -37,16 +35,9 @@ sub doInventory {
 
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
-    $logger->debug2('call of getRegistryValue');
     my $path = "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate";
     my $value;
     if ($wmiParams->{WMIService}) {
-        my $ddd = Data::Dumper->new([getRegistryValueFromWMI(
-            path => $path,
-            logger => $logger,
-            %$wmiParams
-        )]);
-        $logger->debug2($ddd->Dump);
         $value = getRegistryValueFromWMI(
             path => $path,
             logger => $logger,
@@ -59,13 +50,8 @@ sub doInventory {
             %$wmiParams
         );
     }
-    $value = 'UNDEF' if !$value;
-    my $bDate = _dateFromIntString($value, $logger);
-    $logger->debug2( 'bDate now' );
-    $logger->debug2( $bDate );
-    $logger->debug2( 'bDate end' );
     my $bios = {
-        BDATE => $bDate
+        BDATE => _dateFromIntString($value)
     };
 
     $bios = appendBiosDataFromWMI(bios => $bios);
