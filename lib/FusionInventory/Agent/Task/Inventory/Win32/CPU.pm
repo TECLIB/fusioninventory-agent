@@ -66,7 +66,7 @@ sub _getCPUs {
         %params
     )) {
 
-        my $dmidecodeInfo = $dmidecodeInfos && $dmidecodeInfos[$cpuId] ? $dmidecodeInfos[$cpuId] : undef;
+        my $dmidecodeInfo = @dmidecodeInfos && $dmidecodeInfos[$cpuId] ? $dmidecodeInfos[$cpuId] : undef;
         my $registryInfo  = $registryInfos && $registryInfos->{"$cpuId/"} ? $registryInfos->{"$cpuId/"} : undef;
 
         # Compute WMI threads for this CPU if not available in dmidecode, this is the case on win2003r2 with 932370 hotfix applied (see #2894)
