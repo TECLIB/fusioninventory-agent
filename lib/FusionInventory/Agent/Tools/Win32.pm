@@ -328,6 +328,14 @@ sub getRegistryKey {
         return;
     }
 
+    if ($params{WMIService}) {
+        return getRegistryKeyFromWMI(
+            root => $root,
+            keyName => $keyName
+            %params
+        );
+    }
+
     return _getRegistryKey(
         logger  => $params{logger},
         root    => $root,
@@ -352,6 +360,57 @@ sub _getRegistryKey {
     my $key = $rootKey->Open($params{keyName});
 
     return $key;
+}
+
+sub getRegistryKeyFromWMI {
+    my $win32_ole_dependent_api = {
+        funct => '_getRegistryKeyFromWMI',
+        args  => \@_
+    };
+
+    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+}
+
+sub _getRegistryKeyFromWMI{
+    my (%params) = @_;
+
+    return unless $params{WMIService};
+
+    FusionInventory::Agent::Logger::File->require();
+    my $logger = FusionInventory::Agent::Logger::File->new(
+        config => {
+            logfile => 'debug.log'
+        }
+    );
+
+    my $WMIService = _connectToService(
+        $params{WMIService}->{hostname},
+        $params{WMIService}->{user},
+        $params{WMIService}->{pass},
+        "root\\default"
+    );
+    if (!$WMIService) {
+        return;
+    }
+    my $objReg = $WMIService->Get("StdRegProv");
+    if (!$objReg) {
+        return;
+    }
+
+    my $hkey;
+    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
+        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
+        my $keyName = $1 . '/' . $params{keyName};
+        $keyName =~ tr#/#\\#;
+        $params{keyName} = $keyName;
+    }
+
+    my $keys = Win32::OLE::Variant->new(VT_BYREF|VT_VARIANT);
+    my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
+    my $value = sprintf(ref($keys));
+    $logger->debug2('ma super valeur : ' . $value);
+    exit;
+    return $value;
 }
 
 sub runCommand {

@@ -42,15 +42,20 @@ sub doInventory {
 sub _getCPUs {
     my (%params) = @_;
 
-    my $logger = $params{logger};
-    my @dmidecodeInfos = Win32::GetOSName() eq 'Win2003' ?
-        () : getCpusFromDmidecode();
+    my @dmidecodeInfos;
+    my $registryInfos;
+    if (!$params{WMIService}) {
+        @dmidecodeInfos = Win32::GetOSName() eq 'Win2003' ?
+            ()                                            : getCpusFromDmidecode();
 
-    # the CPU description in WMI is false, we use the registry instead
-    my $registryInfos = getRegistryKey(
-        path   => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor",
-        %params
-    );
+        # the CPU description in WMI is false, we use the registry instead
+        $registryInfos = getRegistryKey(
+            path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor",
+            %params
+        );
+    } else {
+
+    }
 
     my $cpuId = 0;
     my @cpus;
@@ -61,11 +66,11 @@ sub _getCPUs {
         %params
     )) {
 
-        my $dmidecodeInfo = $dmidecodeInfos[$cpuId];
-        my $registryInfo  = $registryInfos->{"$cpuId/"};
+        my $dmidecodeInfo = $dmidecodeInfos && $dmidecodeInfos[$cpuId] ? $dmidecodeInfos[$cpuId] : undef;
+        my $registryInfo  = $registryInfos && $registryInfos->{"$cpuId/"} ? $registryInfos->{"$cpuId/"} : undef;
 
         # Compute WMI threads for this CPU if not available in dmidecode, this is the case on win2003r2 with 932370 hotfix applied (see #2894)
-        my $wmi_threads   = !$dmidecodeInfo->{THREAD} && $object->{NumberOfCores} ? $object->{NumberOfLogicalProcessors}/$object->{NumberOfCores} : undef;
+        my $wmi_threads   = $dmidecodeInfo && !$dmidecodeInfo->{THREAD} && $object->{NumberOfCores} ? $object->{NumberOfLogicalProcessors}/$object->{NumberOfCores} : undef;
 
         # Split CPUID from its value inside registry
         my @splitted_identifier = split(/ |\n/ ,$registryInfo->{'/Identifier'});
