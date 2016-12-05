@@ -404,6 +404,9 @@ sub _getRegistryKeyFromWMI{
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
     my $value = sprintf(ref($keys) . ' _ ' . $return);
 
+    $value .= ' - 1 : ' . $keys->Get(1);
+    $value .= ' - 0,1 : ' . $keys->Get(0, 1);
+
     my @dims = $keys->Dim();
     my $dd = Data::Dumper->new([\@dims]);
     $value .= ' - ' . $dd->Dump;
