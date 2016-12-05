@@ -376,13 +376,6 @@ sub _getRegistryKeyFromWMI{
 
     return unless $params{WMIService};
 
-    FusionInventory::Agent::Logger::File->require();
-    my $logger = FusionInventory::Agent::Logger::File->new(
-        config => {
-            logfile => 'debug.log'
-        }
-    );
-
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
@@ -408,7 +401,7 @@ sub _getRegistryKeyFromWMI{
     my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_VARIANT());
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
     my $value = sprintf(ref($keys) . ' _ ' . $return);
-    $logger->debug2('ma super valeur : ' . $value);
+
     return $value;
 }
 
