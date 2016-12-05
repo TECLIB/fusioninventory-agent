@@ -8,12 +8,6 @@ use English qw(-no_match_vars);
 use Data::Dumper;
 
 use FusionInventory::Agent::Tools::Win32;
-use FusionInventory::Agent::Task::Inventory::Win32::Memory;
-use FusionInventory::Agent::Task::Inventory::Win32::Antivirus;
-use FusionInventory::Agent::Task::Inventory::Win32::Bios;
-use FusionInventory::Agent::Task::Inventory::Win32::Chassis;
-use FusionInventory::Agent::Task::Inventory::Win32::Drives;
-use FusionInventory::Agent::Task::Inventory::Win32::Environment;
 
 our $VERSION = '0.1';
 
