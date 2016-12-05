@@ -11,8 +11,6 @@ use threads::shared;
 
 use UNIVERSAL::require();
 
-use Data::Dumper;
-
 use constant KEY_WOW64_64 => 0x100;
 use constant KEY_WOW64_32 => 0x200;
 
@@ -206,7 +204,6 @@ sub getRegistryValue {
         return;
     }
 
-
     my $key = _getRegistryKey(
         logger  => $params{logger},
         root    => $root,
@@ -239,9 +236,6 @@ sub getRegistryValueFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
-    FusionInventory::Agent::Logger::File->require();
-#    Win32::Registry->require();
-
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -260,8 +254,6 @@ sub _getRegistryValueFromWMI {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     }
-    my $dd = Data::Dumper->new([\%params, \$hkey]);
-    $params{logger}->debug2($dd->Dump) if $params{logger};
 
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
@@ -270,21 +262,15 @@ sub _getRegistryValueFromWMI {
         "root\\default"
     );
     if (!$WMIService) {
-        $params{logger}->debug2('WMIService is not defined!') if $params{logger};
         return;
     }
     my $objReg = $WMIService->Get("StdRegProv");
     if (!$objReg) {
-        $params{logger}->debug2('objReg is not defined!') if $params{logger};
         return;
     }
-#    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
-#    Win32::OLE::Variant->require();
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
-    $params{logger}->debug2('result variant created') if $params{logger};
     my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     my $value = sprintf($result);
-    $params{logger}->debug2('result : ' . $result . ' - ' . 'return : ' . $return . ' - ref result: ' . ref($result) . ' - ref value ' . ref($value)) if $params{logger};
     return $value;
 }
 
@@ -640,13 +626,6 @@ sub _call_win32_ole_dependent_api {
     my ($call) = @_
         or return;
 
-    FusionInventory::Agent::Logger::File->require();
-    my $logger = FusionInventory::Agent::Logger::File->new(
-        config => {
-            logfile => 'debug.log'
-        }
-    );
-
     if (defined($worker)) {
         # Share the expect call
         my $call = shared_clone($call);
@@ -693,13 +672,10 @@ sub _call_win32_ole_dependent_api {
 
         # We come here from worker or if we failed to start worker
         my $funct;
-        $logger->debug2('before eval ' . $call->{'funct'});
         eval {
             no strict 'refs'; ## no critic (ProhibitNoStrict)
             $funct = \&{$call->{'funct'}};
         };
-        $logger->debug2('before return ' . $call->{'funct'});
-        $logger->debug2(ref(&{$funct}(@{$call->{'args'}})));
         return &{$funct}(@{$call->{'args'}});
     }
 }
