@@ -423,8 +423,10 @@ sub _getRegistryKeyFromWMI{
         my $key = $keys->Get($_);
         $value .= ' # ' . $_ . ' => ' . $key;
     }
-    $dd = Data::Dumper->new([$keys, $keys->Get(0)]);
-    $value .= $dd->Dump;
+    my $i = 0;
+    while ($keys->Get($i)) {
+        $value .= ' # found key at index ' . $i . ' : ' . $keys->Get($i);
+    }
 
     return $value;
 }
