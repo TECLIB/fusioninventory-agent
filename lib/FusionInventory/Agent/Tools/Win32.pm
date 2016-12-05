@@ -400,15 +400,15 @@ sub _getRegistryKeyFromWMI{
         $params{keyName} = $keyName;
     }
 
-    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT(), [1, 1024]);
+    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_ARRAY(), [1, 1024]);
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
     my $value = sprintf(ref($keys) . ' _ ' . $return);
 
-    $value .= ' - ref get(1) : ' . ref($keys->Get(0));
+    $value .= ' - ref get(0) : ' . ref($keys->Get(0));
     $value .= ' - ' . $keys->Get(0);
     $value .= ' - ref get(1) : ' . ref($keys->Get(1));
     $value .= ' - ' . $keys->Get(1);
-    $value .= ' - ref get(1) : ' . ref($keys->Get(1, 0));
+    $value .= ' - ref get(1,0) : ' . ref($keys->Get(1, 0));
     $value .= ' - ' . $keys->Get(2);
     $value .= ' - ' . $keys->Get(3);
     $value .= ' - ' . $keys->Get(4);
