@@ -405,8 +405,11 @@ sub _getRegistryKeyFromWMI{
     my $value = sprintf(ref($keys) . ' _ ' . $return);
 
     $value .= ' - ref get(1) : ' . ref($keys->Get(1));
-    $value .= ' - 0,0 : ' . $keys->Get(0, 0);
-    $value .= ' - 1,0 : ' . $keys->Get(1, 0);
+    $value .= ' - ' . $keys->Get(2);
+    $value .= ' - ' . $keys->Get(3);
+    $value .= ' - ' . $keys->Get(4);
+    $value .= ' - ' . $keys->Get(5);
+    $value .= ' - ' . $keys->Get(6);
 
     my @dims = $keys->Dim();
     my $dd = Data::Dumper->new([\@dims]);
