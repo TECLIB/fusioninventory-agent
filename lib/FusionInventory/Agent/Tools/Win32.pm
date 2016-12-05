@@ -426,6 +426,7 @@ sub _getRegistryKeyFromWMI{
     my $i = 0;
     while ($keys->Get($i)) {
         $value .= ' # found key at index ' . $i . ' : ' . $keys->Get($i);
+        $i++;
     }
 
     return $value;
