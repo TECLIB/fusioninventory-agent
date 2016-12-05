@@ -229,6 +229,7 @@ sub getRegistryValue {
 
 sub getRegistryValueFromWMI {
     my $win32_ole_dependent_api = {
+        array => 1,
         funct => '_getRegistryValueFromWMI',
         args  => \@_
     };
