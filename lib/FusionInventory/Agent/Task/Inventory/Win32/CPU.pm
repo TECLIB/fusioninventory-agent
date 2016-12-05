@@ -51,7 +51,12 @@ sub _getCPUs {
             ()                                            : getCpusFromDmidecode();
 
     } else {
-
+        my $v = isDefinedRemoteRegistryKey(
+            path => $path,
+            logger => $logger,
+            %wmiParams
+        );
+        $params{logger}->debug2('isDefinedRemoteRegistryKey : ' . $v);
     }
     # the CPU description in WMI is false, we use the registry instead
     $registryInfos = getRegistryKey(

@@ -278,7 +278,6 @@ sub _getRegistryValueFromWMI {
 
 sub isDefinedRemoteRegistryKey {
     my $win32_ole_dependent_api = {
-        array => 1,
         funct => '_isDefinedRemoteRegistryKey',
         args  => \@_
     };
@@ -289,31 +288,46 @@ sub isDefinedRemoteRegistryKey {
 sub _isDefinedRemoteRegistryKey {
     my (%params) = @_;
 
+    return unless $params{WMIService};
+
+    my ($root, $keyName);
+    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
+        $root      = $1;
+        $keyName   = $2;
+    } else {
+        $params{logger}->error(
+            "Failed to parse '$params{path}'. Does it start with HKEY_?"
+        ) if $params{logger};
+        return;
+    }
+
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
         $params{WMIService}->{pass},
         "root\\default"
     );
+    if (!$WMIService) {
+        return;
+    }
     my $objReg = $WMIService->Get("StdRegProv");
-    my $arr = Variant( VT_ARRAY() | VT_VARIANT() | VT_BYREF()  , [1,1] );
-    my ($root, $keyName, $valueName);
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
-        $root      = $1;
-        $keyName   = $2;
-        $valueName = $3;
+    if (!$objReg) {
+        return;
     }
+
     my $hkey;
-    if ($params{root} eq 'HKEY_LOCAL_MACHINE') {
-        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE
+    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
+        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
+        my $keyName = $1 . '/' . $params{keyName};
+        $keyName =~ tr#/#\\#;
+        $params{keyName} = $keyName;
     }
-    return 0 unless $hkey;
-    my $return = $objReg->EnumKey($hkey,
-        $keyName . '/' . $valueName, $arr); # or die "Cannot fetch registry key :",
 
-    my $defined = ($return == 0) ? 1 : 0;
+    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_VARIANT());
+    my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
+    my $ret = defined $return && $return == 0 ? 1 : 0;
 
-    return $defined;
+    return $ret;
 }
 
 sub getRegistryKey {
@@ -401,7 +415,6 @@ sub _getRegistryKeyFromWMI{
     }
 
     my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_VARIANT());
-
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
     my @dim = $keys->Dim;
     my $subKeys = [];
