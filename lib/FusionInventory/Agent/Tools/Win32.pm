@@ -409,7 +409,6 @@ sub _getRegistryKeyFromWMI{
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
     my $value = sprintf(ref($keys));
     $logger->debug2('ma super valeur : ' . $value);
-    exit;
     return $value;
 }
 
