@@ -53,8 +53,7 @@ sub _getCPUs {
     } else {
         my $v = isDefinedRemoteRegistryKey(
             path => $path,
-            logger => $logger,
-            %wmiParams
+            %params
         );
         $params{logger}->debug2('isDefinedRemoteRegistryKey : ' . $v);
     }
