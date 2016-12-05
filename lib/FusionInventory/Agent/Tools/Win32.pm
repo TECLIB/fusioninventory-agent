@@ -11,6 +11,8 @@ use threads::shared;
 
 use UNIVERSAL::require();
 
+use Data::Dumper;
+
 use constant KEY_WOW64_64 => 0x100;
 use constant KEY_WOW64_32 => 0x200;
 
@@ -403,7 +405,8 @@ sub _getRegistryKeyFromWMI{
     my $value = sprintf(ref($keys) . ' _ ' . $return);
 
     my @dims = $keys->Dim();
-    $value .= ' - ' . join(' ', @dims);
+    my $dd = Data::Dumper([\@dims]);
+    $value .= ' - ' . $dd->Dump;
 
     return $value;
 }
