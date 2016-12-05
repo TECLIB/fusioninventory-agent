@@ -331,7 +331,7 @@ sub getRegistryKey {
     if ($params{WMIService}) {
         return getRegistryKeyFromWMI(
             root => $root,
-            keyName => $keyName
+            keyName => $keyName,
             %params
         );
     }
