@@ -421,8 +421,10 @@ sub _getRegistryKeyFromWMI{
     my @dim = $keys->Dim;
     for ($dim[0][0] .. $dim[0][1]) {
         my $key = $keys->Get($_);
-        $value .= ' # ' . $key;
+        $value .= ' # ' . $_ . ' => ' . $key;
     }
+    $dd = Data::Dumper->new([$keys, $keys->Get(0)]);
+    $value .= $dd->Dump;
 
     return $value;
 }
