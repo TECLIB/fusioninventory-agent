@@ -46,6 +46,7 @@ sub _getCPUs {
 
     my @dmidecodeInfos;
     my $registryInfos;
+    my $path = "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor";
     if (!$params{WMIService}) {
         @dmidecodeInfos = Win32::GetOSName() eq 'Win2003' ?
             ()                                            : getCpusFromDmidecode();
@@ -59,7 +60,7 @@ sub _getCPUs {
     }
     # the CPU description in WMI is false, we use the registry instead
     $registryInfos = getRegistryKey(
-        path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor",
+        path => $path,
         %params
     );
 
