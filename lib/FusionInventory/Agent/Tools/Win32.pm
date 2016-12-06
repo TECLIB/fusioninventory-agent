@@ -467,7 +467,7 @@ sub _getRegistryKeyFromWMI{
 
     push @$subKeys, 'UH !';
 
-    my $arr = Variant( VT_ARRAY | VT_VARIANT | VT_BYREF  , [1,1] );
+    my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
 
     # Do not use Die for this method
     my $iRC = $objReg->EnumKey($hkey,
