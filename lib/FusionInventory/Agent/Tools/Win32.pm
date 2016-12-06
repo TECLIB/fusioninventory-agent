@@ -465,6 +465,18 @@ sub _getRegistryKeyFromWMI{
     push @$subKeys, sprintf($keys->Copy(3));
     push @$subKeys, $keys->Copy->Value;
 
+    push @$subKeys, 'UH !';
+
+    my $arr = Variant( VT_ARRAY | VT_VARIANT | VT_BYREF  , [1,1] );
+
+    # Do not use Die for this method
+    $iRC = $objReg->EnumKey($hkey,
+        $params{keyName}, $arr); # or die "Cannot fetch registry key :",
+
+    foreach my $item ( in( $arr->Value ) )
+    {
+        push @$subKeys, sprintf $item;
+    } # end foreach
 
     return $subKeys;
 }
