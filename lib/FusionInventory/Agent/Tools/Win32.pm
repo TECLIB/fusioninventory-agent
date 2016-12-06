@@ -419,6 +419,7 @@ sub _getRegistryKeyFromWMI{
 #    my $subKeys = \@dim;
     my $subKeys = [];
     push @$subKeys, $return;
+    push @$subKeys, $keys->Dim;
     push @$subKeys, $keys->Get(0);
     push @$subKeys, $keys->Get(1);
     push @$subKeys, $keys->Get(2);
