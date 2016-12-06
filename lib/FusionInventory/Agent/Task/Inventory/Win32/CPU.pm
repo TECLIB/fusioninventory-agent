@@ -176,6 +176,7 @@ sub _retrieveCpuIdFromRemoteRegistry {
     };
     for my $wantedKey (keys %$wantedKeys) {
         my $keyPath = $cpuIdPath . '/' . $wantedKey;
+        $params{logger}->debug2('now, getRegistryValue( ' . $keyPath . ')');
         $wantedKeys->{$wantedKey} = getRegistryValue(
             path => $keyPath,
             %params
