@@ -73,13 +73,17 @@ sub _getCPUs {
     $dd = Data::Dumper->new([$registryInfos]);
     $params{logger}->debug2('retour de getRegistryKey : ' . $dd->Dump);
 
-    $registryInfos = getRegistryKey(
-        path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0",
+#    $registryInfos = getRegistryKey(
+#        path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0",
+#        %params
+#    );
+#    $dd = Data::Dumper->new([$registryInfos]);
+#    $params{logger}->debug2('retour de getRegistryKey : ' . $dd->Dump);
+
+    my $val = getRegistryValue(
+        path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0/Identifier",
         %params
     );
-    $dd = Data::Dumper->new([$registryInfos]);
-    $params{logger}->debug2('retour de getRegistryKey : ' . $dd->Dump);
-
 
     my $cpuId = 0;
     my @cpus;
