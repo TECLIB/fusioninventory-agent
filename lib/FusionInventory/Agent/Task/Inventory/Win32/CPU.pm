@@ -84,6 +84,7 @@ sub _getCPUs {
         path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0/Identifier",
         %params
     );
+    $params{logger}->debug2('retour de getRegistryKey "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0/Identifier" : ' . $val);
 
     my $cpuId = 0;
     my @cpus;
