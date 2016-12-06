@@ -150,7 +150,7 @@ sub _retrieveCpuIdFromRemoteRegistry {
         path => $cpuIdPath,
         %params
     );
-    $dd = Data::Dumper->new([$cpuIdKeys]);
+    my $dd = Data::Dumper->new([$cpuIdKeys]);
     $params{logger}->debug2('$cpuIdKeys : ' . $cpuIdPath);
     $params{logger}->debug2($dd->Dump);
     my %cpuIdKeys = map { $_ => 1 } @$cpuIdKeys;
