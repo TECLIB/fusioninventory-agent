@@ -145,12 +145,22 @@ sub _retrieveCpuIdFromRemoteRegistry {
 
     return unless $params{WMIService};
 
+    # super test
+    my $testPath = "HKEY_LOCAL_MACHINE/Hardware/Description/System";
+    my $testKeys = getRegistryKey(
+        path => $testPath,
+        %params
+    );
+    my $dd = Data::Dumper->new([$testKeys]);
+    $params{logger}->debug2('$testKeys : ' . $testPath);
+    $params{logger}->debug2($dd->Dump);
+
     my $cpuIdPath = $path . '/' . $cpuId;
     my $cpuIdKeys = getRegistryKey(
         path => $cpuIdPath,
         %params
     );
-    my $dd = Data::Dumper->new([$cpuIdKeys]);
+    $dd = Data::Dumper->new([$cpuIdKeys]);
     $params{logger}->debug2('$cpuIdKeys : ' . $cpuIdPath);
     $params{logger}->debug2($dd->Dump);
     my %cpuIdKeys = map { $_ => 1 } @$cpuIdKeys;
