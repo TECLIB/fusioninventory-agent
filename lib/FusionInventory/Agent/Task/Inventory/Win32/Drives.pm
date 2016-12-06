@@ -25,9 +25,11 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     foreach my $drive (getDrives(
         logger  => $params{logger},
+        %$wmiParams
     )) {
         $inventory->addEntry(
             section => 'DRIVES',
