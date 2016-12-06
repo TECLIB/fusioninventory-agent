@@ -436,7 +436,7 @@ sub _getRegistryKeyFromWMI{
     push @$subKeys, sprintf($keys->Copy(1));
     push @$subKeys, sprintf($keys->Copy(2));
     push @$subKeys, sprintf($keys->Copy(3));
-    push @$subKeys, $keys->Copy;
+    push @$subKeys, $keys->Copy->Value;
 
 
     return $subKeys;
