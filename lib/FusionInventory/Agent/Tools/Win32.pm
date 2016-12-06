@@ -316,15 +316,15 @@ sub _isDefinedRemoteRegistryKey {
     }
 
     my $hkey;
-    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
+    if ($root =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
-        my $keyName = $1 . '/' . $params{keyName};
+        my $keyName = $1 . '/' . $keyName;
         $keyName =~ tr#/#\\#;
-        $params{keyName} = $keyName;
+        $keyName = $keyName;
     }
 
     my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_VARIANT());
-    my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
+    my $return = $objReg->EnumKey($hkey, $keyName, $keys);
     my $ret = defined $return && $return == 0 ? 1 : 0;
 
     return $ret;
