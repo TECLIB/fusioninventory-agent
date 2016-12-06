@@ -415,8 +415,10 @@ sub _getRegistryKeyFromWMI{
 
     my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_ARRAY(), [1, 128], 1);
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
-    my @dim = $keys->Dim;
-    my $subKeys = \@dim;
+#    my @dim = $keys->Dim;
+#    my $subKeys = \@dim;
+    my $subKeys = $keys->Copy;
+
 
     return $subKeys;
 }
