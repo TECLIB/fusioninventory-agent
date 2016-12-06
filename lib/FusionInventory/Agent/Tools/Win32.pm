@@ -421,7 +421,8 @@ sub _getRegistryKeyFromWMI{
     return unless defined $return && $return == 0;
     my $subKeys = [];
     foreach my $item ( in( $arr->Value ) ) {
-        push @$subKeys, sprintf $item;
+        push @$subKeys, 'truc';
+#        push @$subKeys, sprintf $item;
     } # end foreach
 
     return $subKeys;
