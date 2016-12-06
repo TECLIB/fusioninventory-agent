@@ -74,7 +74,7 @@ sub _getCPUs {
     $params{logger}->debug2('retour de getRegistryKey : ' . $dd->Dump);
 
     $registryInfos = getRegistryKey(
-        path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0",
+        path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0/",
         %params
     );
     $dd = Data::Dumper->new([$registryInfos]);
