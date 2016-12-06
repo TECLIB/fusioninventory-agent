@@ -173,7 +173,10 @@ sub _retrieveCpuIdFromRemoteRegistry {
     }
 
     # Split CPUID from its value inside registry
-    my @splitted_identifier = split(/ |\n/, $wantedKeys->{Identifier});
+    my @splitted_identifier;
+    if ($wantedKeys->{Identifier}) {
+        @splitted_identifier = split(/ |\n/, $wantedKeys->{Identifier});
+    }
 
     my $cpu = {
         CORE         => $object->{NumberOfCores},
@@ -181,7 +184,7 @@ sub _retrieveCpuIdFromRemoteRegistry {
         DESCRIPTION  => $wantedKeys->{Identifier},
         NAME         => trimWhitespace($wantedKeys->{ProcessorNameString}),
         MANUFACTURER => getCanonicalManufacturer($wantedKeys->{VendorIdentifier}),
-        SERIAL       => undef,
+        SERIAL       => '',
         SPEED        => $object->{MaxClockSpeed},
         FAMILYNUMBER => $splitted_identifier[2],
         MODEL        => $splitted_identifier[4],
@@ -189,6 +192,7 @@ sub _retrieveCpuIdFromRemoteRegistry {
         ID           => $object->{ProcessorId}
     };
 
+    return $cpu;
 }
 
 1;
