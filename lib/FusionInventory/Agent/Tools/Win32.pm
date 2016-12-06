@@ -438,6 +438,33 @@ sub _getRegistryKeyFromWMI{
     push @$subKeys, sprintf($keys->Copy(3));
     push @$subKeys, $keys->Copy->Value;
 
+    push @$subKeys, 'UH !';
+
+    $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_BYREF(), 128);
+    $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
+    #    my @dim = $keys->Dim;
+    #    my $subKeys = \@dim;
+#    $subKeys = [];
+    push @$subKeys, $return;
+    push @$subKeys, $keys->Dim;
+    push @$subKeys, $keys->Get(0);
+    push @$subKeys, $keys->Get(1);
+    push @$subKeys, $keys->Get(2);
+    push @$subKeys, $keys->Get(3);
+    push @$subKeys, $keys->Copy(0);
+    push @$subKeys, $keys->Copy(1);
+    push @$subKeys, $keys->Copy(2);
+    push @$subKeys, $keys->Copy(3);
+    push @$subKeys, $keys->Copy(0)->Value();
+    push @$subKeys, $keys->Copy(1)->Value();
+    push @$subKeys, $keys->Copy(2)->Value();
+    push @$subKeys, $keys->Copy(3)->Value();
+    push @$subKeys, sprintf($keys->Copy(0));
+    push @$subKeys, sprintf($keys->Copy(1));
+    push @$subKeys, sprintf($keys->Copy(2));
+    push @$subKeys, sprintf($keys->Copy(3));
+    push @$subKeys, $keys->Copy->Value;
+
 
     return $subKeys;
 }
