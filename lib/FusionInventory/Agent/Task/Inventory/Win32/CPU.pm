@@ -164,16 +164,7 @@ sub _retrieveCpuIdFromRemoteRegistry {
 
     return unless $params{WMIService};
 
-    my $cpuIdPath = $path . '/' . "$cpuId" . 'eh';
-    my $cpuIdKeys = getRegistryKey(
-        path => $cpuIdPath,
-        %params
-    );
-    my $dd = Data::Dumper->new([$cpuIdKeys]);
-    $params{logger}->debug2('$cpuIdKeys : ' . $cpuIdPath);
-    $params{logger}->debug2($dd->Dump);
-    my %cpuIdKeys = map { $_ => 1 } @$cpuIdKeys;
-
+    my $cpuIdPath = $path . '/' . "$cpuId";
     my $wantedKeys = {
         'Identifier' => undef,
         'ProcessorNameString' => undef,
