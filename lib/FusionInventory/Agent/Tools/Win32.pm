@@ -482,7 +482,8 @@ sub getInterfaces {
         class      => 'Win32_NetworkAdapterConfiguration',
         properties => [ qw/Index Description IPEnabled DHCPServer MACAddress
                            MTU DefaultIPGateway DNSServerSearchOrder IPAddress
-                           IPSubnet/  ]
+                           IPSubnet/  ],
+        @_
     )) {
 
         my $configuration = {
@@ -516,7 +517,8 @@ sub getInterfaces {
     foreach my $object (getWMIObjects(
         class      => 'Win32_NetworkAdapter',
         properties => [ qw/Index PNPDeviceID Speed PhysicalAdapter
-                           AdapterTypeId/  ]
+                           AdapterTypeId/  ],
+        @_
     )) {
         # http://comments.gmane.org/gmane.comp.monitoring.fusion-inventory.devel/34
         next unless $object->{PNPDeviceID};

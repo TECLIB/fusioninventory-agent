@@ -15,8 +15,9 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
-    my @envVars = getEnvironmentValues(%params);
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    my @envVars = getEnvironmentValues(%params, %$wmiParams);
     foreach my $envVar (@envVars) {
         $inventory->addEntry(
             section => 'ENVS',

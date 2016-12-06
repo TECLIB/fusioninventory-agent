@@ -17,9 +17,11 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     my (@gateways, @dns, @ips);
 
-    foreach my $interface (getInterfaces()) {
+    foreach my $interface (getInterfaces(%$wmiParams)) {
         push @gateways, $interface->{IPGATEWAY}
             if $interface->{IPGATEWAY};
         push @dns, $interface->{dns}

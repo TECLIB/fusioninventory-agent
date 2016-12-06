@@ -81,8 +81,9 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
-    foreach my $memory (getMemories()) {
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    foreach my $memory (getMemories(%$wmiParams)) {
         $inventory->addEntry(
             section => 'MEMORIES',
             entry   => $memory
