@@ -145,7 +145,7 @@ sub _retrieveCpuIdFromRemoteRegistry {
 
     return unless $params{WMIService};
 
-    my $cpuIdPath = $path . '/' . $cpuId;
+    my $cpuIdPath = $path . '/' . $cpuId . '/';
     my $cpuIdKeys = getRegistryKey(
         path => $cpuIdPath,
         %params
