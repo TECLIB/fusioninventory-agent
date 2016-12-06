@@ -159,9 +159,6 @@ sub _getCPUs {
 sub _retrieveCpuIdFromRemoteRegistry {
     my (%params) = @_;
 
-    my $dd = Data::Dumper->new([\%params]);
-    $params{logger}->debug2($dd->Dump);
-
     my $path = $params{path};
     my $cpuId = $params{cpuId};
     my $object = $params{object};
@@ -176,12 +173,10 @@ sub _retrieveCpuIdFromRemoteRegistry {
     };
     for my $wantedKey (keys %$wantedKeys) {
         my $keyPath = $cpuIdPath . '/' . $wantedKey;
-        $params{logger}->debug2('now, getRegistryValue( ' . $keyPath . ')');
         $wantedKeys->{$wantedKey} = getRegistryValue(
             %params,
             path => $keyPath
         );
-        $params{logger}->debug2('getRegistryValue( ' . $keyPath . ') : ' . $wantedKeys->{$wantedKey});
     }
 
     my $wmi_threads;

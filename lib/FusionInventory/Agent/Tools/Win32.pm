@@ -415,10 +415,10 @@ sub _getRegistryKeyFromWMI{
 
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     # Do not use Die for this method
-    my $return = $objReg->EnumKey($hkey,
-        $params{keyName}, $arr); # or die "Cannot fetch registry key :",
+    my $return = $objReg->EnumKey($hkey, $params{keyName}, $arr);
 
     return unless defined $return && $return == 0;
+
     my $subKeys = [];
     foreach my $item ( in( $arr->Value ) ) {
         push @$subKeys, sprintf $item;
