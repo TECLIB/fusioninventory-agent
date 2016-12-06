@@ -97,6 +97,7 @@ sub _getCPUs {
 
         my $cpu;
         if ($params{WMIService}) {
+            $params{logger}->debug2('with WMIService, launching _retrieveCpuIdFromRemoteRegistry');
             $cpu = _retrieveCpuIdFromRemoteRegistry(
                 cpuId => $cpuId,
                 path => $path,
@@ -157,6 +158,9 @@ sub _getCPUs {
 
 sub _retrieveCpuIdFromRemoteRegistry {
     my (%params) = @_;
+
+    my $dd = Data::Dumper->new([\%params]);
+    $params{logger}->debug2($dd->Dump);
 
     my $path = $params{path};
     my $cpuId = $params{cpuId};
