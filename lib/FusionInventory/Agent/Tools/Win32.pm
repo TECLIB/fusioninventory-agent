@@ -417,8 +417,10 @@ sub _getRegistryKeyFromWMI{
     my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
 #    my @dim = $keys->Dim;
 #    my $subKeys = \@dim;
-    my $subKeys = $keys->Get(1, 0);
-
+    my $subKeys = [];
+    push @$subKeys, $keys->Get(1, 0);
+    push @$subKeys, $keys->Get(2, 0);
+    push @$subKeys, $keys->Get(3, 0);
 
     return $subKeys;
 }
