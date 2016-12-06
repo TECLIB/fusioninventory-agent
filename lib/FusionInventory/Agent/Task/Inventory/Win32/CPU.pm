@@ -77,28 +77,38 @@ sub _getCPUs {
         %params
     )) {
 
-        my $dmidecodeInfo = @dmidecodeInfos && $dmidecodeInfos[$cpuId] ? $dmidecodeInfos[$cpuId] : undef;
-        my $registryInfo  = $registryInfos && $registryInfos->{"$cpuId/"} ? $registryInfos->{"$cpuId/"} : undef;
+        my $cpu;
+        if ($params{WMIService}) {
+            $cpu = _retrieveCpuIdFromRemoteRegistry(
+                cpuId => $cpuId,
+                path => $path,
+                object => $object,
+                %params
+            );
+        } else {
+            my $dmidecodeInfo = @dmidecodeInfos && $dmidecodeInfos[$cpuId] ? $dmidecodeInfos[$cpuId] : undef;
+            my $registryInfo = $registryInfos && $registryInfos->{"$cpuId/"} ? $registryInfos->{"$cpuId/"} : undef;
 
-        # Compute WMI threads for this CPU if not available in dmidecode, this is the case on win2003r2 with 932370 hotfix applied (see #2894)
-        my $wmi_threads   = $dmidecodeInfo && !$dmidecodeInfo->{THREAD} && $object->{NumberOfCores} ? $object->{NumberOfLogicalProcessors}/$object->{NumberOfCores} : undef;
+            # Compute WMI threads for this CPU if not available in dmidecode, this is the case on win2003r2 with 932370 hotfix applied (see #2894)
+            my $wmi_threads = $dmidecodeInfo && !$dmidecodeInfo->{THREAD} && $object->{NumberOfCores} ? $object->{NumberOfLogicalProcessors} / $object->{NumberOfCores} : undef;
 
-        # Split CPUID from its value inside registry
-        my @splitted_identifier = split(/ |\n/ ,$registryInfo->{'/Identifier'});
+            # Split CPUID from its value inside registry
+            my @splitted_identifier = split(/ |\n/, $registryInfo->{'/Identifier'});
 
-        my $cpu = {
-            CORE         => $dmidecodeInfo->{CORE} || $object->{NumberOfCores},
-            THREAD       => $dmidecodeInfo->{THREAD} || $wmi_threads,
-            DESCRIPTION  => $registryInfo->{'/Identifier'},
-            NAME         => trimWhitespace($registryInfo->{'/ProcessorNameString'}),
-            MANUFACTURER => getCanonicalManufacturer($registryInfo->{'/VendorIdentifier'}),
-            SERIAL       => $dmidecodeInfo->{SERIAL},
-            SPEED        => $dmidecodeInfo->{SPEED} || $object->{MaxClockSpeed},
-            FAMILYNUMBER => $splitted_identifier[2],
-            MODEL        => $splitted_identifier[4],
-            STEPPING     => $splitted_identifier[6],
-            ID           => $dmidecodeInfo->{ID} || $object->{ProcessorId}
-        };
+            $cpu = {
+                CORE         => $dmidecodeInfo->{CORE} || $object->{NumberOfCores},
+                THREAD       => $dmidecodeInfo->{THREAD} || $wmi_threads,
+                DESCRIPTION  => $registryInfo->{'/Identifier'},
+                NAME         => trimWhitespace($registryInfo->{'/ProcessorNameString'}),
+                MANUFACTURER => getCanonicalManufacturer($registryInfo->{'/VendorIdentifier'}),
+                SERIAL       => $dmidecodeInfo->{SERIAL},
+                SPEED        => $dmidecodeInfo->{SPEED} || $object->{MaxClockSpeed},
+                FAMILYNUMBER => $splitted_identifier[2],
+                MODEL        => $splitted_identifier[4],
+                STEPPING     => $splitted_identifier[6],
+                ID           => $dmidecodeInfo->{ID} || $object->{ProcessorId}
+            };
+        }
 
         # Some information are missing on Win2000
         if (!$cpu->{NAME}) {
@@ -125,6 +135,61 @@ sub _getCPUs {
     }
 
     return @cpus;
+}
+
+sub _retrieveCpuIdFromRemoteRegistry {
+    my (%params) = @_;
+
+    my $path = $params{path};
+    my $cpuId = $params{cpuId};
+    my $object = $params{object};
+
+    return unless $params{WMIService};
+
+    my $cpuIdPath = $path . '/' . $cpuId;
+    my $cpuIdKeys = getRegistryKey(
+        path => $cpuIdPath,
+        %params
+    );
+    my %cpuIdKeys = map { $_ => 1 } @$cpuIdKeys;
+
+    my $wantedKeys = {
+        'Identifier' => undef,
+        'ProcessorNameString' => undef,
+        'VendorIdentifier' => undef
+    };
+    for my $wantedKey (keys %$wantedKeys) {
+        if ($cpuIdKeys{$wantedKey}) {
+            my $keyPath = $cpuIdPath . '/' . $wantedKey;
+            $wantedKeys->{$wantedKey} = getRegistryValue(
+                path => $keyPath,
+                %params
+            );
+        }
+    }
+
+    my $wmi_threads;
+    if ($object->{NumberOfCores}) {
+        $wmi_threads = $object->{NumberOfLogicalProcessors} / $object->{NumberOfCores};
+    }
+
+    # Split CPUID from its value inside registry
+    my @splitted_identifier = split(/ |\n/, $wantedKeys->{Identifier});
+
+    my $cpu = {
+        CORE         => $object->{NumberOfCores},
+        THREAD       => $wmi_threads,
+        DESCRIPTION  => $wantedKeys->{Identifier},
+        NAME         => trimWhitespace($wantedKeys->{ProcessorNameString}),
+        MANUFACTURER => getCanonicalManufacturer($wantedKeys->{VendorIdentifier}),
+        SERIAL       => undef,
+        SPEED        => $object->{MaxClockSpeed},
+        FAMILYNUMBER => $splitted_identifier[2],
+        MODEL        => $splitted_identifier[4],
+        STEPPING     => $splitted_identifier[6],
+        ID           => $object->{ProcessorId}
+    };
+
 }
 
 1;
