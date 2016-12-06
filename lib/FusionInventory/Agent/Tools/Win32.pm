@@ -318,9 +318,8 @@ sub _isDefinedRemoteRegistryKey {
     my $hkey;
     if ($root =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
-        my $keyName = $1 . '/' . $keyName;
+        $keyName = $1 . '/' . $keyName;
         $keyName =~ tr#/#\\#;
-        $keyName = $keyName;
     }
 
     my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_VARIANT());
