@@ -413,69 +413,16 @@ sub _getRegistryKeyFromWMI{
         $params{keyName} = $keyName;
     }
 
-    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_BSTR(), 128);
-    my $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
-#    my @dim = $keys->Dim;
-#    my $subKeys = \@dim;
+    my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
+    # Do not use Die for this method
+    my $return = $objReg->EnumKey($hkey,
+    $params{keyName}, $arr); # or die "Cannot fetch registry key :",
+
+    return unless defined $return && $return == 0;
     my $subKeys = [];
     push @$subKeys, $return;
-    push @$subKeys, $keys->Dim;
-    push @$subKeys, $keys->Get(0);
-    push @$subKeys, $keys->Get(1);
-    push @$subKeys, $keys->Get(2);
-    push @$subKeys, $keys->Get(3);
-    push @$subKeys, $keys->Copy(0);
-    push @$subKeys, $keys->Copy(1);
-    push @$subKeys, $keys->Copy(2);
-    push @$subKeys, $keys->Copy(3);
-    push @$subKeys, $keys->Copy(0)->Value();
-    push @$subKeys, $keys->Copy(1)->Value();
-    push @$subKeys, $keys->Copy(2)->Value();
-    push @$subKeys, $keys->Copy(3)->Value();
-    push @$subKeys, sprintf($keys->Copy(0));
-    push @$subKeys, sprintf($keys->Copy(1));
-    push @$subKeys, sprintf($keys->Copy(2));
-    push @$subKeys, sprintf($keys->Copy(3));
-    push @$subKeys, $keys->Copy->Value;
-
-    push @$subKeys, 'UH !';
-
-    $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_BSTR(), 128);
-    $return = $objReg->EnumKey($hkey, $params{keyName}, $keys);
-    #    my @dim = $keys->Dim;
-    #    my $subKeys = \@dim;
-#    $subKeys = [];
-    push @$subKeys, $return;
-    push @$subKeys, $keys->Dim;
-    push @$subKeys, $keys->Get(0);
-    push @$subKeys, $keys->Get(1);
-    push @$subKeys, $keys->Get(2);
-    push @$subKeys, $keys->Get(3);
-    push @$subKeys, $keys->Copy(0);
-    push @$subKeys, $keys->Copy(1);
-    push @$subKeys, $keys->Copy(2);
-    push @$subKeys, $keys->Copy(3);
-    push @$subKeys, $keys->Copy(0)->Value();
-    push @$subKeys, $keys->Copy(1)->Value();
-    push @$subKeys, $keys->Copy(2)->Value();
-    push @$subKeys, $keys->Copy(3)->Value();
-    push @$subKeys, sprintf($keys->Copy(0));
-    push @$subKeys, sprintf($keys->Copy(1));
-    push @$subKeys, sprintf($keys->Copy(2));
-    push @$subKeys, sprintf($keys->Copy(3));
-    push @$subKeys, $keys->Copy->Value;
-
-    push @$subKeys, 'UH !';
-
-    my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
-
-    # Do not use Die for this method
-    my $iRC = $objReg->EnumKey($hkey,
-        $params{keyName}, $arr); # or die "Cannot fetch registry key :",
-
-    foreach my $item ( in( $arr->Value ) )
-    {
-        push @$subKeys, sprintf $item;
+    foreach my $item ( in( $arr->Value ) ) {
+        push @$subKeys, $item;
     } # end foreach
 
     return $subKeys;
