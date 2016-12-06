@@ -470,7 +470,7 @@ sub _getRegistryKeyFromWMI{
     my $arr = Variant( VT_ARRAY | VT_VARIANT | VT_BYREF  , [1,1] );
 
     # Do not use Die for this method
-    $iRC = $objReg->EnumKey($hkey,
+    my $iRC = $objReg->EnumKey($hkey,
         $params{keyName}, $arr); # or die "Cannot fetch registry key :",
 
     foreach my $item ( in( $arr->Value ) )
