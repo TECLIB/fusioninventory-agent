@@ -31,7 +31,7 @@ sub doInventory {
             if $interface->{IPADDRESS};
 
         delete $interface->{dns};
-        $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID});
+        $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID}, $wmiParams);
 
         $inventory->addEntry(
             section => 'NETWORKS',
@@ -48,9 +48,13 @@ sub doInventory {
 }
 
 sub _getMediaType {
-    my ($deviceId, $logger) = @_;
+    my ($deviceId, $logger, $wmiParams) = @_;
 
     return unless defined $deviceId;
+
+    if ($wmiParams && $wmiParams->{WMIService}) {
+        return _getMediaTypeFromRemote($deviceId, $logger, $wmiParams);
+    }
 
     my $key = getRegistryKey(
         path   => "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}",
@@ -71,6 +75,50 @@ sub _getMediaType {
             $subtype eq '0x00000001' ? 'ethernet' :
             $subtype eq '0x00000002' ? 'wifi'     :
                                        undef;
+    }
+
+    ## no critic (ExplicitReturnUndef)
+    return undef;
+}
+
+sub _getMediaTypeFromRemote {
+    my ($deviceId, $logger, $wmiParams) = @_;
+
+    my $path = "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}";
+    my $subKeys = getRegistryKeyFromWMI(
+        path   => $path,
+        logger => $logger,
+        %$wmiParams
+    );
+
+    foreach my $subkey_name (@$subKeys) {
+        # skip variables
+        next if $subkey_name =~ m{^/};
+        my $subkey = $key->{$subkey_name};
+
+        next unless isDefinedRemoteRegistryKey(
+            path => $path . '/' . $subkey_name,
+            %$wmiParams
+        ) && isDefinedRemoteRegistryKey(
+            path => $path . '/' . $subkey_name . '/Connection',
+            %$wmiParams
+        ) && isDefinedRemoteRegistryKey(
+            path => $path . '/' . $subkey_name . '/Connection/PnpInstanceID',
+            %$wmiParams
+        ) && getRegistryValueFromWMI(
+            path => $path . '/' . $subkey_name . '/Connection/PnpInstanceID',
+            %$wmiParams
+        ) eq $deviceId;
+
+        my $subtype = getRegistryValueFromWMI(
+            path => $path . '/' . $subkey_name . '/Connection/MediaSubType',
+            %$wmiParams
+        );
+        return
+                !defined $subtype        ? 'ethernet' :
+                $subtype eq '0x00000001' ? 'ethernet' :
+                    $subtype eq '0x00000002' ? 'wifi'     :
+                    undef;
     }
 
     ## no critic (ExplicitReturnUndef)
