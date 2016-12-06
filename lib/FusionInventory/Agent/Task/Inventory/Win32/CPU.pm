@@ -171,14 +171,12 @@ sub _retrieveCpuIdFromRemoteRegistry {
         'VendorIdentifier' => undef
     };
     for my $wantedKey (keys %$wantedKeys) {
-        if ($cpuIdKeys{$wantedKey}) {
-            my $keyPath = $cpuIdPath . '/' . $wantedKey;
-            $wantedKeys->{$wantedKey} = getRegistryValue(
-                path => $keyPath,
-                %params
-            );
-            $params{logger}->debug2('getRegistryValue( ' . $keyPath . ') : ' . $wantedKeys->{$wantedKey});
-        }
+        my $keyPath = $cpuIdPath . '/' . $wantedKey;
+        $wantedKeys->{$wantedKey} = getRegistryValue(
+            path => $keyPath,
+            %params
+        );
+        $params{logger}->debug2('getRegistryValue( ' . $keyPath . ') : ' . $wantedKeys->{$wantedKey});
     }
 
     my $wmi_threads;
