@@ -75,7 +75,7 @@ sub doInventory {
         NAME           => "Windows",
         ARCH           => $arch,
         INSTALL_DATE   => _getInstallDate(%$wmiParams),
-        BOOT_TIME      => $boottime || '',
+        BOOT_TIME      => $boottime || '',
         KERNEL_VERSION => $operatingSystem->{Version},
         FULL_NAME      => $operatingSystem->{Caption},
         SERVICE_PACK   => $operatingSystem->{CSDVersion},
