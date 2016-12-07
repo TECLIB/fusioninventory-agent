@@ -19,33 +19,37 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     my ($operatingSystem) = getWMIObjects(
         class      => 'Win32_OperatingSystem',
         properties => [ qw/
             OSLanguage Caption Version SerialNumber Organization RegisteredUser
             CSDVersion TotalSwapSpaceSize LastBootUpTime
-        / ]
+        / ],
+        %$wmiParams
     );
 
     my ($computerSystem) = getWMIObjects(
         class      => 'Win32_ComputerSystem',
         properties => [ qw/
             Name Domain Workgroup PrimaryOwnerName TotalPhysicalMemory
-        / ]
+        / ],
+        %$wmiParams
     );
 
     my ($computerSystemProduct) = getWMIObjects(
         class      => 'Win32_ComputerSystemProduct',
-        properties => [ qw/UUID/ ]
+        properties => [ qw/UUID/ ],
+        %$wmiParams
     );
 
     my $key =
-        decodeMicrosoftKey(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId')) ||
-        decodeMicrosoftKey(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId4'));
+        decodeMicrosoftKey(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId', %$wmiParams)) ||
+        decodeMicrosoftKey(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId4', %$wmiParams));
 
     my $description =
-        encodeFromRegistry(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/lanmanserver/Parameters/srvcomment'));
+        encodeFromRegistry(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/lanmanserver/Parameters/srvcomment', %$wmiParams));
 
     my $arch = is64bit() ? '64-bit' : '32-bit';
 
@@ -65,12 +69,12 @@ sub doInventory {
     }
 
     # get the name through native Win32::API, as WMI DB is sometimes broken
-    my $hostname = getHostname(short => 1);
+    my $hostname = $wmiParams{WMIService} ? $computerSystem->{Name} : getHostname(short => 1);
 
     $inventory->setOperatingSystem({
         NAME           => "Windows",
         ARCH           => $arch,
-        INSTALL_DATE   => _getInstallDate(),
+        INSTALL_DATE   => _getInstallDate(%$wmiParams),
         BOOT_TIME      => $boottime,
         KERNEL_VERSION => $operatingSystem->{Version},
         FULL_NAME      => $operatingSystem->{Caption},
@@ -98,8 +102,10 @@ sub doInventory {
 }
 
 sub _getInstallDate {
+    my (%params) = @_;
     my $installDate = getRegistryValue(
-        path   => 'HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows NT/CurrentVersion/InstallDate'
+        path   => 'HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows NT/CurrentVersion/InstallDate',
+        %params
     );
     return unless $installDate;
 
