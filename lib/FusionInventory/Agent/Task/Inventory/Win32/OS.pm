@@ -69,7 +69,7 @@ sub doInventory {
     }
 
     # get the name through native Win32::API, as WMI DB is sometimes broken
-    my $hostname = $wmiParams{WMIService} ? $computerSystem->{Name} : getHostname(short => 1);
+    my $hostname = $wmiParams && $wmiParams{WMIService} ? $computerSystem->{Name} : getHostname(short => 1);
 
     $inventory->setOperatingSystem({
         NAME           => "Windows",
