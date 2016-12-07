@@ -51,7 +51,7 @@ sub doInventory {
     my $description =
         encodeFromRegistry(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/lanmanserver/Parameters/srvcomment', %$wmiParams));
 
-    my $arch = is64bit() ? '64-bit' : '32-bit';
+    my $arch = is64bit(%$wmiParams) ? '64-bit' : '32-bit';
 
     my $swap = $operatingSystem->{TotalSwapSpaceSize} ?
         int($operatingSystem->{TotalSwapSpaceSize} / (1024 * 1024)) : undef;
