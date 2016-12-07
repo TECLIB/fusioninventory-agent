@@ -94,7 +94,6 @@ sub _getMediaTypeFromRemote {
     foreach my $subkey_name (@$subKeys) {
         # skip variables
         next if $subkey_name =~ m{^/};
-        my $subkey = $key->{$subkey_name};
 
         next unless isDefinedRemoteRegistryKey(
             path => $path . '/' . $subkey_name,
