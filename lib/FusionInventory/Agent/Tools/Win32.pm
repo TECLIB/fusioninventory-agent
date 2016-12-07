@@ -48,6 +48,7 @@ our @EXPORT = qw(
     FileTimeToSystemTime
     getUsersFromRegistry
     isDefinedRemoteRegistryKey
+    getRegistryTreeFromWMI
 );
 
 sub is64bit {
