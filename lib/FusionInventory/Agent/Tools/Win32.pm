@@ -474,34 +474,33 @@ sub _getRegistryTreeFromWMI {
         return;
     }
 
-    my $tree = {};
+    return _retrieveSubTreeRec(
+        %params,
+        objReg => $objReg
+    );
+}
+
+sub _retrieveSubTreeRec {
+    my (%params) = @_;
+
+    my $tree;
     my $subKeys = _retrieveSubKeyList(%params);
     if ($subKeys) {
-        for my $subKey (@subKeys) {
-            $tree->{$subKey} = _retrieveSubKeyList(
+        $tree = {};
+        for my $subKey (@$subKeys) {
+            $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
             );
         }
     } else {
-
-    }
-
-    for my $key (@$subKeys) {
-        my $keySubKeys = _retrieveSubKeyList(
+        $tree =_retrieveValueFromRemoteRegistry(
             %params,
-            path => $params{path} . '/' . $key
+            objReg => $objReg
         );
-        if ($keySubKeys) {
-            for my $keySubKey (@$keySubKeys) {
-                $tree->{$key} = _retrieveSubKeyList(
-
-                );
-            }
-        } else {
-            $tree->{$key} =
-        }
     }
+
+    return $tree;
 }
 
 sub runCommand {
