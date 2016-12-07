@@ -62,7 +62,7 @@ sub doInventory {
     my $uuid = $computerSystemProduct->{UUID} !~ /^[0-]+$/ ?
         $computerSystemProduct->{UUID} : undef;
 
-    my $boottime = '';
+    my $boottime;
     if ($operatingSystem->{LastBootUpTime} =~
             /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/) {
         $boottime = getFormatedDate($1, $2, $3, $4, $5, $6);
@@ -75,7 +75,7 @@ sub doInventory {
         NAME           => "Windows",
         ARCH           => $arch,
         INSTALL_DATE   => _getInstallDate(%$wmiParams),
-        BOOT_TIME      => $boottime,
+        BOOT_TIME      => $boottime || '',
         KERNEL_VERSION => $operatingSystem->{Version},
         FULL_NAME      => $operatingSystem->{Caption},
         SERVICE_PACK   => $operatingSystem->{CSDVersion},
