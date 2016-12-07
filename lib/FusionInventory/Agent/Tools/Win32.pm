@@ -405,6 +405,15 @@ sub _getRegistryKeyFromWMI{
         return;
     }
 
+    return _retrieveSubKeyList(
+        %params,
+        objReg => $objReg
+    );
+}
+
+sub _retrieveSubKeyList {
+    my (%params) = @_;
+
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -412,10 +421,9 @@ sub _getRegistryKeyFromWMI{
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     }
-
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     # Do not use Die for this method
-    my $return = $objReg->EnumKey($hkey, $params{keyName}, $arr);
+    my $return = $params->{objReg}->EnumKey($hkey, $params{keyName}, $arr);
 
     return unless defined $return && $return == 0;
 
@@ -425,6 +433,23 @@ sub _getRegistryKeyFromWMI{
     } # end foreach
 
     return $subKeys;
+}
+
+sub getRegistryTreeFromWMI {
+    my $win32_ole_dependent_api = {
+        funct => '_getRegistryTreeFromWMI',
+        args  => \@_
+    };
+
+    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+}
+
+sub _getRegistryTreeFromWMI {
+    my (%params) = @_;
+
+    return unless $params{WMIService};
+
+
 }
 
 sub runCommand {
