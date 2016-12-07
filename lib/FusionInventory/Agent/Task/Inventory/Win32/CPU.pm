@@ -56,6 +56,7 @@ sub _getCPUs {
             path => $path,
             %params
         );
+        $v = 'UNDEF' unless $v;
         $params{logger}->debug2('isDefinedRemoteRegistryKey : ' . $v);
     }
     # the CPU description in WMI is false, we use the registry instead
