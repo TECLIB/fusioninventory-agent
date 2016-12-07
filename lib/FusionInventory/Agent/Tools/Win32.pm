@@ -249,14 +249,6 @@ sub _getRegistryValueFromWMI {
         return;
     }
 
-    my $hkey;
-    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
-        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
-        my $keyName = $1 . '/' . $params{keyName};
-        $keyName =~ tr#/#\\#;
-        $params{keyName} = $keyName;
-    }
-
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
@@ -270,9 +262,28 @@ sub _getRegistryValueFromWMI {
     if (!$objReg) {
         return;
     }
+
+    return _retrieveValueFromRemoteRegistry(
+        %params,
+        objReg => $objReg
+    );
+}
+
+sub _retrieveValueFromRemoteRegistry {
+    my (%params) = @_;
+
+    my $hkey;
+    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
+        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
+        my $keyName = $1 . '/' . $params{keyName};
+        $keyName =~ tr#/#\\#;
+        $params{keyName} = $keyName;
+    }
+
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
-    my $return = $objReg->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
+    $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
     my $value = sprintf($result);
+
     return $value;
 }
 
@@ -449,7 +460,48 @@ sub _getRegistryTreeFromWMI {
 
     return unless $params{WMIService};
 
+    my $WMIService = _connectToService(
+        $params{WMIService}->{hostname},
+        $params{WMIService}->{user},
+        $params{WMIService}->{pass},
+        "root\\default"
+    );
+    if (!$WMIService) {
+        return;
+    }
+    my $objReg = $WMIService->Get("StdRegProv");
+    if (!$objReg) {
+        return;
+    }
 
+    my $tree = {};
+    my $subKeys = _retrieveSubKeyList(%params);
+    if ($subKeys) {
+        for my $subKey (@subKeys) {
+            $tree->{$subKey} = _retrieveSubKeyList(
+                %params,
+                path => $params{path} . '/' . $subKey
+            );
+        }
+    } else {
+
+    }
+
+    for my $key (@$subKeys) {
+        my $keySubKeys = _retrieveSubKeyList(
+            %params,
+            path => $params{path} . '/' . $key
+        );
+        if ($keySubKeys) {
+            for my $keySubKey (@$keySubKeys) {
+                $tree->{$key} = _retrieveSubKeyList(
+
+                );
+            }
+        } else {
+            $tree->{$key} =
+        }
+    }
 }
 
 sub runCommand {
