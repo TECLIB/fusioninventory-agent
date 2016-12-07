@@ -494,10 +494,7 @@ sub _retrieveSubTreeRec {
             );
         }
     } else {
-        $tree =_retrieveValueFromRemoteRegistry(
-            %params,
-            objReg => $objReg
-        );
+        $tree =_retrieveValueFromRemoteRegistry(%params);
     }
 
     return $tree;
