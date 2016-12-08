@@ -521,6 +521,7 @@ sub _retrieveSubTreeRec {
         debug => 'in _retrieveSubTreeRec' . "\n"
     };
     $tree->{debug} .= $dd->Dump . "\n";
+    $tree->{debug} .= 'path : ' . $params{path} . "\n";
     my $subKeys = _retrieveSubKeyList(%params);
     if ($subKeys) {
         $params{logger}->debug2('found subKeys');
