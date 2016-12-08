@@ -461,6 +461,8 @@ sub _getRegistryTreeFromWMI {
 
     return unless $params{WMIService};
 
+    FusionInventory::Agent::Logger->require();
+    FusionInventory::Agent::Logger->import();
     FusionInventory::Agent::Logger::File->require();
     FusionInventory::Agent::Logger::File->import();
     my $logger = FusionInventory::Agent::Logger::File->new(
