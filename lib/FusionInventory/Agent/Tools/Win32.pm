@@ -619,6 +619,7 @@ sub _retrieveSubTreeRec {
             );
         }
     } else {
+        return 'in the else calling _retrieveValuesNameAndType';
 #        $params{debug} .= "didn't find subKeys" . "\n";
 #        $params{debug} .= 'lauching _retrieveValueFromRemoteRegistry' . "\n";
 
@@ -632,7 +633,6 @@ sub _retrieveSubTreeRec {
             ) if $params{logger};
             return;
         }
-        return 'before calling _retrieveValuesNameAndType';
         $tree = _retrieveValuesNameAndType(
             %params
         );
