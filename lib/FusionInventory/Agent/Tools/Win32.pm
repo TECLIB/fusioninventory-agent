@@ -465,7 +465,8 @@ sub _getRegistryTreeFromWMI {
     FusionInventory::Agent::Logger->import();
     FusionInventory::Agent::Logger::File->require();
     FusionInventory::Agent::Logger::File->import();
-    my $logger = FusionInventory::Agent::Logger::File->new(
+    my $logger = FusionInventory::Agent::Logger->new(
+        backends => ['File'],
         logfile => 'debug.log'
     );
     my $WMIService = _connectToService(
