@@ -10,6 +10,7 @@ use threads 'exit' => 'threads_only';
 use threads::shared;
 
 use UNIVERSAL::require();
+use Switch;
 
 use Data::Dumper;
 
