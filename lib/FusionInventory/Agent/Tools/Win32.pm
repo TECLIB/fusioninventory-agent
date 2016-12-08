@@ -503,27 +503,27 @@ sub _retrieveRemoteRegistryValueByType {
 
     my $value;
     switch ($params{valueType}) {
-        case 'REG_BINARY'    {
+        case "REG_BINARY"    {
             my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
             $value = $params{objReg}->GetBinaryValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
             $value = sprintf($result);
         }
-        case 'REG_DWORD'     {
+        case "REG_DWORD"     {
             my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
             $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
             $value = sprintf($result);
         }
-        case 'REG_EXPAND_SZ' {
+        case "REG_EXPAND_SZ" {
             my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
             $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
             $value = sprintf($result);
         }
-        case 'REG_MULTI_SZ'  {
+        case "REG_MULTI_SZ"  {
             my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
             $value = $params{objReg}->GetMultiStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
             $value = sprintf($result);
         }
-        case 'REG_SZ'        {
+        case "REG_SZ"        {
             my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
             $value = $params{objReg}->GetStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
             $value = sprintf($result);
