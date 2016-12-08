@@ -31,6 +31,16 @@ sub doInventory {
         %$wmiParams
     );
     my $dd = Data::Dumper->new([$tree]);
+    $logger->debug2($p);
+    $logger->debug2($dd->Dump);
+
+    $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor";
+    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
+        path => $p,
+        %$wmiParams
+    );
+    $dd = Data::Dumper->new([$tree]);
+    $logger->debug2($p);
     $logger->debug2($dd->Dump);
 
     my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
