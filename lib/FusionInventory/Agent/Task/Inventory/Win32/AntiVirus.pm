@@ -25,20 +25,21 @@ sub doInventory {
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
 
     # super test
+    my $tree = '';
     my $p = "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}";
-    my $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
-        path => $p,
-        %$wmiParams
-    );
+#    my $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
+#        path => $p,
+#        %$wmiParams
+#    );
     my $dd = Data::Dumper->new([$tree]);
     $logger->debug2($p);
     $logger->debug2($dd->Dump);
 
     $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor";
-    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
-        path => $p,
-        %$wmiParams
-    );
+#    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
+#        path => $p,
+#        %$wmiParams
+#    );
     $dd = Data::Dumper->new([$tree]);
     $logger->debug2($p);
     $logger->debug2($dd->Dump);
