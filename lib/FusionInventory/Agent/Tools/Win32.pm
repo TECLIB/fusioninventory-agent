@@ -517,14 +517,20 @@ sub _retrieveSubTreeRec {
     $params{logger}->debug2('in _retrieveSubTreeRec');
     my $dd = Data::Dumper->new([\%params]);
     $params{logger}->debug2($dd->Dump);
-    my $tree;
+    my $tree = {
+        debug => 'in _retrieveSubTreeRec'
+    };
+    $tree->{debug} .= $dd->Dump . "\n";
     my $subKeys = _retrieveSubKeyList(%params);
     if ($subKeys) {
         $params{logger}->debug2('found subKeys');
-        $tree = {};
+        $tree->{debug} .= 'found keys' . "\n";
+        $tree = {} unless $tree;
         for my $subKey (@$subKeys) {
             $params{logger}->debug2('subKey : ' . $subKey);
+            $tree->{debug} .= 'subKey : ' . $subKey . "\n";
             $params{logger}->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
+            $tree->{debug} .= 'lauching _retrieveSubTreeRec in _retrieveSubTreeRec' . "\n";
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
@@ -532,7 +538,9 @@ sub _retrieveSubTreeRec {
         }
     } else {
         $params{logger}->debug2("didn't find subKeys");
+        $tree->{debug} .= "didn't find subKeys" . "\n";
         $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
+        $tree->{debug} .= 'lauching _retrieveValueFromRemoteRegistry' . "\n";
 
         $tree =_retrieveValueFromRemoteRegistry(%params);
     }
