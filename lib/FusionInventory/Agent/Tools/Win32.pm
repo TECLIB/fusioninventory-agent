@@ -603,7 +603,7 @@ sub _retrieveSubTreeRec {
 #    $params{debug} .= 'in _retrieveSubTreeRec' . "\n" unless $params{debug};
 #    $params{debug} .= 'path : ' . $params{path} . "\n";
     my $subKeys = _retrieveSubKeyList(%params);
-    return {'after calling _retrieveSubKeyList'};
+
     if ($subKeys && scalar(@$subKeys) > 0) {
 #        $params{debug} .= 'found keys' . "\n";
 #        my $dd = Data::Dumper->new([$subKeys]);
@@ -632,6 +632,7 @@ sub _retrieveSubTreeRec {
             ) if $params{logger};
             return;
         }
+        return 'before calling _retrieveValuesNameAndType';
         $tree = _retrieveValuesNameAndType(
             %params
         );
