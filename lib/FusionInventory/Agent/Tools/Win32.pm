@@ -588,7 +588,6 @@ sub _getRegistryTreeFromWMI {
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
-    return {'in _retrieveSubTreeRec'};
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -604,6 +603,7 @@ sub _retrieveSubTreeRec {
 #    $params{debug} .= 'in _retrieveSubTreeRec' . "\n" unless $params{debug};
 #    $params{debug} .= 'path : ' . $params{path} . "\n";
     my $subKeys = _retrieveSubKeyList(%params);
+    return {'after calling _retrieveSubKeyList'};
     if ($subKeys && scalar(@$subKeys) > 0) {
 #        $params{debug} .= 'found keys' . "\n";
 #        my $dd = Data::Dumper->new([$subKeys]);
