@@ -537,7 +537,17 @@ sub _retrieveSubTreeRec {
         $params{debug} .= "didn't find subKeys" . "\n";
         $params{debug} .= 'lauching _retrieveValueFromRemoteRegistry' . "\n";
 
-        $tree->{VALUE} =_retrieveValueFromRemoteRegistry(%params);
+        if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
+            $params{root}      = $1;
+            $params{keyName}   = $2;
+            $params{valueName} = $3;
+        } else {
+            $params{logger}->error(
+                "Failed to parse '$params{path}'. Does it start with HKEY_?"
+            ) if $params{logger};
+            return;
+        }
+        $tree->{VALUE} = _retrieveValueFromRemoteRegistry(%params);
     }
     $params{debug} .= '<<<<<<<<<<<<<<<< END DEBUG';
     $tree->{DEBUG} = $params{debug};
