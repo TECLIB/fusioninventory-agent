@@ -450,6 +450,7 @@ sub _retrieveSubKeyList {
 
     my $subKeys = [];
     foreach my $item ( in( $arr->Value ) ) {
+        next unless defined $item;
         push @$subKeys, sprintf $item;
     } # end foreach
 
