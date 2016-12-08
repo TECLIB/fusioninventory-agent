@@ -461,6 +461,7 @@ sub _retrieveSubKeyList {
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
 
+    return 'launching the function... Arrrrrrgh';
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -549,7 +550,7 @@ sub getRegistryTreeFromWMI {
     return _call_win32_ole_dependent_api($win32_ole_dependent_api);
 }
 
-sub _getRegistryTreeFromWMI {
+lausub _getRegistryTreeFromWMI {
     my (%params) = @_;
 
     return unless $params{WMIService};
