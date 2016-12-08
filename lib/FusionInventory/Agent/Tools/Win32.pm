@@ -526,7 +526,9 @@ sub _retrieveSubTreeRec {
     if ($subKeys) {
         $params{logger}->debug2('found subKeys');
         $tree->{debug} .= 'found keys' . "\n";
-        $tree = {} unless $tree;
+        $dd = Data::Dumper->new([$tree]);
+        $tree->{debug} .= $dd->Dump . "\n";
+            $tree = {} unless $tree;
         for my $subKey (@$subKeys) {
             $params{logger}->debug2('subKey : ' . $subKey);
             $tree->{debug} .= 'subKey : ' . $subKey . "\n";
