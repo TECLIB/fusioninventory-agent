@@ -603,7 +603,6 @@ sub _retrieveSubTreeRec {
 #    $params{debug} .= 'in _retrieveSubTreeRec' . "\n" unless $params{debug};
 #    $params{debug} .= 'path : ' . $params{path} . "\n";
     my $subKeys = _retrieveSubKeyList(%params);
-
     if ($subKeys && scalar(@$subKeys) > 0) {
 #        $params{debug} .= 'found keys' . "\n";
 #        my $dd = Data::Dumper->new([$subKeys]);
@@ -613,13 +612,13 @@ sub _retrieveSubTreeRec {
         for my $subKey (@$subKeys) {
 #            $params{debug} .= 'subKey : ' . $subKey . "\n";
 #            $params{debug} .= 'lauching _retrieveSubTreeRec in _retrieveSubTreeRec' . "\n";
+            return 'before calling _retrieveSubTreeRec';
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
             );
         }
     } else {
-        return 'in the else calling _retrieveValuesNameAndType';
 #        $params{debug} .= "didn't find subKeys" . "\n";
 #        $params{debug} .= 'lauching _retrieveValueFromRemoteRegistry' . "\n";
 
