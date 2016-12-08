@@ -417,6 +417,16 @@ sub _getRegistryKeyFromWMI{
         return;
     }
 
+    my ($root, $keyName);
+    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
+        $root      = $1;
+        $keyName   = $2;
+    } else {
+        $params{logger}->error(
+            "Failed to parse '$params{path}'. Does it start with HKEY_?"
+        ) if $params{logger};
+        return;
+    }
     return _retrieveSubKeyList(
         %params,
         objReg => $objReg
@@ -493,6 +503,17 @@ sub _getRegistryTreeFromWMI {
 
 sub _retrieveSubTreeRec {
     my (%params) = @_;
+
+    my ($root, $keyName);
+    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
+        $root      = $1;
+        $keyName   = $2;
+    } else {
+        $params{logger}->error(
+            "Failed to parse '$params{path}'. Does it start with HKEY_?"
+        ) if $params{logger};
+        return;
+    }
 
     $params{logger}->debug2('in _retrieveSubTreeRec');
     my $dd = Data::Dumper->new([\%params]);
