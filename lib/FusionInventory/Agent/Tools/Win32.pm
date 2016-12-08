@@ -446,13 +446,22 @@ sub _retrieveSubKeyList {
     # Do not use Die for this method
     my $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
 
-    return unless defined $return && $return == 0;
-
     my $subKeys = [];
     foreach my $item ( in( $arr->Value ) ) {
         next unless defined $item;
         push @$subKeys, sprintf $item;
-    } # end foreach
+    }
+
+    if (scalar(@$subKeys) == 0) {
+        my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
+        my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
+
+        $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
+        foreach my $item ( in( $arrValueNames->Value ) ) {
+            next unless defined $item;
+            push @$subKeys, sprintf $item;
+        }
+    }
 
     return $subKeys;
 }
