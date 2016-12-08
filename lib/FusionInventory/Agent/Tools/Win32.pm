@@ -446,24 +446,94 @@ sub _retrieveSubKeyList {
     # Do not use Die for this method
     my $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
 
+    reurn unless defined $return && $return ==0;
+
     my $subKeys = [];
     foreach my $item ( in( $arr->Value ) ) {
         next unless defined $item;
         push @$subKeys, sprintf $item;
     }
 
-    if (scalar(@$subKeys) == 0) {
-        my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
-        my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
+    return $subKeys;
+}
 
-        $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
-        foreach my $item ( in( $arrValueNames->Value ) ) {
-            next unless defined $item;
-            push @$subKeys, sprintf $item;
+sub _retrieveValuesNameAndType {
+    my (%params) = @_;
+
+    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
+        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
+        my $keyName = $1 . '/' . $params{keyName};
+        $keyName =~ tr#/#\\#;
+        $params{keyName} = $keyName;
+    } else {
+        $params{logger}->error(
+            "Failed to parse '$params{path}'. Does it start with HKEY_?"
+        ) if $params{logger};
+        return;
+    }
+
+    my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
+    my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
+
+    $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
+
+    # types
+    my $types = [];
+    foreach my $item ( in( $arrValueTypes->Value ) ) {
+        push @$types, sprintf $item;
+    }
+
+    my $values = {};
+    my $i = 0;
+    foreach my $item ( in( $arrValueNames->Value ) ) {
+        $values->{sprintf $item} = _retrieveRemoteRegistryValueByType(
+            valueType => $types->[$i],
+            keyName => $params{path},
+            valueName => (sprintf $item),
+            objReg => $params{objReg},
+            hkey => $hkey
+        );
+    }
+
+    return $values;
+}
+
+sub _retrieveRemoteRegistryValueByType {
+    my (%params) = @_;
+
+    my $value;
+    switch ($params{valueType}) {
+        case 'REG_BINARY'    {
+            my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
+            $value = $params{objReg}->GetBinaryValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+            $value = sprintf($result);
+        }
+        case 'REG_DWORD'     {
+            my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
+            $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+            $value = sprintf($result);
+        }
+        case 'REG_EXPAND_SZ' {
+            my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
+            $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+            $value = sprintf($result);
+        }
+        case 'REG_MULTI_SZ'  {
+            my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
+            $value = $params{objReg}->GetMultiStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+            $value = sprintf($result);
+        }
+        case 'REG_SZ'        {
+            my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
+            $value = $params{objReg}->GetStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+            $value = sprintf($result);
+        }
+        else		         {
+            $params{logger}->error('_retrieveRemoteRegistryValueByType() : wrong valueType !');
         }
     }
 
-    return $subKeys;
+    return $value;
 }
 
 sub getRegistryTreeFromWMI {
@@ -556,7 +626,11 @@ sub _retrieveSubTreeRec {
             ) if $params{logger};
             return;
         }
-        $tree = _retrieveValueFromRemoteRegistry(%params);
+        $tree = _retrieveValuesNameAndType(
+            %params
+        );
+
+#            _retrieveValueFromRemoteRegistry(%params);
     }
 #    $params{debug} .= '<<<<<<<<<<<<<<<< END DEBUG';
 #    $tree->{DEBUG} = $params{debug};
