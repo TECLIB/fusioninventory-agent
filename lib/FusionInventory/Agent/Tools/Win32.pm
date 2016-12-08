@@ -461,6 +461,10 @@ sub _getRegistryTreeFromWMI {
 
     return unless $params{WMIService};
 
+    FusionInventory::Agent::Logger::File->require();
+    my $logger = FusionInventory::Agent::Logger::File->new(
+        logfile => 'debug.log'
+    );
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
@@ -475,26 +479,36 @@ sub _getRegistryTreeFromWMI {
         return;
     }
 
+    $logger->debug2('lauching _retrieveSubTreeRec');
     return _retrieveSubTreeRec(
         %params,
-        objReg => $objReg
+        objReg => $objReg,
+        logger => $logger
     );
 }
 
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
+    $params{logger}->debug2('in _retrieveSubTreeRec');
+    my $dd = Data::Dumper->new([\%params]);
+    $params{logger}->debug2($dd->Dump);
     my $tree;
     my $subKeys = _retrieveSubKeyList(%params);
     if ($subKeys) {
+        $params{logger}->debug2('found subKeys');
         $tree = {};
         for my $subKey (@$subKeys) {
+            $params{logger}->debug2('subKey : ' . $subKey);
+            $logger->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
             );
         }
     } else {
+        $params{logger}->debug2("didn't find subKeys");
+        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
         $tree =_retrieveValueFromRemoteRegistry(%params);
     }
 
