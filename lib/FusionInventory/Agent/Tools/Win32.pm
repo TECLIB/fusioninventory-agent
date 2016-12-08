@@ -550,7 +550,7 @@ sub getRegistryTreeFromWMI {
     return _call_win32_ole_dependent_api($win32_ole_dependent_api);
 }
 
-lausub _getRegistryTreeFromWMI {
+sub _getRegistryTreeFromWMI {
     my (%params) = @_;
 
     return unless $params{WMIService};
