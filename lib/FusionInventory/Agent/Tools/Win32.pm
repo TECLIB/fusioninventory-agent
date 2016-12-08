@@ -523,7 +523,7 @@ sub _retrieveSubTreeRec {
     $tree->{debug} .= $dd->Dump . "\n";
     $tree->{debug} .= 'path : ' . $params{path} . "\n";
     my $subKeys = _retrieveSubKeyList(%params);
-    if ($subKeys) {
+    if ($subKeys && scalar(@$subKeys) > 0) {
         $params{logger}->debug2('found subKeys');
         $tree->{debug} .= 'found keys' . "\n";
         $dd = Data::Dumper->new([$subKeys]);
