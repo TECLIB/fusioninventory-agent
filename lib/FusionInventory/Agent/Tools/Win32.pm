@@ -514,7 +514,7 @@ sub _retrieveSubTreeRec {
         return;
     }
 
-    my;
+    my $tree;
     $params{debug} = '>>>>>>>>>>>>>>>>>> DEBUG' unless $params{debug};
     $params{debug} .= 'in _retrieveSubTreeRec' . "\n" unless $params{debug};
     $params{debug} .= 'path : ' . $params{path} . "\n";
