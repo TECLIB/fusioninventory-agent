@@ -518,7 +518,7 @@ sub _retrieveSubTreeRec {
     my $dd = Data::Dumper->new([\%params]);
     $params{logger}->debug2($dd->Dump);
     my $tree = {
-        debug => 'in _retrieveSubTreeRec'
+        debug => 'in _retrieveSubTreeRec' . "\n"
     };
     $tree->{debug} .= $dd->Dump . "\n";
     my $subKeys = _retrieveSubKeyList(%params);
