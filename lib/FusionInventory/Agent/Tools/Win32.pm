@@ -447,7 +447,7 @@ sub _retrieveSubKeyList {
     # Do not use Die for this method
     my $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
 
-    reurn unless defined $return && $return ==0;
+    return unless defined $return && $return ==0;
 
     my $subKeys = [];
     foreach my $item ( in( $arr->Value ) ) {
@@ -461,6 +461,7 @@ sub _retrieveSubKeyList {
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
 
+    my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
         my $keyName = $1 . '/' . $params{keyName};
@@ -476,7 +477,7 @@ sub _retrieveValuesNameAndType {
     my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
 
-    $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
+    my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
 
     # types
     my $types = [];
@@ -494,6 +495,7 @@ sub _retrieveValuesNameAndType {
             objReg => $params{objReg},
             hkey => $hkey
         );
+        $i++;
     }
 
     return $values;
