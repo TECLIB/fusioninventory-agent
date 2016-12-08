@@ -602,6 +602,9 @@ sub _retrieveSubTreeRec {
 #    $params{debug} = '>>>>>>>>>>>>>>>>>> DEBUG' unless $params{debug};
 #    $params{debug} .= 'in _retrieveSubTreeRec' . "\n" unless $params{debug};
 #    $params{debug} .= 'path : ' . $params{path} . "\n";
+    if ($params{recall}) {
+        return 'recall here';
+    }
     my $subKeys = _retrieveSubKeyList(%params);
     if ($subKeys && scalar(@$subKeys) > 0) {
 #        $params{debug} .= 'found keys' . "\n";
@@ -615,7 +618,8 @@ sub _retrieveSubTreeRec {
             return 'before calling _retrieveSubTreeRec';
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
-                path => $params{path} . '/' . $subKey
+                path => $params{path} . '/' . $subKey,
+                recall => 1
             );
         }
     } else {
