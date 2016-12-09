@@ -66,7 +66,7 @@ sub doInventory {
     $description = encodeFromRegistry($raw3) if $raw3;
     $params{logger}->debug2('après encode');
     my $arch = is64bit(%$wmiParams) ? '64-bit' : '32-bit';
-
+    $params{logger}->debug2('après is64bit');
     my $swap = $operatingSystem->{TotalSwapSpaceSize} ?
         int($operatingSystem->{TotalSwapSpaceSize} / (1024 * 1024)) : undef;
 
@@ -81,9 +81,11 @@ sub doInventory {
             /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/) {
         $boottime = getFormatedDate($1, $2, $3, $4, $5, $6);
     }
+    $params{logger}->debug2('après getFormatDate');
 
     # get the name through native Win32::API, as WMI DB is sometimes broken
     my $hostname = $wmiParams->{WMIService} ? $computerSystem->{Name} : getHostname(short => 1);
+    $params{logger}->debug2('après getHostname()');
 
     $inventory->setOperatingSystem({
         NAME           => "Windows",
