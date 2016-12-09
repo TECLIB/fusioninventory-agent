@@ -90,7 +90,7 @@ sub doInventory {
     $inventory->setOperatingSystem({
         NAME           => "Windows",
         ARCH           => $arch,
-        INSTALL_DATE   => _getInstallDate(%$wmiParams) || '',
+        INSTALL_DATE   => _getInstallDate(logger => $params{logger}, %$wmiParams) || '',
         BOOT_TIME      => $boottime || '',
         KERNEL_VERSION => $operatingSystem->{Version},
         FULL_NAME      => $operatingSystem->{Caption},
