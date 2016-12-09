@@ -479,7 +479,7 @@ sub _getRegistryTreeFromWMI {
         return;
     }
 
-    $logger->debug2('lauching _retrieveSubTreeRec');
+#    $logger->debug2('lauching _retrieveSubTreeRec');
     return _retrieveSubTreeRec(
         %params,
         objReg => $objReg,
