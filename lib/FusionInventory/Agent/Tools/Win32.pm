@@ -244,9 +244,6 @@ sub _getRegistryValueFromWMI {
         $params{keyName}   = $2;
         $params{valueName} = $3;
     } else {
-        $params{logger}->error(
-            "Failed to parse '$params{path}'. Does it start with HKEY_?"
-        ) if $params{logger};
         return;
     }
 
@@ -279,6 +276,8 @@ sub _retrieveValueFromRemoteRegistry {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
+    } else {
+        return;
     }
 
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
@@ -490,6 +489,12 @@ sub _getRegistryTreeFromWMI {
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
+    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
+        $params{root}      = $1;
+        $params{keyName}   = $2;
+    } else {
+        return;
+    }
 #    $params{logger}->debug2('in _retrieveSubTreeRec');
 #    my $dd = Data::Dumper->new([\%params]);
 #    $params{logger}->debug2($dd->Dump);
@@ -507,9 +512,14 @@ sub _retrieveSubTreeRec {
             );
         }
     } else {
+        if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
+            $params{root}      = $1;
+            $params{keyName}   = $2;
+            $params{valueName} = $3;
+            $tree =_retrieveValueFromRemoteRegistry(%params);
+        }
 #        $params{logger}->debug2("didn't find subKeys");
 #        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
-        $tree =_retrieveValueFromRemoteRegistry(%params);
     }
 
     return $tree;
