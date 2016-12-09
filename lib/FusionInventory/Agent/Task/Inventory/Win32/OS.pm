@@ -61,7 +61,7 @@ sub doInventory {
     my $key =
         decodeMicrosoftKey($raw1) ||
         decodeMicrosoftKey($raw2);
-
+    $params{logger}->debug2('après decode, avant encode');
     my $description = encodeFromRegistry($raw3);
     my $arch = is64bit(%$wmiParams) ? '64-bit' : '32-bit';
 
