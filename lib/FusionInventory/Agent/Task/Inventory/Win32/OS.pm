@@ -119,6 +119,8 @@ sub doInventory {
 
 sub _getInstallDate {
     my (%params) = @_;
+
+    $params{logger}->debug2('_getInstallDate()');
     my $installDate = getRegistryValue(
         path   => 'HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows NT/CurrentVersion/InstallDate',
         %params
@@ -128,6 +130,7 @@ sub _getInstallDate {
     my $dec = hex2dec($installDate);
     return unless $dec;
 
+    $params{logger}->debug2('in _getInstallDate() getFormatedLocalTime() now');
     return getFormatedLocalTime($dec);
 }
 
