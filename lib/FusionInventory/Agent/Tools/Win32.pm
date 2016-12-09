@@ -417,15 +417,6 @@ sub _getRegistryKeyFromWMI{
         return;
     }
 
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
-        $params{root}      = $1;
-        $params{keyName}   = $2;
-    } else {
-        $params{logger}->error(
-            "Failed to parse '$params{path}'. Does it start with HKEY_?"
-        ) if $params{logger};
-        return;
-    }
     return _retrieveSubKeyList(
         %params,
         objReg => $objReg
@@ -446,22 +437,12 @@ sub _retrieveSubKeyList {
     # Do not use Die for this method
     my $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
 
+    return unless defined $return && $return == 0;
+
     my $subKeys = [];
     foreach my $item ( in( $arr->Value ) ) {
-        next unless defined $item;
         push @$subKeys, sprintf $item;
-    }
-
-    if (scalar(@$subKeys) == 0) {
-        my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
-        my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
-
-        $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
-        foreach my $item ( in( $arrValueNames->Value ) ) {
-            next unless defined $item;
-            push @$subKeys, sprintf $item;
-        }
-    }
+    } # end foreach
 
     return $subKeys;
 }
@@ -480,14 +461,6 @@ sub _getRegistryTreeFromWMI {
 
     return unless $params{WMIService};
 
-    FusionInventory::Agent::Logger->require();
-    FusionInventory::Agent::Logger->import();
-    FusionInventory::Agent::Logger::File->require();
-    FusionInventory::Agent::Logger::File->import();
-    my $logger = FusionInventory::Agent::Logger->new(
-        backends => ['File'],
-        logfile => 'debug.log'
-    );
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
@@ -502,64 +475,28 @@ sub _getRegistryTreeFromWMI {
         return;
     }
 
-    $logger->debug2('lauching _retrieveSubTreeRec');
     return _retrieveSubTreeRec(
         %params,
-        objReg => $objReg,
-        logger => $logger
+        objReg => $objReg
     );
 }
 
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
-        $params{root}      = $1;
-        $params{keyName}   = $2;
-    } else {
-        $params{logger}->error(
-            "Failed to parse '$params{path}'. Does it start with HKEY_?"
-        ) if $params{logger};
-        return;
-    }
-
     my $tree;
-#    $params{debug} = '>>>>>>>>>>>>>>>>>> DEBUG' unless $params{debug};
-#    $params{debug} .= 'in _retrieveSubTreeRec' . "\n" unless $params{debug};
-#    $params{debug} .= 'path : ' . $params{path} . "\n";
     my $subKeys = _retrieveSubKeyList(%params);
-    if ($subKeys && scalar(@$subKeys) > 0) {
-#        $params{debug} .= 'found keys' . "\n";
-#        my $dd = Data::Dumper->new([$subKeys]);
-#        $params{debug} .= $dd->Dump;
-#        $params{debug} .= "\n";
-        $tree = {} unless $tree;
+    if ($subKeys) {
+        $tree = {};
         for my $subKey (@$subKeys) {
-#            $params{debug} .= 'subKey : ' . $subKey . "\n";
-#            $params{debug} .= 'lauching _retrieveSubTreeRec in _retrieveSubTreeRec' . "\n";
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
             );
         }
     } else {
-#        $params{debug} .= "didn't find subKeys" . "\n";
-#        $params{debug} .= 'lauching _retrieveValueFromRemoteRegistry' . "\n";
-
-        if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
-            $params{root}      = $1;
-            $params{keyName}   = $2;
-            $params{valueName} = $3;
-        } else {
-            $params{logger}->error(
-                "Failed to parse '$params{path}'. Does it start with HKEY_?"
-            ) if $params{logger};
-            return;
-        }
-        $tree = _retrieveValueFromRemoteRegistry(%params);
+        $tree =_retrieveValueFromRemoteRegistry(%params);
     }
-#    $params{debug} .= '<<<<<<<<<<<<<<<< END DEBUG';
-#    $tree->{DEBUG} = $params{debug};
 
     return $tree;
 }
