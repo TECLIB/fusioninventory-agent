@@ -44,13 +44,14 @@ sub doInventory {
         %$wmiParams
     );
 
+    $params{logger}->debug2('avant getRegistryValue');
     my $key =
         decodeMicrosoftKey(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId', %$wmiParams)) ||
         decodeMicrosoftKey(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId4', %$wmiParams));
 
     my $description =
         encodeFromRegistry(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/lanmanserver/Parameters/srvcomment', %$wmiParams));
-
+    $params{logger}->debug2('après getRegistryValue');
     my $arch = is64bit(%$wmiParams) ? '64-bit' : '32-bit';
 
     my $swap = $operatingSystem->{TotalSwapSpaceSize} ?
