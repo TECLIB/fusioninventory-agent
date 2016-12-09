@@ -493,6 +493,16 @@ sub _getRegistryTreeFromWMI {
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
+    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
+        $params{root}      = $1;
+        $params{keyName}   = $2;
+    } else {
+        $params{logger}->error(
+            "Failed to parse '$params{path}'. Does it start with HKEY_?"
+        ) if $params{logger};
+        return;
+    }
+
     my $tree;
     my $subKeys = _retrieveSubKeyList(%params);
     if ($subKeys) {
