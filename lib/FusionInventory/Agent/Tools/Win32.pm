@@ -421,9 +421,6 @@ sub _getRegistryKeyFromWMI{
         $params{root}      = $1;
         $params{keyName}   = $2;
     } else {
-        $params{logger}->error(
-            "Failed to parse '$params{path}'. Does it start with HKEY_?"
-        ) if $params{logger};
         return;
     }
     return _retrieveSubKeyList(
@@ -441,6 +438,8 @@ sub _retrieveSubKeyList {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
+    } else {
+        return;
     }
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     # Do not use Die for this method
