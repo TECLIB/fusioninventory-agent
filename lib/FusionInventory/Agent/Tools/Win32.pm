@@ -497,9 +497,6 @@ sub _retrieveSubTreeRec {
         $params{root}      = $1;
         $params{keyName}   = $2;
     } else {
-        $params{logger}->error(
-            "Failed to parse '$params{path}'. Does it start with HKEY_?"
-        ) if $params{logger};
         return;
     }
 
