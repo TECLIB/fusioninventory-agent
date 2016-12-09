@@ -244,6 +244,9 @@ sub _getRegistryValueFromWMI {
         $params{keyName}   = $2;
         $params{valueName} = $3;
     } else {
+        $params{logger}->error(
+            "Failed to parse '$params{path}'. Does it start with HKEY_?"
+        ) if $params{logger};
         return;
     }
 
@@ -276,8 +279,6 @@ sub _retrieveValueFromRemoteRegistry {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
-    } else {
-        return;
     }
 
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
@@ -416,12 +417,6 @@ sub _getRegistryKeyFromWMI{
         return;
     }
 
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
-        $params{root}      = $1;
-        $params{keyName}   = $2;
-    } else {
-        return;
-    }
     return _retrieveSubKeyList(
         %params,
         objReg => $objReg
@@ -437,8 +432,6 @@ sub _retrieveSubKeyList {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
-    } else {
-        return;
     }
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     # Do not use Die for this method
@@ -468,6 +461,10 @@ sub _getRegistryTreeFromWMI {
 
     return unless $params{WMIService};
 
+    FusionInventory::Agent::Logger::File->require();
+    my $logger = FusionInventory::Agent::Logger::File->new(
+        logfile => 'debug.log'
+    );
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
@@ -482,33 +479,36 @@ sub _getRegistryTreeFromWMI {
         return;
     }
 
+    $logger->debug2('lauching _retrieveSubTreeRec');
     return _retrieveSubTreeRec(
         %params,
-        objReg => $objReg
+        objReg => $objReg,
+        logger => $logger
     );
 }
 
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
-        $params{root}      = $1;
-        $params{keyName}   = $2;
-    } else {
-        return;
-    }
-
+    $params{logger}->debug2('in _retrieveSubTreeRec');
+    my $dd = Data::Dumper->new([\%params]);
+    $params{logger}->debug2($dd->Dump);
     my $tree;
     my $subKeys = _retrieveSubKeyList(%params);
     if ($subKeys) {
+        $params{logger}->debug2('found subKeys');
         $tree = {};
         for my $subKey (@$subKeys) {
+            $params{logger}->debug2('subKey : ' . $subKey);
+            $params{logger}->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
             );
         }
     } else {
+        $params{logger}->debug2("didn't find subKeys");
+        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
         $tree =_retrieveValueFromRemoteRegistry(%params);
     }
 
