@@ -417,6 +417,15 @@ sub _getRegistryKeyFromWMI{
         return;
     }
 
+    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
+        $params{root}      = $1;
+        $params{keyName}   = $2;
+    } else {
+        $params{logger}->error(
+            "Failed to parse '$params{path}'. Does it start with HKEY_?"
+        ) if $params{logger};
+        return;
+    }
     return _retrieveSubKeyList(
         %params,
         objReg => $objReg
