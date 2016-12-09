@@ -270,6 +270,19 @@ sub _getRegistryValueFromWMI {
 sub _retrieveValueFromRemoteRegistry {
     my (%params) = @_;
 
+    my $logger;
+    if (
+        FusionInventory::Agent::Logger->require()
+        && FusionInventory::Agent::Logger::File->require()
+    ) {
+        FusionInventory::Agent::Logger->import();
+        FusionInventory::Agent::Logger::File->import();
+        $logger = FusionInventory::Agent::Logger(
+            backends => [ 'File' ],
+            logfile => 'debug.log'
+        );
+        $logger->debug2('in _retrieveValueFromRemoteRegistry');
+    }
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -279,6 +292,8 @@ sub _retrieveValueFromRemoteRegistry {
     } else {
         return;
     }
+    my $dd = Data::Dumper->new([\%params]);
+    $logger->debug2($dd->Dump) if $logger;
 
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
     $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
