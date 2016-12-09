@@ -49,6 +49,7 @@ our @EXPORT = qw(
     getUsersFromRegistry
     isDefinedRemoteRegistryKey
     getRegistryTreeFromWMI
+    getRegistryValuesFromWMI
 );
 
 sub is64bit {
@@ -236,6 +237,47 @@ sub getRegistryValueFromWMI {
     };
 
     return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+}
+
+sub getRegistryValuesFromWMI {
+    my $win32_ole_dependent_api = {
+        funct => '_getRegistryValuesFromWMI',
+        args  => \@_
+    };
+
+    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+}
+
+sub _getRegistryValuesFromWMI {
+    my (%params) = @_;
+
+    return unless ref($params{path}) eq 'ARRAY';
+
+    my $WMIService = _connectToService(
+        $params{WMIService}->{hostname},
+        $params{WMIService}->{user},
+        $params{WMIService}->{pass},
+        "root\\default"
+    );
+    return unless $WMIService;
+    my $objReg = $WMIService->Get("StdRegProv");
+    return unless $objReg;
+
+    my $values = [];
+    for my $path (@{$params{path}}) {
+        next unless $path =~ m{^(HKEY_\S+)/(.+)/([ ^ /]+)};
+        my $root = $1;
+        my $keyName = $2;
+        my $valueName = $3;
+        push @$values, _retrieveValueFromRemoteRegistry(
+            %params,
+            root => $root,
+            keyName => $keyName,
+            valueName => $valueName,
+            objReg => $objReg
+        );
+    }
+    return $values;
 }
 
 sub _getRegistryValueFromWMI {
