@@ -46,7 +46,7 @@ sub doInventory {
 
     $params{logger}->debug2('avant getRegistryValue');
     my $raw1 = getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId', %$wmiParams);
-    my $raw2 = getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId4', %$wmiParams)
+    my $raw2 = getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId4', %$wmiParams);
     my $raw3 = getRegistryValue(path => 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/lanmanserver/Parameters/srvcomment', %$wmiParams);
     $params{logger}->debug2('après getRegistryValue');
     my $key =
