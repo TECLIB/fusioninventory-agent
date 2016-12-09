@@ -296,7 +296,8 @@ sub _retrieveValueFromRemoteRegistry {
     $logger->debug2($dd->Dump) if $logger;
 
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
-    $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
+    my $return = $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
+    return unless defined $return && $return == 0;
     my $value = sprintf($result);
 
     return $value;
