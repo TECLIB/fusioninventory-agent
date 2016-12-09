@@ -64,6 +64,7 @@ sub doInventory {
     $params{logger}->debug2('après decode, avant encode');
     my $description = '';
     $description = encodeFromRegistry($raw3) if $raw3;
+    $params{logger}->debug2('après encode');
     my $arch = is64bit(%$wmiParams) ? '64-bit' : '32-bit';
 
     my $swap = $operatingSystem->{TotalSwapSpaceSize} ?
