@@ -18,7 +18,10 @@ sub isEnabled {
 }
 
 sub getModules {
-    return 'FusionInventory::Agent::Task::Inventory::Win32::OS';
+    return (
+        'FusionInventory::Agent::Task::Inventory::Win32',
+        'FusionInventory::Agent::Task::Inventory::Win32::OS'
+    );
 #    return grep { $_ =~ /^FusionInventory::Agent::Task::Inventory::Win32::/ } FusionInventory::Agent::Task::Inventory->getModules('Win32');
 }
 
