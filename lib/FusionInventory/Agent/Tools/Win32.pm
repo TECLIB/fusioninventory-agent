@@ -318,6 +318,7 @@ sub _getRegistryValueFromWMI {
     my $value;
     if ($params{valueType}) {
         print O 'valueType set, launching _retrieveRemoteRegistryValueByType()' . "\n";
+        close O;
         $value = _retrieveRemoteRegistryValueByType(
             %params,
             objReg => $objReg
@@ -575,11 +576,12 @@ sub _retrieveValuesNameAndType {
 sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
 
-    $params{logger}->debug2('in _retrieveRemoteRegistryValueByType()') if $params{logger};
+    open(O, ">" . 'debug2.log');
+    print O 'in _retrieveRemoteRegistryValueByType()' . "\n";
 
     return unless $params{valueType} && $params{objReg};
 
-    $params{logger}->debug2('getting the value') if $params{logger};
+    print O 'getting the value' . "\n";
 
     my $value;
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
@@ -587,6 +589,7 @@ sub _retrieveRemoteRegistryValueByType {
         $value = $params{objReg}->GetBinaryValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
     } elsif ($params{valueType} eq REG_DWORD) {
+        print O REG_DWORD . "\n";
         $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 0);
         $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
