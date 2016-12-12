@@ -587,6 +587,9 @@ sub _retrieveRemoteRegistryValueByType {
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
     if ($params{valueType} eq REG_BINARY) {
         $value = $params{objReg}->GetBinaryValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+        my $dd = Data::Dumper->new([$result]);
+        print O $dd->Dump;
+        print O "\n";
         $value = sprintf($result);
     } elsif ($params{valueType} eq REG_DWORD) {
         print O REG_DWORD . "\n";
