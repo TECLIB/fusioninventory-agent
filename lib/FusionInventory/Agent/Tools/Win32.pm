@@ -289,6 +289,21 @@ sub _getRegistryValuesFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
+    my $logger;
+    if (
+        FusionInventory::Agent::Logger->require()
+            && FusionInventory::Agent::Logger::File->require()
+    ) {
+        FusionInventory::Agent::Logger->import();
+        FusionInventory::Agent::Logger::File->import();
+        $logger = FusionInventory::Agent::Logger->new(
+            backends => [ 'File' ],
+            logfile => 'debug.log'
+        );
+        $params{logger} = $logger;
+        $logger->debug2('in _getRegistryValueFromWMI');
+    }
+
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -313,12 +328,12 @@ sub _getRegistryValueFromWMI {
 
     my $value;
     if ($params{valueType}) {
-        _retrieveRemoteRegistryValueByType(
+        $value = _retrieveRemoteRegistryValueByType(
             %params,
             objReg => $objReg
         );
     } else {
-        _retrieveValueFromRemoteRegistry(
+        $value = _retrieveValueFromRemoteRegistry(
             %params,
             objReg => $objReg
         );
@@ -568,7 +583,11 @@ sub _retrieveValuesNameAndType {
 sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
 
+    $params{logger}->debug2('in _retrieveRemoteRegistryValueByType()') if $params{logger};
+
     return unless $params{valueType} && $params{objReg};
+
+    $params{logger}->debug2('getting the value') if $params{logger};
 
     my $value;
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
