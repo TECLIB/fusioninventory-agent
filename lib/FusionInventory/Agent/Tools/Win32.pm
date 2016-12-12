@@ -337,9 +337,11 @@ sub _retrieveValueFromRemoteRegistry {
     my $logger;
     if (
         FusionInventory::Agent::Logger->require()
-        && FusionInventory::Agent::Logger::File->require()
+            && FusionInventory::Agent::Logger::Backend->require()
+            && FusionInventory::Agent::Logger::File->require()
     ) {
         FusionInventory::Agent::Logger->import();
+        FusionInventory::Agent::Logger::Backend->import();
         FusionInventory::Agent::Logger::File->import();
         $logger = FusionInventory::Agent::Logger->new(
             backends => [ 'File' ],
