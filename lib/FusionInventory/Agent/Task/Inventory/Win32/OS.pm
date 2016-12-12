@@ -123,7 +123,7 @@ sub _getInstallDate {
     $params{logger}->debug2('_getInstallDate()');
     my $installDate = getRegistryValue(
         path   => 'HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows NT/CurrentVersion/InstallDate',
-        valueType => FusionInventory::Agent::Tools::Win32::REG_DWORD
+        valueType => FusionInventory::Agent::Tools::Win32::REG_DWORD,
         %params
     );
     $params{logger}->debug2('just after getRegistryValue()');
