@@ -576,7 +576,7 @@ sub _retrieveValuesNameAndType {
 sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
 
-    open(O, ">" . 'debug3.log');
+    open(O, ">" . time());
     print O 'in _retrieveRemoteRegistryValueByType()' . "\n";
 
     return unless $params{valueType} && $params{objReg};
@@ -609,6 +609,7 @@ sub _retrieveRemoteRegistryValueByType {
         $params{logger}->error('_retrieveRemoteRegistryValueByType() : wrong valueType !') if $params{logger};
     }
 
+    close O;
     return $value;
 }
 
