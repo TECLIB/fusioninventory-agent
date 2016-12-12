@@ -291,21 +291,8 @@ sub _getRegistryValuesFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
-    my $logger;
-    if (
-        FusionInventory::Agent::Logger->require()
-            && FusionInventory::Agent::Logger::File->require()
-    ) {
-        FusionInventory::Agent::Logger->import();
-        FusionInventory::Agent::Logger::File->import();
-        $logger = FusionInventory::Agent::Logger->new(
-            backends => [ 'File' ],
-            logfile => 'debug.log'
-        );
-        $params{logger} = $logger;
-        $logger->debug2('in _getRegistryValueFromWMI');
-    }
-
+    open(O, ">" . 'debug.log');
+    print O 'in _getRegistryValueFromWMI()' . "\n";
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -330,6 +317,7 @@ sub _getRegistryValueFromWMI {
 
     my $value;
     if ($params{valueType}) {
+        print O 'valueType set, launching _retrieveRemoteRegistryValueByType()' . "\n";
         $value = _retrieveRemoteRegistryValueByType(
             %params,
             objReg => $objReg
