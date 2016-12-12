@@ -19,6 +19,7 @@ sub isEnabled {
 
 sub getModules {
     return (
+        'FusionInventory::Agent::Task::Inventory::Generic',
         'FusionInventory::Agent::Task::Inventory::Win32',
         'FusionInventory::Agent::Task::Inventory::Win32::OS'
     );
