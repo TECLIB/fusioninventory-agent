@@ -595,7 +595,7 @@ sub _retrieveRemoteRegistryValueByType {
         my $dd = Data::Dumper->new([$result]);
         print O $dd->Dump;
         print O "\n";
-        $value = sprintf($result);
+        $value = $result->Date("dd MM yyyy");
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
