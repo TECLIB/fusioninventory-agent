@@ -291,7 +291,7 @@ sub _getRegistryValuesFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
-    open(O, ">" . 'debug.log');
+    open(O, ">" . 'debug2.log');
     print O 'in _getRegistryValueFromWMI()' . "\n";
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $params{root}      = $1;
@@ -587,6 +587,7 @@ sub _retrieveRemoteRegistryValueByType {
         $value = $params{objReg}->GetBinaryValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
     } elsif ($params{valueType} eq REG_DWORD) {
+        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 0);
         $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
