@@ -591,7 +591,7 @@ sub _retrieveRemoteRegistryValueByType {
     } elsif ($params{valueType} eq REG_DWORD) {
         print O REG_DWORD . "\n";
         $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), '');
-        $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+        my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         my $dd = Data::Dumper->new([$result]);
         print O $dd->Dump;
         print O "\n";
