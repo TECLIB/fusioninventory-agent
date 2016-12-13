@@ -597,7 +597,7 @@ sub _retrieveRemoteRegistryValueByType {
         print O "\n";
         $value = $result->Date("dd MM yyyy");
         $value .= ' - ' . $result->Date('yyyy/MM/dd');
-        $value .= ' - ' . $result->Date(DATE_LONGDATE);
+        $value .= ' - ' . $result->Date(Win32::OLE::Variant::DATE_LONGDATE());
         $value .= ' - ' . $result->Time();
         $value .= ' - ' . $result->Time("s");
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
@@ -928,6 +928,7 @@ sub _win32_ole_worker {
     # Load Win32::OLE as late as possible in a dedicated worker
     Win32::OLE->require() or return;
     Win32::OLE::Variant->require() or return;
+    Win32::OLE::NLS->require() or return;
     Win32::OLE->Option(CP => Win32::OLE::CP_UTF8());
 
     while (1) {
