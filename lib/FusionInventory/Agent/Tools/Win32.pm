@@ -291,8 +291,6 @@ sub _getRegistryValuesFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
-    open(O, ">" . 'debug2.log');
-    print O 'in _getRegistryValueFromWMI()' . "\n";
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -317,8 +315,6 @@ sub _getRegistryValueFromWMI {
 
     my $value;
     if ($params{valueType}) {
-        print O 'valueType set, launching _retrieveRemoteRegistryValueByType()' . "\n";
-        close O;
         $value = _retrieveRemoteRegistryValueByType(
             %params,
             objReg => $objReg
@@ -509,9 +505,6 @@ sub _getRegistryKeyFromWMI{
 sub _retrieveSubKeyList {
     my (%params) = @_;
 
-    open(O, ">" . 'debug_' . time());
-    print O 'in _retrieveSubKeyList' . "\n";
-
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -520,14 +513,11 @@ sub _retrieveSubKeyList {
         $params{keyName} = $keyName;
     }
     my $dd = Data::Dumper->new([\%params]);
-    print O $dd->Dump;
-    print O "\n";
+
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     # Do not use Die for this method
 
-    print O 'now EnumKey' . "\n";
     my $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
-    print O 'EnumKey is finished' . "\n";
 
     return unless defined $return && $return == 0;
 
@@ -536,9 +526,6 @@ sub _retrieveSubKeyList {
         next unless $item;
         push @$subKeys, $item;
     } # end foreach
-
-    print O 'now return' . "\n";
-    close O;
 
     return $subKeys;
 }
@@ -590,12 +577,7 @@ sub _retrieveValuesNameAndType {
 sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
 
-    open(O, ">" . 'debug_' . time());
-    print O 'in _retrieveRemoteRegistryValueByType()' . "\n";
-
     return unless $params{valueType} && $params{objReg};
-
-    print O 'getting the value' . "\n";
 
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -612,7 +594,6 @@ sub _retrieveRemoteRegistryValueByType {
         $value = $params{objReg}->GetBinaryValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
     } elsif ($params{valueType} eq REG_DWORD) {
-        print O REG_DWORD . "\n";
         $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 0);
         my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         if (defined $return && $return == 0 && $result) {
@@ -649,8 +630,6 @@ sub _getRegistryTreeFromWMI {
 
     return unless $params{WMIService};
 
-    open(O, ">" . 'debug_' . time());
-    print O 'getting the key registry subtree' . "\n";
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
@@ -665,9 +644,6 @@ sub _getRegistryTreeFromWMI {
         return;
     }
 
-    print O 'lauching _retrieveSubTreeRec';
-    close O;
-    sleep 3;
     return _retrieveSubTreeRec(
         objReg => $objReg,
         %params
@@ -677,11 +653,7 @@ sub _getRegistryTreeFromWMI {
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
-    open(OO, ">" . 'debug_' . time());
-    print OO 'in _retrieveSubTreeRec' . "\n";
     my $dd = Data::Dumper->new([\%params]);
-    print OO $dd->Dump;
-    print OO "\n";
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -689,13 +661,8 @@ sub _retrieveSubTreeRec {
         return;
     }
     my $tree;
-    print OO 'before _retrieveSubKeyList';
     $dd = Data::Dumper->new([\%params]);
-    print OO $dd->Dump;
-    print OO "\n";
-    close OO;
     my $subKeys = _retrieveSubKeyList(%params);
-    print OO 'after keyValues' . "\n";
     my $keyValues = _retrieveValuesNameAndType(%params);
     if ($subKeys) {
 #        $params{logger}->debug2('found subKeys');
