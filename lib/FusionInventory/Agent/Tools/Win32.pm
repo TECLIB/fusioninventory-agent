@@ -534,7 +534,7 @@ sub _retrieveSubKeyList {
     my $subKeys = [];
     foreach my $item ( in( $arr->Value ) ) {
         next unless $item;
-        push @$subKeys, sprintf $item;
+        push @$subKeys, $item;
     } # end foreach
 
     print O 'now return' . "\n";
@@ -696,7 +696,7 @@ sub _retrieveSubTreeRec {
     close OO;
     my $subKeys = _retrieveSubKeyList(%params);
     print OO 'after keyValues' . "\n";
-    my $keyValues; # = _retrieveValuesNameAndType(%params);
+    my $keyValues = _retrieveValuesNameAndType(%params);
     if ($subKeys) {
 #        $params{logger}->debug2('found subKeys');
         $tree = {};
