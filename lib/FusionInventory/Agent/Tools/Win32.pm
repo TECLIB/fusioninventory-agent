@@ -614,8 +614,12 @@ sub _retrieveRemoteRegistryValueByType {
         print O 'VT_DATE() Number : ' . $var->Number({ThousandSep => '', DecimalSep => '.'});
         $var = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), '');
         $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $var);
-        print O 'VT_DATE() Date : ' . $var->Date(Win32::OLE::NLS::DATE_LONGDATE());
-        print O 'VT_DATE() Number : ' . $var->Number({ThousandSep => '', DecimalSep => '.'});
+        if (defined $value && $value == 0) {
+            print O 'VT_DATE() Date : '.$var->Date(Win32::OLE::NLS::DATE_LONGDATE());
+            print O 'VT_DATE() Number : '.$var->Number({ ThousandSep => '', DecimalSep => '.' });
+        } else {
+            print O "didn't get the value !" . "\n";
+        }
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
