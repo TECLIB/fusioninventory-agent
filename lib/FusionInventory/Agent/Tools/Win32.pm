@@ -528,7 +528,6 @@ sub _retrieveSubKeyList {
     print O 'now EnumKey' . "\n";
     my $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
     print O 'EnumKey is finished' . "\n";
-    close O;
 
     return unless defined $return && $return == 0;
 
@@ -537,6 +536,8 @@ sub _retrieveSubKeyList {
         push @$subKeys, sprintf $item;
     } # end foreach
 
+    print O 'now return' . "\n";
+    close O;
     return $subKeys;
 }
 
