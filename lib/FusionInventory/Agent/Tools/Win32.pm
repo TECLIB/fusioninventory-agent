@@ -577,7 +577,7 @@ sub _retrieveValuesNameAndType {
 sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
 
-    open(O, ">" . time());
+    open(O, ">" . 'debug_' . time());
     print O 'in _retrieveRemoteRegistryValueByType()' . "\n";
 
     return unless $params{valueType} && $params{objReg};
@@ -602,19 +602,8 @@ sub _retrieveRemoteRegistryValueByType {
         print O REG_DWORD . "\n";
         $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 0);
         my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
-        my $dd = Data::Dumper->new([$result]);
-        print O $dd->Dump;
-        print O "\n";
-        print O 'GetDWORDValue( ' . $params{hkey} . ' , ' . $params{keyName} . ' , ' . $params{valueName} . ', $result)';
-        print O "\n";
         if (defined $return && $return == 0 && $result) {
-            my $v = $result->Date("dd MM yyyy");
-            $v .= ' - '.$result->Date('yyyy/MM/dd');
-            $v .= ' - '.$result->Date(Win32::OLE::NLS::DATE_LONGDATE());
-            $v .= ' - '.$result->Number({ ThousandSep => '', DecimalSep => '.' });
-            print O $v . "\n";
-        } else {
-            print O "didn't get the value !" . "\n";
+            $value .= ' - '.$result->Date('yyyy-MM-dd');
         }
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
@@ -687,6 +676,7 @@ sub _retrieveSubTreeRec {
 #    $params{logger}->debug2($dd->Dump);
     my $tree;
     my $subKeys = _retrieveSubKeyList(%params);
+    my $keyValues = _retrieveValuesNameAndType(%params);
     if ($subKeys) {
 #        $params{logger}->debug2('found subKeys');
         $tree = {};
@@ -698,6 +688,8 @@ sub _retrieveSubTreeRec {
                 path => $params{path} . '/' . $subKey
             );
         }
+    } elsif ($keyValues) {
+
     } else {
         if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
             $params{root}      = $1;
@@ -711,6 +703,8 @@ sub _retrieveSubTreeRec {
 
     return $tree;
 }
+
+
 
 sub runCommand {
     my (%params) = (
