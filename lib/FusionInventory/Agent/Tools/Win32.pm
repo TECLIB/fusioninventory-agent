@@ -583,6 +583,15 @@ sub _retrieveRemoteRegistryValueByType {
 
     print O 'getting the value' . "\n";
 
+    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
+        $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
+        my $keyName = $1 . '/' . $params{keyName};
+        $keyName =~ tr#/#\\#;
+        $params{keyName} = $keyName;
+    } else {
+        return;
+    }
+
     my $value;
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
     if ($params{valueType} eq REG_BINARY) {
