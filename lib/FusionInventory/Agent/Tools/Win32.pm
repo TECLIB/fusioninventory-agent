@@ -669,6 +669,7 @@ sub _retrieveSubTreeRec {
     my $dd = Data::Dumper->new([\%params]);
     print OO $dd->Dump;
     print OO "\n";
+    close OO;
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
