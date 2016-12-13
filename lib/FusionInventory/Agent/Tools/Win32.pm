@@ -663,17 +663,17 @@ sub _getRegistryTreeFromWMI {
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
+    open(O, ">" . 'debug_' . time());
+    print O 'in _retrieveSubTreeRec' . "\n";
+    my $dd = Data::Dumper->new([\%params]);
+    print O $dd->Dump;
+    print O "\n";
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
     } else {
         return;
     }
-    open(O, ">" . 'debug_' . time());
-    print O 'in _retrieveSubTreeRec' . "\n";
-    my $dd = Data::Dumper->new([\%params]);
-    print O $dd->Dump;
-    print O "\n";
     my $tree;
     my $subKeys = _retrieveSubKeyList(%params);
     my $keyValues = _retrieveValuesNameAndType(%params);
