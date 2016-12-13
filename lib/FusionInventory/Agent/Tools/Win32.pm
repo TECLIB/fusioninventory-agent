@@ -602,6 +602,7 @@ sub _retrieveRemoteRegistryValueByType {
             $v .= ' - '.$result->Number({ ThousandSep => '', DecimalSep => '.' });
             print O $v . "\n";
         } else {
+            print O 'GetDWORDValue( ' . $params{hkey} . ' , ' . $params{keyName} . ' , ' . $params{valueName} . ', $result)';
             print O "didn't get the value !" . "\n";
         }
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
