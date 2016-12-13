@@ -676,9 +676,13 @@ sub _retrieveSubTreeRec {
         return;
     }
     my $tree;
+    print OO 'before _retrieveSubKeyList';
+    $dd = Data::Dumper->new([\%params]);
+    print OO $dd->Dump;
+    print OO "\n";
+    close OO;
     my $subKeys = _retrieveSubKeyList(%params);
     print OO 'after keyValues' . "\n";
-    close OO;
     my $keyValues = _retrieveValuesNameAndType(%params);
     if ($subKeys) {
 #        $params{logger}->debug2('found subKeys');
