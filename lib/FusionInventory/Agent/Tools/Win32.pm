@@ -602,6 +602,10 @@ sub _retrieveRemoteRegistryValueByType {
         $value .= ' - ' . $result->Time("s");
         $value .= ' - ' . $result->Number({ThousandSep => '', DecimalSep => '.'});
         print O $value . "\n";
+        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
+        $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+        $value = 'VT_I4 : ' . $result->Number();
+        print O $value . "\n";
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
