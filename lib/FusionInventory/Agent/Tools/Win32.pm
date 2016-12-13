@@ -604,8 +604,14 @@ sub _retrieveRemoteRegistryValueByType {
         print O $value . "\n";
         $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
         $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
-        $value = 'VT_I4 : ' . $result->Number();
+        $value = 'VT_I4 : ' . $result->Number({ThousandSep => '', DecimalSep => '.'});
         print O $value . "\n";
+        my $var = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 'Jan 1,1970');
+        print O 'VT_DATE() Date : ' . $var->Date(Win32::OLE::NLS::DATE_LONGDATE());
+        print O 'VT_DATE() Number : ' . $var->Number({ThousandSep => '', DecimalSep => '.'});
+        $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $var);
+        print O 'VT_DATE() Date : ' . $var->Date(Win32::OLE::NLS::DATE_LONGDATE());
+        print O 'VT_DATE() Number : ' . $var->Number({ThousandSep => '', DecimalSep => '.'});
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
