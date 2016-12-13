@@ -604,6 +604,8 @@ sub _retrieveRemoteRegistryValueByType {
         my $dd = Data::Dumper->new([$result]);
         print O $dd->Dump;
         print O "\n";
+        print O 'GetDWORDValue( ' . $params{hkey} . ' , ' . $params{keyName} . ' , ' . $params{valueName} . ', $result)';
+        print O "\n";
         if (defined $return && $return == 0) {
             my $v = $result->Date("dd MM yyyy");
             $v .= ' - '.$result->Date('yyyy/MM/dd');
@@ -611,7 +613,6 @@ sub _retrieveRemoteRegistryValueByType {
             $v .= ' - '.$result->Number({ ThousandSep => '', DecimalSep => '.' });
             print O $v . "\n";
         } else {
-            print O 'GetDWORDValue( ' . $params{hkey} . ' , ' . $params{keyName} . ' , ' . $params{valueName} . ', $result)';
             print O "didn't get the value !" . "\n";
         }
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
