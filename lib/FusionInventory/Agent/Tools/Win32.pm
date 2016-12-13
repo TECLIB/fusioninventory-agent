@@ -656,8 +656,7 @@ sub _getRegistryTreeFromWMI {
     close O;
     return _retrieveSubTreeRec(
         %params,
-        objReg => $objReg,
-        logger => $logger
+        objReg => $objReg
     );
 }
 
