@@ -361,6 +361,7 @@ sub _retrieveValueFromRemoteRegistry {
     }
     my $dd = Data::Dumper->new([\%params]);
     $logger->debug2($dd->Dump) if $logger;
+    $logger->debug2($hkey);
 
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
     my $return = $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
