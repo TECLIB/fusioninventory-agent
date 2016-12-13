@@ -25,7 +25,7 @@ sub doInventory {
         class      => 'Win32_OperatingSystem',
         properties => [ qw/
             OSLanguage Caption Version SerialNumber Organization RegisteredUser
-            CSDVersion TotalSwapSpaceSize LastBootUpTime
+            CSDVersion TotalSwapSpaceSize LastBootUpTime InstallDate
         / ],
         %$wmiParams
     );
@@ -90,7 +90,8 @@ sub doInventory {
     $inventory->setOperatingSystem({
         NAME           => "Windows",
         ARCH           => $arch,
-        INSTALL_DATE   => _getInstallDate(logger => $params{logger}, %$wmiParams) || '',
+#        INSTALL_DATE   => _getInstallDate(logger => $params{logger}, %$wmiParams) || '',
+        INSTALL_DATE   => $operatingSystem->{InstallDate},
         BOOT_TIME      => $boottime || '',
         KERNEL_VERSION => $operatingSystem->{Version},
         FULL_NAME      => $operatingSystem->{Caption},
