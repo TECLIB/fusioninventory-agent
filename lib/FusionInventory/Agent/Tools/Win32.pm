@@ -655,19 +655,19 @@ sub _getRegistryTreeFromWMI {
     print O 'lauching _retrieveSubTreeRec';
     close O;
     return _retrieveSubTreeRec(
-        %params,
-        objReg => $objReg
+        objReg => $objReg,
+        %params
     );
 }
 
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
-    open(O, ">" . 'debug_' . time());
-    print O 'in _retrieveSubTreeRec' . "\n";
+    open(OO, ">" . 'debug_' . time());
+    print OO 'in _retrieveSubTreeRec' . "\n";
     my $dd = Data::Dumper->new([\%params]);
-    print O $dd->Dump;
-    print O "\n";
+    print OO $dd->Dump;
+    print OO "\n";
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -688,9 +688,11 @@ sub _retrieveSubTreeRec {
                 path => $params{path} . '/' . $subKey
             );
         }
-    } elsif ($keyValues) {
-
-    } else {
+    }
+    if ($keyValues) {
+        $tree = $keyValues;
+    }
+    if (!$subKeys && !$keyValues) {
         if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
             $params{root}      = $1;
             $params{keyName}   = $2;
