@@ -509,6 +509,9 @@ sub _getRegistryKeyFromWMI{
 sub _retrieveSubKeyList {
     my (%params) = @_;
 
+    open(O, ">" . 'debug_' . time());
+    print O 'in _retrieveSubKeyList' . "\n";
+
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -516,6 +519,10 @@ sub _retrieveSubKeyList {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     }
+    my $dd = Data::Dumper->new([\%params]);
+    print O $dd->Dump;
+    print O "\n";
+    close O;
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     # Do not use Die for this method
     my $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
