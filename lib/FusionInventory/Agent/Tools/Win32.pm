@@ -653,6 +653,8 @@ sub _getRegistryTreeFromWMI {
     }
 
     print O 'lauching _retrieveSubTreeRec';
+    close O;
+    sleep 3;
     return _retrieveSubTreeRec(
         objReg => $objReg,
         %params
