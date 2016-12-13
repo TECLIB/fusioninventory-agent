@@ -600,7 +600,8 @@ sub _retrieveRemoteRegistryValueByType {
         $value .= ' - ' . $result->Date(Win32::OLE::NLS::DATE_LONGDATE());
         $value .= ' - ' . $result->Time();
         $value .= ' - ' . $result->Time("s");
-        $value .= $result->Number({ThousandSep => '', DecimalSep => '.'});
+        $value .= ' - ' . $result->Number({ThousandSep => '', DecimalSep => '.'});
+        print O $value . "\n";
     } elsif ($params{valueType} eq REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
