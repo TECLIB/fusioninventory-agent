@@ -533,8 +533,8 @@ sub _retrieveSubKeyList {
 
     my $subKeys = [];
     foreach my $item ( in( $arr->Value ) ) {
-        print O 'foreach';
-#        push @$subKeys, sprintf $item;
+        next unless $item;
+        push @$subKeys, sprintf $item;
     } # end foreach
 
     print O 'now return' . "\n";
