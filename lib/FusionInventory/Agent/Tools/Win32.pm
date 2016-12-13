@@ -599,14 +599,14 @@ sub _retrieveRemoteRegistryValueByType {
         $value = sprintf($result);
     } elsif ($params{valueType} eq REG_DWORD) {
         print O REG_DWORD . "\n";
-        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), '');
+        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 0);
         my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         my $dd = Data::Dumper->new([$result]);
         print O $dd->Dump;
         print O "\n";
         print O 'GetDWORDValue( ' . $params{hkey} . ' , ' . $params{keyName} . ' , ' . $params{valueName} . ', $result)';
         print O "\n";
-        if (defined $return && $return == 0) {
+        if (defined $return && $return == 0 && $result) {
             my $v = $result->Date("dd MM yyyy");
             $v .= ' - '.$result->Date('yyyy/MM/dd');
             $v .= ' - '.$result->Date(Win32::OLE::NLS::DATE_LONGDATE());
