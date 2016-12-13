@@ -145,7 +145,7 @@ sub _initModulesList {
     my $logger = $self->{logger};
     my $config = $self->{config};
 
-    my @modules = $self->getModules('');
+    my @modules = __PACKAGE__->getModules('');
     die "no inventory module found" if !@modules;
 
     # first pass: compute all relevant modules
