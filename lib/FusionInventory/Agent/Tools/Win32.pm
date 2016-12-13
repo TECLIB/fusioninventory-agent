@@ -669,7 +669,6 @@ sub _retrieveSubTreeRec {
     my $dd = Data::Dumper->new([\%params]);
     print OO $dd->Dump;
     print OO "\n";
-    close OO;
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -678,6 +677,8 @@ sub _retrieveSubTreeRec {
     }
     my $tree;
     my $subKeys = _retrieveSubKeyList(%params);
+    print OO 'after keyValues' . "\n";
+    close OO;
     my $keyValues = _retrieveValuesNameAndType(%params);
     if ($subKeys) {
 #        $params{logger}->debug2('found subKeys');
