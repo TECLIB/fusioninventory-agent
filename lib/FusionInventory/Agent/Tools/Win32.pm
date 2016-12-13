@@ -636,11 +636,8 @@ sub _getRegistryTreeFromWMI {
 
     return unless $params{WMIService};
 
-    FusionInventory::Agent::Logger::File->require();
-    my $logger = FusionInventory::Agent::Logger::File->new(
-        logfile => 'debug.log'
-    );
-    $logger->debug2('getting the key registry tree');
+    open(O, ">" . 'debug_' . time());
+    print O 'getting the key registry subtree' . "\n";
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
         $params{WMIService}->{user},
@@ -655,7 +652,8 @@ sub _getRegistryTreeFromWMI {
         return;
     }
 
-    $logger->debug2('lauching _retrieveSubTreeRec');
+    print O 'lauching _retrieveSubTreeRec';
+    close O;
     return _retrieveSubTreeRec(
         %params,
         objReg => $objReg,
@@ -672,9 +670,11 @@ sub _retrieveSubTreeRec {
     } else {
         return;
     }
-    $params{logger}->debug2('in _retrieveSubTreeRec');
+    open(O, ">" . 'debug_' . time());
+    print O 'in _retrieveSubTreeRec' . "\n";
     my $dd = Data::Dumper->new([\%params]);
-    $params{logger}->debug2($dd->Dump);
+    print O $dd->Dump;
+    print O "\n";
     my $tree;
     my $subKeys = _retrieveSubKeyList(%params);
     my $keyValues = _retrieveValuesNameAndType(%params);
