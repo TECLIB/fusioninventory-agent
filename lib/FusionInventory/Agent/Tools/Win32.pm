@@ -526,8 +526,9 @@ sub _retrieveSubKeyList {
     # Do not use Die for this method
 
     print O 'now EnumKey' . "\n";
-    close O;
     my $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
+    print O 'EnumKey is finished' . "\n";
+    close O;
 
     return unless defined $return && $return == 0;
 
