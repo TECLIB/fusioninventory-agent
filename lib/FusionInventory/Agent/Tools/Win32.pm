@@ -590,33 +590,17 @@ sub _retrieveRemoteRegistryValueByType {
         $value = sprintf($result);
     } elsif ($params{valueType} eq REG_DWORD) {
         print O REG_DWORD . "\n";
-        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 0);
-        $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), '');
+        $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         my $dd = Data::Dumper->new([$result]);
         print O $dd->Dump;
         print O "\n";
-        $value = $result->Date("dd MM yyyy");
-        $value .= ' - ' . $result->Date('yyyy/MM/dd');
-        $value .= ' - ' . $result->Date(Win32::OLE::NLS::DATE_LONGDATE());
-        $value .= ' - ' . $result->Time();
-        $value .= ' - ' . $result->Time("s");
-        $value .= ' - ' . $result->Number({ThousandSep => '', DecimalSep => '.'});
-        print O $value . "\n";
-        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
-        $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
-        $value = 'VT_I4 : ' . $result->Number({ThousandSep => '', DecimalSep => '.'});
-        print O $value . "\n";
-        my $var = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 'Jan 1,1970');
-        print O 'VT_DATE() Date : ' . $var->Date(Win32::OLE::NLS::DATE_LONGDATE());
-        print O 'VT_DATE() Number : ' . $var->Number({ThousandSep => '', DecimalSep => '.'});
-        $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $var);
-        print O 'VT_DATE() Date : ' . $var->Date(Win32::OLE::NLS::DATE_LONGDATE());
-        print O 'VT_DATE() Number : ' . $var->Number({ThousandSep => '', DecimalSep => '.'});
-        $var = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), '');
-        $value = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $var);
-        if (defined $value && $value == 0) {
-            print O 'VT_DATE() Date : '.$var->Date(Win32::OLE::NLS::DATE_LONGDATE());
-            print O 'VT_DATE() Number : '.$var->Number({ ThousandSep => '', DecimalSep => '.' });
+        if (defined $return && $return == 0) {
+            my $v = $result->Date("dd MM yyyy");
+            $v .= ' - '.$result->Date('yyyy/MM/dd');
+            $v .= ' - '.$result->Date(Win32::OLE::NLS::DATE_LONGDATE());
+            $v .= ' - '.$result->Number({ ThousandSep => '', DecimalSep => '.' });
+            print O $v . "\n";
         } else {
             print O "didn't get the value !" . "\n";
         }
