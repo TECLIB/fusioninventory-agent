@@ -725,11 +725,10 @@ sub _retrieveSubTreeRec {
 #            $params{logger}->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
             print O $params{path} . '/' . $subKey;
             print O "\n";
-#            $tree->{$subKey} = _retrieveSubTreeRec(
-#                %params,
-#                path => $params{path} . '/' . $subKey
-#            );
-            $tree->{$subKey} = 'uh';
+            $tree->{$subKey} = _retrieveSubTreeRec(
+                %params,
+                path => $params{path} . '/' . $subKey
+            );
         }
     }
     if ($keyValues) {
@@ -743,7 +742,7 @@ sub _retrieveSubTreeRec {
             $params{root}      = $1;
             $params{keyName}   = $2;
             $params{valueName} = $3;
-            $tree->{VALUE} =_retrieveValueFromRemoteRegistry(%params);
+            $tree->{VALUE} = 'value';#_retrieveValueFromRemoteRegistry(%params);
         }
 #        $params{logger}->debug2("didn't find subKeys");
 #        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
