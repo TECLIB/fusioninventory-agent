@@ -523,6 +523,7 @@ sub _retrieveSubKeyList {
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
     };
     print O 'après eval' . "\n";
+    print O $@ if $@;
     close O;
     return if $@;
     return unless defined $return && $return == 0;
