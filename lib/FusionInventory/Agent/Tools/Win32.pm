@@ -575,7 +575,7 @@ sub _retrieveValuesNameAndType {
     close O;
 
     my $func1 = sub {
-        open (O, ">" . 'eval_return.log');
+        open (O, ">>" . 'eval_return.log') or die('uh');
         print O 'eval is fatal error also here !!!' . "\n";
         close O;
     };
