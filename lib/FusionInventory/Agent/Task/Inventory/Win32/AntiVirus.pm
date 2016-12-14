@@ -24,12 +24,19 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
 
+    my $func = sub {
+        $logger->debug2('eval fatal error catched') if $logger;
+    };
     # super test
     my $p = "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}";
-    my $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
-        path => $p,
-        %$wmiParams
-    );
+    my $tree;
+    eval {
+        $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
+            path => $p,
+            %$wmiParams
+        );
+    };
+    &$func if $@;
     my $dd = Data::Dumper->new([$tree]);
     $logger->debug2($p);
     $logger->debug2($dd->Dump);
