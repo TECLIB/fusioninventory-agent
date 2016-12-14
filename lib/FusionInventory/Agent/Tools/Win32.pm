@@ -693,6 +693,10 @@ sub _getRegistryTreeFromWMI {
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
+    open(O, ">>" . 'hard_debug.log');
+    print O '_retrieveSubTreeRec() ' . $params{path} . "\n";
+    close O;
+
     my @debug = ('in _retrieveSubTreeRec()');
     my $dd = Data::Dumper->new([\%params]);
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
