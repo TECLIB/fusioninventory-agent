@@ -701,7 +701,8 @@ sub _retrieveSubTreeRec {
     my $subKeys = _retrieveSubKeyList(%params);
     print O '_retrieveSubKeyList() done' . "\n";
     close O;
-    my $keyValues = _retrieveValuesNameAndType(%params);
+    my $keyValues;
+#    $keyValues = _retrieveValuesNameAndType(%params);
     open(O, ">" . $hardDebugPasBeau);
     print O '_retrieveValuesNameAndType() done' . "\n";
     close O;
