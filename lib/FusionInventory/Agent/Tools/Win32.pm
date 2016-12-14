@@ -713,7 +713,7 @@ sub _retrieveSubTreeRec {
     print O '_retrieveSubKeyList() done' . "\n";
 
     my $keyValues;
-#    $keyValues = _retrieveValuesNameAndType(%params);
+    $keyValues = _retrieveValuesNameAndType(%params);
     print O '_retrieveValuesNameAndType() done' . "\n";
     if ($subKeys) {
         print O 'subKeys found';
@@ -725,10 +725,11 @@ sub _retrieveSubTreeRec {
 #            $params{logger}->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
             print O $params{path} . '/' . $subKey;
             print O "\n";
-            $tree->{$subKey} = _retrieveSubTreeRec(
-                %params,
-                path => $params{path} . '/' . $subKey
-            );
+#            $tree->{$subKey} = _retrieveSubTreeRec(
+#                %params,
+#                path => $params{path} . '/' . $subKey
+#            );
+            $tree->{$subKey} = 'uh';
         }
     }
     if ($keyValues) {
