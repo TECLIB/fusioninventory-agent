@@ -367,7 +367,7 @@ sub _retrieveValueFromRemoteRegistry {
     my $value;
     eval {
         $return = $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
-        if (defined $return && $return == 0) {
+        if (defined $return && $return == 0 && $result) {
             $value = sprintf($result);
         }
     };
