@@ -608,7 +608,9 @@ sub _retrieveValuesNameAndType {
 
 sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
-
+    open (O, ">" . 'eval_return.log');
+    print O 'in _retrieveRemoteRegistryValueByType' . "\n";
+    close O;
     return unless $params{valueType} && $params{objReg};
 
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
