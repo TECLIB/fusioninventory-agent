@@ -674,11 +674,15 @@ sub _retrieveSubTreeRec {
     }
     my $tree;
     $dd = Data::Dumper->new([\%params]);
-    open(O, ">" . 'debug_' . time());
+    my $hardDebugPasBeau = 'debug_' . time();
+    open(O, ">" . $hardDebugPasBeau);
     my $subKeys = _retrieveSubKeyList(%params);
     print O '_retrieveSubKeyList() done' . "\n";
+    close O;
     my $keyValues = _retrieveValuesNameAndType(%params);
+    open(O, ">" . $hardDebugPasBeau);
     print O '_retrieveValuesNameAndType() done' . "\n";
+    close O;
     if ($subKeys) {
 #        $params{logger}->debug2('found subKeys');
         $tree = {};
