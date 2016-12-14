@@ -365,11 +365,16 @@ sub _retrieveValueFromRemoteRegistry {
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
     my $return;
     my $value;
+    $dd = Data::Dumper->new([\%params]);
     open(O, ">>" . 'hard_debug.log');
     print O 'avant eval()' . "\n";
+    print $dd->Dump;
     close O;
     eval {
         $return = $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
+        open(O, ">>" . 'hard_debug.log');
+        print O 'dans eval()' . "\n";
+        close O;
         if (defined $return && $return == 0 && $result) {
             $value = sprintf($result);
         }
