@@ -708,17 +708,21 @@ sub _retrieveSubTreeRec {
     my $hardDebugPasBeau = 'debug_' . time();
     open(O, ">" . $hardDebugPasBeau);
     my $subKeys = _retrieveSubKeyList(%params);
+    print O $params{path} . "\n";
     print O '_retrieveSubKeyList() done' . "\n";
     return $subKeys;
     my $keyValues;
     $keyValues = _retrieveValuesNameAndType(%params);
     print O '_retrieveValuesNameAndType() done' . "\n";
     if ($subKeys) {
+        print O 'subKeys found';
 #        $params{logger}->debug2('found subKeys');
         $tree = {};
         for my $subKey (@$subKeys) {
 #            $params{logger}->debug2('subKey : ' . $subKey);
 #            $params{logger}->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
+            print O $params{path} . '/' . $subKey;
+            print O "\n";
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
@@ -726,6 +730,7 @@ sub _retrieveSubTreeRec {
         }
     }
     if ($keyValues) {
+        print O 'found keyValues' . "\n";
         $tree = $keyValues;
     }
     if (!$subKeys && !$keyValues) {
