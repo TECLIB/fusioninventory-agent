@@ -516,25 +516,31 @@ sub _retrieveSubKeyList {
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     # Do not use Die for this method
 
+    my $func = sub {
+        open (O, ">" . 'eval_return.log');
+        print O 'eval is fatal error !!!' . "\n";
+        close O;
+    };
     my $return;
     my $subKeys;
-    open(O, ">" . 'debug_' . time());
-    print O 'avant eval' . "\n";
+#    open(O, ">" . 'debug_' . time());
+#    print O 'avant eval' . "\n";
     eval {
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
-        $subKeys = [];
-        foreach my $item ( in( $arr->Value ) ) {
-            next unless $item;
-            push @$subKeys, $item;
+        if (defined $return && $return == 0) {
+            $subKeys = [ ];
+            foreach my $item (in( $arr->Value )) {
+                next unless $item;
+                push @$subKeys, $item;
+            }
         }
     };
-    print O 'après eval' . "\n";
-    print O 'mais heu' . "\n" if $@;
-    print O 'mais alors ! ' . "\n";
-    print O $@ if $@;
-    close O;
-    return if $@;
-    return unless defined $return && $return == 0;
+    &$func if $@;
+#    print O 'après eval' . "\n";
+#    print O 'mais heu' . "\n" if $@;
+#    print O 'mais alors ! ' . "\n";
+#    print O $@ if $@;
+#    close O;
     return $subKeys;
 }
 
