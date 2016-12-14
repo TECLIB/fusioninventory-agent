@@ -581,15 +581,17 @@ sub _retrieveValuesNameAndType {
     my $types;
     my $arrValueNames;
     eval {
-        Win32::OLE->use('in');
         my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
         $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
         $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         if (defined $return && $return == 0) {
             $types = [];
-            foreach my $item (in( $arrValueTypes->Value )) {
+            open (O, ">>" . 'eval_return.log');
+            print O $arrValueTypes . "\n";
+            close O;
+#            foreach my $item (in( $arrValueTypes->Value )) {
 #                push @$types, sprintf $item;
-            }
+#            }
         }
     };
     &$func1 if $@;
