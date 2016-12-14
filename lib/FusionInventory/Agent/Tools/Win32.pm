@@ -526,10 +526,11 @@ sub _retrieveSubKeyList {
         foreach my $item ( in( $arr->Value ) ) {
             next unless $item;
             push @$subKeys, $item;
-        } # end foreach
+        }
     };
     print O 'après eval' . "\n";
     print O 'mais heu' . "\n" if $@;
+    print O 'mais alors ! ' . "\n";
     print O $@ if $@;
     close O;
     return if $@;
