@@ -570,7 +570,7 @@ sub _retrieveValuesNameAndType {
     }
 
     return {
-        'on fait les variants'
+        debug => 'on fait les variants'
     };
 
     my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
