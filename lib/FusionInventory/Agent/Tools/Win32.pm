@@ -555,7 +555,9 @@ sub _retrieveSubKeyList {
 
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
-
+    open (O, ">" . 'eval_return.log');
+    print O 'in _retrieveValuesNameAndType()' . "\n";
+    close O;
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
