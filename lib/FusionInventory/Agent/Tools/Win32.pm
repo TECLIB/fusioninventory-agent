@@ -696,6 +696,7 @@ sub _getRegistryTreeFromWMI {
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
+    my @debug = ('in _retrieveSubTreeRec()');
     my $dd = Data::Dumper->new([\%params]);
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
@@ -716,6 +717,7 @@ sub _retrieveSubTreeRec {
     print O '_retrieveValuesNameAndType() done' . "\n";
     if ($subKeys) {
         print O 'subKeys found';
+        push @debug, 'subKeys found';
 #        $params{logger}->debug2('found subKeys');
         $tree = {};
         for my $subKey (@$subKeys) {
@@ -731,19 +733,22 @@ sub _retrieveSubTreeRec {
     }
     if ($keyValues) {
         print O 'found keyValues' . "\n";
+        push @debug, 'found keyValues' . "\n";
         $tree = $keyValues;
-    }
+    }'found keyValues' . "\n";
     if (!$subKeys && !$keyValues) {
+        $tree = {};
         if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
             $params{root}      = $1;
             $params{keyName}   = $2;
             $params{valueName} = $3;
-            $tree =_retrieveValueFromRemoteRegistry(%params);
+            $tree->{VALUE} =_retrieveValueFromRemoteRegistry(%params);
         }
 #        $params{logger}->debug2("didn't find subKeys");
 #        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
     }
     close O;
+    $tree->{DEBUG} = \@debug;
     return $tree;
 }
 
