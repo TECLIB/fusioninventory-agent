@@ -514,6 +514,10 @@ sub _getRegistryKeyFromWMI{
 sub _retrieveSubKeyList {
     my (%params) = @_;
 
+    open(O, ">>" . 'hard_debug.log');
+    print O '_retrieveSubKeyList() ' . $params{path} . "\n";
+    close O;
+
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -555,6 +559,10 @@ sub _retrieveSubKeyList {
 
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
+
+    open(O, ">>" . 'hard_debug.log');
+    print O '_retrieveSubKeyList() ' . $params{path} . "\n";
+    close O;
 
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
