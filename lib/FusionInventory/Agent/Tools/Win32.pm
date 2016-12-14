@@ -561,7 +561,7 @@ sub _retrieveValuesNameAndType {
     my (%params) = @_;
 
     open(O, ">>" . 'hard_debug.log');
-    print O '_retrieveSubKeyList() ' . $params{path} . "\n";
+    print O '_retrieveValuesNameAndType() ' . $params{path} . "\n";
     close O;
 
     my $hkey;
@@ -595,6 +595,9 @@ sub _retrieveValuesNameAndType {
         }
     };
     &$func1 if $@;
+    open(O, ">>" . 'hard_debug.log');
+    print O 'apres eval 1)() ' . $params{path} . "\n";
+    close O;
     my $func2 = sub {
         # do nothing
     };
