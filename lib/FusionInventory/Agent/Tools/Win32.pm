@@ -619,7 +619,9 @@ sub _retrieveValuesNameAndType {
         }
     };
     &$func2 if $@;
-
+    open(O, ">>" . 'hard_debug.log');
+    print O 'apres eval 2)() ' . $params{path} . "\n";
+    close O;
     return $values;
 }
 
@@ -722,6 +724,9 @@ sub _retrieveSubTreeRec {
     my $subKeys = _retrieveSubKeyList(%params);
     my $keyValues;
     $keyValues = _retrieveValuesNameAndType(%params);
+    open(O, ">>" . 'hard_debug.log');
+    print O 'done _retrieveValuesNameAndType' . "\n";
+    close O;
     if ($subKeys) {
         push @debug, 'subKeys found';
 #        $params{logger}->debug2('found subKeys');
