@@ -704,8 +704,6 @@ sub _retrieveSubTreeRec {
     my $keyValues;
     $keyValues = _retrieveValuesNameAndType(%params);
     print O '_retrieveValuesNameAndType() done' . "\n";
-    close O;
-    return $subKeys;
     if ($subKeys) {
 #        $params{logger}->debug2('found subKeys');
         $tree = {};
@@ -718,6 +716,8 @@ sub _retrieveSubTreeRec {
             );
         }
     }
+    close O;
+    return $subKeys;
     if ($keyValues) {
         $tree = $keyValues;
     }
