@@ -563,7 +563,7 @@ sub _retrieveValuesNameAndType {
     my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
 
-    my $func = sub {
+    my $func1 = sub {
         open (O, ">" . 'eval_return.log');
         print O 'eval is fatal error also here !!!' . "\n";
         close O;
@@ -579,10 +579,13 @@ sub _retrieveValuesNameAndType {
             }
         }
     };
-    &$func if $@;
-    open (O, ">" . 'eval_return.log');
-    print O 'apres eval 1' . "\n";
-    close O;
+    &$func1 if $@;
+
+    my $func2 = sub {
+        open (O, ">" . 'eval_return.log');
+        print O 'eval is fatal error also here !!!' . "\n";
+        close O;
+    };
     my $values;
     eval {
         $values = {};
@@ -598,7 +601,7 @@ sub _retrieveValuesNameAndType {
             $i++;
         }
     };
-    &$func if $@;
+    &$func2 if $@;
 
     return $values;
 }
