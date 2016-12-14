@@ -735,6 +735,9 @@ sub _retrieveSubTreeRec {
 #            $params{logger}->debug2('subKey : ' . $subKey);
 #            $params{logger}->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
 #            $tree->{$subKey} = 'value';
+            open(O, ">>" . 'hard_debug.log');
+            print O 'subKey : ' . $subKey . "\n";
+            close O;
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
