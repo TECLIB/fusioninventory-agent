@@ -738,7 +738,7 @@ sub _retrieveSubTreeRec {
 #        $params{logger}->debug2("didn't find subKeys");
 #        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
     }
-
+    close O;
     return $tree;
 }
 
