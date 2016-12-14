@@ -368,7 +368,7 @@ sub _retrieveValueFromRemoteRegistry {
     $dd = Data::Dumper->new([\%params]);
     open(O, ">>" . 'hard_debug.log');
     print O 'avant eval()' . "\n";
-    print $dd->Dump;
+    print O $dd->Dump;
     close O;
     eval {
         $return = $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
