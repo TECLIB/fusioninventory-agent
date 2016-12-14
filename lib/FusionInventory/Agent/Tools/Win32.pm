@@ -735,7 +735,7 @@ sub _retrieveSubTreeRec {
         print O 'found keyValues' . "\n";
         push @debug, 'found keyValues' . "\n";
         $tree = $keyValues;
-    }'found keyValues' . "\n";
+    }
     if (!$subKeys && !$keyValues) {
         $tree = {};
         if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
