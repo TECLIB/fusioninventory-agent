@@ -718,10 +718,11 @@ sub _retrieveSubTreeRec {
         for my $subKey (@$subKeys) {
 #            $params{logger}->debug2('subKey : ' . $subKey);
 #            $params{logger}->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
-            $tree->{$subKey} = _retrieveSubTreeRec(
-                %params,
-                path => $params{path} . '/' . $subKey
-            );
+            $tree->{$subKey} = 'value';
+#            $tree->{$subKey} = _retrieveSubTreeRec(
+#                %params,
+#                path => $params{path} . '/' . $subKey
+#            );
         }
     }
     if ($keyValues) {
