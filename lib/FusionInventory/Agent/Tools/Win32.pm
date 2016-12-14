@@ -586,9 +586,9 @@ sub _retrieveValuesNameAndType {
         $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         if (defined $return && $return == 0) {
             $types = [];
-#            foreach my $item (in( $arrValueTypes->Value )) {
+            foreach my $item (in( $arrValueTypes->Value )) {
 #                push @$types, sprintf $item;
-#            }
+            }
         }
     };
     &$func1 if $@;
