@@ -570,7 +570,9 @@ sub _retrieveValuesNameAndType {
         ) if $params{logger};
         return;
     }
-
+    open (O, ">" . 'eval_return.log');
+    print O 'after params cooking' . "\n";
+    close O;
 
     my $func1 = sub {
         open (O, ">" . 'eval_return.log');
