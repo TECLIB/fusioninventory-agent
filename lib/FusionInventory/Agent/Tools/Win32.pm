@@ -563,31 +563,40 @@ sub _retrieveValuesNameAndType {
     my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
 
+    my $func = sub {
+        open (O, ">" . 'eval_return.log');
+        print O 'eval is fatal error also here !!!' . "\n";
+        close O;
+    };
     my $return;
+    my $types;
     eval {
         $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
+        if (defined $return && $return == 0) {
+            $types = [];
+            foreach my $item (in( $arrValueTypes->Value )) {
+                push @$types, sprintf $item;
+            }
+        }
     };
-    return if $@;
-    return unless defined $return && $return == 0;
+    &$func if $@;
 
-    # types
-    my $types = [];
-    foreach my $item ( in( $arrValueTypes->Value ) ) {
-        push @$types, sprintf $item;
-    }
-
-    my $values = {};
-    my $i = 0;
-    foreach my $item ( in( $arrValueNames->Value ) ) {
-        $values->{sprintf $item} = _retrieveRemoteRegistryValueByType(
-            valueType => $types->[$i],
-            keyName => $params{path},
-            valueName => (sprintf $item),
-            objReg => $params{objReg},
-            hkey => $hkey
-        );
-        $i++;
-    }
+    my $values;
+    eval {
+        $values = {};
+        my $i = 0;
+        foreach my $item ( in( $arrValueNames->Value ) ) {
+            $values->{sprintf $item} = _retrieveRemoteRegistryValueByType(
+                valueType => $types->[$i],
+                keyName => $params{path},
+                valueName => (sprintf $item),
+                objReg => $params{objReg},
+                hkey => $hkey
+            );
+            $i++;
+        }
+    };
+    &$func if $@;
 
     return $values;
 }
