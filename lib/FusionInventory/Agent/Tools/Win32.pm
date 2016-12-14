@@ -708,6 +708,7 @@ sub _retrieveSubTreeRec {
     $dd = Data::Dumper->new([\%params]);
     my $hardDebugPasBeau = 'debug_' . time();
     my $subKeys = _retrieveSubKeyList(%params);
+    return $subKeys;
     my $keyValues;
     $keyValues = _retrieveValuesNameAndType(%params);
     if ($subKeys) {
