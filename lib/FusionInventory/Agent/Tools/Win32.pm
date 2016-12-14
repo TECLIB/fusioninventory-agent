@@ -512,13 +512,15 @@ sub _retrieveSubKeyList {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     }
-    my $dd = Data::Dumper->new([\%params]);
 
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
     # Do not use Die for this method
 
-    my $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
-
+    my $return;
+    eval {
+        $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
+    };
+    return if $@;
     return unless defined $return && $return == 0;
 
     my $subKeys = [];
