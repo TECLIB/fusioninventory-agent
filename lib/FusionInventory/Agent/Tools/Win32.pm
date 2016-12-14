@@ -711,7 +711,7 @@ sub _retrieveSubTreeRec {
     my $subKeys = _retrieveSubKeyList(%params);
     print O $params{path} . "\n";
     print O '_retrieveSubKeyList() done' . "\n";
-    return $subKeys;
+
     my $keyValues;
     $keyValues = _retrieveValuesNameAndType(%params);
     print O '_retrieveValuesNameAndType() done' . "\n";
