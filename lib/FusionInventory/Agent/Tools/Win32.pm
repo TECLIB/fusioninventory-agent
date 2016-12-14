@@ -708,9 +708,9 @@ sub _retrieveSubTreeRec {
     $dd = Data::Dumper->new([\%params]);
     my $hardDebugPasBeau = 'debug_' . time();
     my $subKeys = _retrieveSubKeyList(%params);
-    return $subKeys;
     my $keyValues;
     $keyValues = _retrieveValuesNameAndType(%params);
+    return $keyValues;
     if ($subKeys) {
         print O 'subKeys found';
         push @debug, 'subKeys found';
