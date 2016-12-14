@@ -700,10 +700,11 @@ sub _retrieveSubTreeRec {
     open(O, ">" . $hardDebugPasBeau);
     my $subKeys = _retrieveSubKeyList(%params);
     print O '_retrieveSubKeyList() done' . "\n";
+    close O;
+    return $subKeys;
     my $keyValues;
 #    $keyValues = _retrieveValuesNameAndType(%params);
     print O '_retrieveValuesNameAndType() done' . "\n";
-    close O;
     if ($subKeys) {
 #        $params{logger}->debug2('found subKeys');
         $tree = {};
