@@ -540,7 +540,7 @@ sub _retrieveSubKeyList {
 #    print O 'avant eval' . "\n";
     eval {
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
-        if (defined $return && $return == 0) {
+        if (defined $return && $return == 0 && $arr) {
             $subKeys = [ ];
             foreach my $item (in( $arr->Value )) {
                 next unless $item;
