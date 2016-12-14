@@ -517,9 +517,13 @@ sub _retrieveSubKeyList {
     # Do not use Die for this method
 
     my $return;
+    open(O, ">" . 'debug_' . time());
+    print O 'avant eval' . "\n";
     eval {
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
     };
+    print O 'après eval' . "\n";
+    close O;
     return if $@;
     return unless defined $return && $return == 0;
 
