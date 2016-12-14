@@ -555,9 +555,7 @@ sub _retrieveSubKeyList {
 
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
-    open (O, ">" . 'eval_return.log');
-    print O 'in _retrieveValuesNameAndType()' . "\n";
-    close O;
+
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -570,9 +568,6 @@ sub _retrieveValuesNameAndType {
         ) if $params{logger};
         return;
     }
-    open (O, ">>" . 'eval_return.log');
-    print O 'after params cooking' . "\n";
-    close O;
 
     my $func1 = sub {
         # do nothing
@@ -584,23 +579,16 @@ sub _retrieveValuesNameAndType {
         my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
         $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
         $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
-        if (defined $return && $return == 0) {
-            if ($arrValueTypes) {
-                $types = [];
-                foreach my $item (in( $arrValueTypes->Value )) {
-                    push @$types, sprintf $item;
-                }
+        if (defined $return && $return == 0 && $arrValueTypes) {
+            $types = [];
+            foreach my $item (in( $arrValueTypes->Value )) {
+                push @$types, sprintf $item;
             }
         }
     };
     &$func1 if $@;
-    open (O, ">>" . 'eval_return.log');
-    print O 'after eval 1)' . "\n";
-    close O;
     my $func2 = sub {
-        open (O, ">" . 'eval_return.log');
-        print O 'eval is fatal error also here !!!' . "\n";
-        close O;
+        # do nothing
     };
     my $values;
     eval {
