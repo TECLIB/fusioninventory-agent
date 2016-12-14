@@ -375,6 +375,9 @@ sub _retrieveValueFromRemoteRegistry {
         }
     };
     &$func if $@;
+    open(O, ">>" . 'hard_debug.log');
+    print O 'après eval()' . "\n";
+    close O;
 
     return $value;
 }
