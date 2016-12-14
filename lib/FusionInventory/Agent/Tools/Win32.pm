@@ -700,10 +700,8 @@ sub _retrieveSubTreeRec {
     open(O, ">" . $hardDebugPasBeau);
     my $subKeys = _retrieveSubKeyList(%params);
     print O '_retrieveSubKeyList() done' . "\n";
-    close O;
     my $keyValues;
 #    $keyValues = _retrieveValuesNameAndType(%params);
-    open(O, ">" . $hardDebugPasBeau);
     print O '_retrieveValuesNameAndType() done' . "\n";
     close O;
     if ($subKeys) {
@@ -731,7 +729,6 @@ sub _retrieveSubTreeRec {
 #        $params{logger}->debug2("didn't find subKeys");
 #        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
     }
-    close O;
 
     return $tree;
 }
