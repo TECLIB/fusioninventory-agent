@@ -707,14 +707,9 @@ sub _retrieveSubTreeRec {
     my $tree;
     $dd = Data::Dumper->new([\%params]);
     my $hardDebugPasBeau = 'debug_' . time();
-    open(O, ">" . $hardDebugPasBeau);
     my $subKeys = _retrieveSubKeyList(%params);
-    print O $params{path} . "\n";
-    print O '_retrieveSubKeyList() done' . "\n";
-
     my $keyValues;
     $keyValues = _retrieveValuesNameAndType(%params);
-    print O '_retrieveValuesNameAndType() done' . "\n";
     if ($subKeys) {
         print O 'subKeys found';
         push @debug, 'subKeys found';
@@ -723,8 +718,6 @@ sub _retrieveSubTreeRec {
         for my $subKey (@$subKeys) {
 #            $params{logger}->debug2('subKey : ' . $subKey);
 #            $params{logger}->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
-            print O $params{path} . '/' . $subKey;
-            print O "\n";
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
@@ -732,7 +725,6 @@ sub _retrieveSubTreeRec {
         }
     }
     if ($keyValues) {
-        print O 'found keyValues' . "\n";
         push @debug, 'found keyValues' . "\n";
         $tree = $keyValues;
     }
@@ -747,7 +739,6 @@ sub _retrieveSubTreeRec {
 #        $params{logger}->debug2("didn't find subKeys");
 #        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
     }
-    close O;
     $tree->{DEBUG} = \@debug;
     return $tree;
 }
