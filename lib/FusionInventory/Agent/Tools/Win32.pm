@@ -580,7 +580,9 @@ sub _retrieveValuesNameAndType {
         }
     };
     &$func if $@;
-
+    open (O, ">" . 'eval_return.log');
+    print O 'apres eval 1' . "\n";
+    close O;
     my $values;
     eval {
         $values = {};
