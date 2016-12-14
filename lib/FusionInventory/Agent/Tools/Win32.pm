@@ -517,10 +517,16 @@ sub _retrieveSubKeyList {
     # Do not use Die for this method
 
     my $return;
+    my $subKeys;
     open(O, ">" . 'debug_' . time());
     print O 'avant eval' . "\n";
     eval {
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
+        $subKeys = [];
+        foreach my $item ( in( $arr->Value ) ) {
+            next unless $item;
+            push @$subKeys, $item;
+        } # end foreach
     };
     print O 'après eval' . "\n";
     print O 'mais heu' . "\n" if $@;
@@ -528,13 +534,6 @@ sub _retrieveSubKeyList {
     close O;
     return if $@;
     return unless defined $return && $return == 0;
-
-    my $subKeys = [];
-    foreach my $item ( in( $arr->Value ) ) {
-        next unless $item;
-        push @$subKeys, $item;
-    } # end foreach
-
     return $subKeys;
 }
 
