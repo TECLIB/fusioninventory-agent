@@ -570,7 +570,7 @@ sub _retrieveValuesNameAndType {
         ) if $params{logger};
         return;
     }
-    open (O, ">" . 'eval_return.log');
+    open (O, ">>" . 'eval_return.log');
     print O 'after params cooking' . "\n";
     close O;
 
@@ -594,7 +594,9 @@ sub _retrieveValuesNameAndType {
         }
     };
     &$func1 if $@;
-
+    open (O, ">>" . 'eval_return.log');
+    print O 'after eval 1)' . "\n";
+    close O;
     my $func2 = sub {
         open (O, ">" . 'eval_return.log');
         print O 'eval is fatal error also here !!!' . "\n";
