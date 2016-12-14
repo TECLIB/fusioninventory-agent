@@ -742,7 +742,7 @@ sub _retrieveSubTreeRec {
             $params{root}      = $1;
             $params{keyName}   = $2;
             $params{valueName} = $3;
-            $tree->{VALUE} = 'value';#_retrieveValueFromRemoteRegistry(%params);
+            $tree->{VALUE} = _retrieveValueFromRemoteRegistry(%params);
         }
 #        $params{logger}->debug2("didn't find subKeys");
 #        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
