@@ -365,6 +365,9 @@ sub _retrieveValueFromRemoteRegistry {
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
     my $return;
     my $value;
+    open(O, ">>" . 'hard_debug.log');
+    print O 'avant eval()' . "\n";
+    close O;
     eval {
         $return = $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
         if (defined $return && $return == 0 && $result) {
