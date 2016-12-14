@@ -716,11 +716,11 @@ sub _retrieveSubTreeRec {
             );
         }
     }
-    close O;
-    return $subKeys;
     if ($keyValues) {
         $tree = $keyValues;
     }
+    close O;
+    return $tree;
     if (!$subKeys && !$keyValues) {
         if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
             $params{root}      = $1;
