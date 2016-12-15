@@ -535,6 +535,8 @@ sub _retrieveSubKeyList {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
+    } else {
+        return
     }
 
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
@@ -550,6 +552,9 @@ sub _retrieveSubKeyList {
 #    open(O, ">" . 'debug_' . time());
 #    print O 'avant eval' . "\n";
     eval {
+        open(O, ">>" . 'hard_debug.log');
+        print O $hkey . ' - ' . $params{keyName} . "\n";
+        close O;
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
         if (defined $return && $return == 0 && $arr) {
             $subKeys = [ ];
