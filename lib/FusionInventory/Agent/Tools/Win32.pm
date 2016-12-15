@@ -536,7 +536,7 @@ sub _retrieveSubKeyList {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     } else {
-        return
+        return;
     }
 
     my $arr = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
@@ -556,7 +556,7 @@ sub _retrieveSubKeyList {
         print O $hkey . ' - ' . $params{keyName} . "\n";
         close O;
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
-        if (defined $return && $return == 0 && $arr) {
+        if (defined $return && $return == 0) {
             $subKeys = [ ];
             foreach my $item (in( $arr->Value )) {
                 next unless $item;
@@ -603,7 +603,7 @@ sub _retrieveValuesNameAndType {
         my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
         $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
         $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
-        if (defined $return && $return == 0 && $arrValueTypes) {
+        if (defined $return && $return == 0) {
             $types = [];
             foreach my $item (in( $arrValueTypes->Value )) {
                 push @$types, sprintf $item;
@@ -619,19 +619,17 @@ sub _retrieveValuesNameAndType {
     };
     my $values;
     eval {
-        if ($arrValueNames) {
-            my $i = 0;
-            $values = {};
-            foreach my $item ( in( $arrValueNames->Value ) ) {
-                $values->{sprintf $item} = _retrieveRemoteRegistryValueByType(
-                    valueType => $types->[$i],
-                    keyName => $params{path},
-                    valueName => (sprintf $item),
-                    objReg => $params{objReg},
-                    hkey => $hkey
-                );
-                $i++;
-            }
+        my $i = 0;
+        $values = {};
+        foreach my $item ( in( $arrValueNames->Value ) ) {
+            $values->{sprintf $item} = _retrieveRemoteRegistryValueByType(
+                valueType => $types->[$i],
+                keyName => $params{path},
+                valueName => (sprintf $item),
+                objReg => $params{objReg},
+                hkey => $hkey
+            );
+            $i++;
         }
     };
     &$func2 if $@;
