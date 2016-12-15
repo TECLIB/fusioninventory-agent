@@ -556,6 +556,9 @@ sub _retrieveSubKeyList {
         print O 'keyName : ' . $params{keyName} . "\n";
         close O;
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
+        open(O, ">>" . 'hard_debug.log');
+        print O 'après EnumKey' . "\n";
+        close O;
         if (defined $return && $return == 0 && $arr->Value) {
             open(O, ">>" . 'hard_debug.log');
             print O '$return : ' . $return . "\n";
