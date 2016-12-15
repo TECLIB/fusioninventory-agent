@@ -553,7 +553,7 @@ sub _retrieveSubKeyList {
 #    print O 'avant eval' . "\n";
     eval {
         open(O, ">>" . 'hard_debug.log');
-        print O $hkey . ' - ' . $params{keyName} . "\n";
+        print O 'keyName : ' . $params{keyName} . "\n";
         close O;
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
         if (defined $return && $return == 0) {
