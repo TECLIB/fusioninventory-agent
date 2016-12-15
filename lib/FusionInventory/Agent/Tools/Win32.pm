@@ -731,7 +731,6 @@ sub _retrieveSubTreeRec {
     }
     my $tree;
     $dd = Data::Dumper->new([\%params]);
-    my $hardDebugPasBeau = 'debug_' . time();
     my $subKeys = _retrieveSubKeyList(%params);
     my $keyValues;
     $keyValues = _retrieveValuesNameAndType(%params);
@@ -767,7 +766,7 @@ sub _retrieveSubTreeRec {
             $params{root}      = $1;
             $params{keyName}   = $2;
             $params{valueName} = $3;
-            $tree->{VALUE} = _retrieveValueFromRemoteRegistry(%params);
+            $tree->{VALUE} = 'value';#_retrieveValueFromRemoteRegistry(%params);
         }
 #        $params{logger}->debug2("didn't find subKeys");
 #        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
