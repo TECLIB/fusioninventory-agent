@@ -37,7 +37,7 @@ sub doInventory {
 
     $p = 'HARDWARE/DESCRIPTION/System/CentralProcessor';
 
-    $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor";
+    $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor/";
     $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
         path => $p,
         %$wmiParams
