@@ -614,6 +614,7 @@ sub _retrieveValuesNameAndType {
     open(O, ">>" . 'hard_debug.log');
     print O 'apres eval 1)() ' . $params{path} . "\n";
     close O;
+    return unless $types;
     my $func2 = sub {
         # do nothing
     };
