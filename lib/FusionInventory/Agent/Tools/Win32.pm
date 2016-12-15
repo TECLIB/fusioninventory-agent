@@ -557,6 +557,9 @@ sub _retrieveSubKeyList {
         close O;
         $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
         if (defined $return && $return == 0) {
+            open(O, ">>" . 'hard_debug.log');
+            print O '$return : ' . $return . "\n";
+            close O;
             $subKeys = [ ];
             foreach my $item (in( $arr->Value )) {
                 next unless $item;
