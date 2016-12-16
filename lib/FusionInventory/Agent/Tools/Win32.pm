@@ -698,11 +698,11 @@ sub _retrieveValuesNameAndType {
 
 sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
-    open (O, ">>" . 'eval_return.log');
-    print O 'in _retrieveRemoteRegistryValueByType' . "\n";
-    my $dd = Data::Dumper->new([\%params]);
-    print O $dd->Dump;
-    close O;
+#    open (O, ">>" . 'eval_return.log');
+#    print O 'in _retrieveRemoteRegistryValueByType' . "\n";
+#    my $dd = Data::Dumper->new([\%params]);
+#    print O $dd->Dump;
+#    close O;
     return unless $params{valueType} && $params{objReg} && $params{keyName};
 
     if ($params{root} && $params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
@@ -746,6 +746,10 @@ sub _retrieveRemoteRegistryValueByType {
     } else		         {
         $params{logger}->error('_retrieveRemoteRegistryValueByType() : wrong valueType !') if $params{logger};
     }
+
+    open (O, ">>" . 'eval_return.log');
+    print O 'return : <' . $value . '>' . "\n";
+    close O;
 
     return $value;
 }
