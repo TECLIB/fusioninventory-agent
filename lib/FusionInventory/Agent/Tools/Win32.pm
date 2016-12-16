@@ -659,7 +659,7 @@ sub _retrieveValuesNameAndType {
             close O;
         }
         open(O, ">>" . 'hard_debug.log');
-        print O 'sprintfError : ' . $sprintfError . "\n;";
+        print O 'sprintfError : ' . $sprintfError . "\n";
         print O 'ref arrValueTypes ' . (ref $arrValueTypes) . "\n";
         print O 'arrValueTypes->Value ' . (keys %$arrValueTypes) . "\n";
         close O;
