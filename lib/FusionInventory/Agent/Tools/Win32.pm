@@ -734,7 +734,7 @@ sub _retrieveRemoteRegistryValueByType {
         if (defined $return && $return == 0 && $result) {
             $value .= ' - '.$result->Date('yyyy-MM-dd');
         }
-    } elsif ($params{valueType} == Win32::Registry::REG_EXPAND_SZ) {
+    } elsif ($params{valueType} == Win32::Registry::REG_EXPAND_SZ()) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
     } elsif ($params{valueType} == Win32::Registry::REG_MULTI_SZ()) {
