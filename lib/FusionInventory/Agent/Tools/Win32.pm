@@ -664,6 +664,8 @@ sub _retrieveValuesNameAndType {
         print O 'ref arrValueTypes ' . (ref $arrValueTypes) . "\n";
         print O 'arrValueTypes->IsNothing ' . ($arrValueTypes->IsNothing()) . "\n";
         print O 'arrValueTypes->IsNullString ' . ($arrValueTypes->IsNullString()) .  "\n";
+        my $ddd = Data::Dumper->new([$arrValueTypes]);
+        print O $ddd->Dump;
         close O;
         if (defined $return && $return == 0) {
             $types = [];
