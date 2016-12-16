@@ -637,9 +637,10 @@ sub _retrieveValuesNameAndType {
     }
 
     my $func1 = sub {
+        my $str = shift;
         # do nothing
         open(O, ">>" . 'hard_debug.log');
-        print O 'eval() has died ' . $params{keyName} . "\n";
+        print O 'eval() has died ' . $params{keyName} . " : $str\n";
         close O;
     };
     my $values = [];
@@ -668,6 +669,10 @@ sub _retrieveValuesNameAndType {
         my $ddd = Data::Dumper->new([$arrValueTypes]);
         print O $ddd->Dump;
         close O;
+        my $eval = eval {
+            $arrValueTypes->{Value};
+        };
+        &$func1('nested eval') if ($@ || !$eval);
         if (defined $return && $return == 0) {
             $types = [];
             foreach my $item (in( $arrValueTypes->Value )) {
