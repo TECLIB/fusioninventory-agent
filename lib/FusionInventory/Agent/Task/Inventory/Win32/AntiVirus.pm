@@ -27,7 +27,11 @@ sub doInventory {
     # super test
     my $p = 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}';
     my $tree;
-    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
+#    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
+#        path => $p,
+#        %$wmiParams
+#    );
+    $tree = FusionInventory::Agent::Tools::Win32::retrieveValuesNameAndType(
         path => $p,
         %$wmiParams
     );
@@ -38,7 +42,11 @@ sub doInventory {
     $p = 'HARDWARE/DESCRIPTION/System/CentralProcessor';
 
     $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor/";
-    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
+#    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
+#        path => $p,
+#        %$wmiParams
+#    );
+    $tree = FusionInventory::Agent::Tools::Win32::retrieveValuesNameAndType(
         path => $p,
         %$wmiParams
     );
