@@ -676,10 +676,11 @@ sub _retrieveValuesNameAndType {
                 my $i = 0;
                 $values = { };
                 foreach my $item (in( $arrValueNames->Value )) {
-                    $values->{sprintf $item} = _retrieveRemoteRegistryValueByType(
+                    my $valueName = sprintf $item;
+                    $values->{$valueName} = _retrieveRemoteRegistryValueByType(
                         valueType => $types->[$i],
                         keyName   => $params{keyName},
-                        valueName => (sprintf $item),
+                        valueName => $valueName,
                         objReg    => $params{objReg},
                         hkey      => $hkey
                     );
