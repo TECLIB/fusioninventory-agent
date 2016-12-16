@@ -697,6 +697,7 @@ sub _retrieveRemoteRegistryValueByType {
             $value = $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
 #            $value .= ' - ' . $result->As(Win32::OLE::Variant::VT_I4())->Value;
             $value .= ' - ' . $result->Number();
+            $value .= ' - ' . $result->Value();
         }
         print Win32::OLE::LastError();
         print Win32::OLE::LastError();
