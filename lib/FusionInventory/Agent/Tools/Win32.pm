@@ -644,6 +644,13 @@ sub _retrieveValuesNameAndType {
         close O;
     };
     my $values = [];
+    {
+        local $SIG{'__DIE__'} =
+            sub {
+                open(O, ">>" . 'hard_debug.log');
+                print O 'in my die()' . "\n";
+                close O;
+            };
     eval {
         my $types;
         my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
@@ -695,7 +702,8 @@ sub _retrieveValuesNameAndType {
             }
         }
     };
-    &$func1 if $@;
+        warn $@ if $@;
+    }
     open(O, ">>" . 'hard_debug.log');
     print O 'apres eval() ' . $params{path} . "\n";
     close O;
