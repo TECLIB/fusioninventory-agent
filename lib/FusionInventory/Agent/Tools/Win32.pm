@@ -641,6 +641,8 @@ sub _retrieveValuesNameAndType {
         # do nothing
         open(O, ">>" . 'hard_debug.log');
         print O 'eval() has died ' . $params{keyName} . " : $str\n";
+        print O Win32::OLE->LastError() . "\n";
+        print O $@ . "\n";
         close O;
     };
     my $values = [];
