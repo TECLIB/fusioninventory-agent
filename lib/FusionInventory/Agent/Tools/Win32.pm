@@ -654,8 +654,7 @@ sub _retrieveValuesNameAndType {
         my $sprintfError = '';
         if (Win32::OLE->LastError) {
             Win32::OLE->LastError;
-        }
-        if (defined $return && $return == 0) {
+        } elsif (defined $return && $return == 0) {
             $types = [];
             foreach my $item (in( $arrValueTypes->Value )) {
                 push @$types, sprintf $item;
