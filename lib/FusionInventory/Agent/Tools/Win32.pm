@@ -654,11 +654,11 @@ sub _retrieveValuesNameAndType {
         close O;
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : ' . $return . "\n";
-        print Win32::OLE->LastError . "\n";
+        print Win32::OLE->LastError() . "\n";
         my $sprintfError = '';
-        if (Win32::OLE->LastError) {
+        if (Win32::OLE->LastError()) {
             open(O, ">>" . 'hard_debug.log');
-            $sprintfError = sprintf("%s", Win32::OLE->LastError);
+            $sprintfError = sprintf("%s", Win32::OLE->LastError());
             print O $sprintfError . "\n";
             close O;
         }
