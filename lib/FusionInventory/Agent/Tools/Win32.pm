@@ -716,11 +716,11 @@ sub _retrieveRemoteRegistryValueByType {
 
     open (O, ">>" . 'eval_return.log');
     print O 'valueType : ' . $params{valueType};
-    print O ' ?== ' . $Win32::Registry::REG_DWORD . "\n";
-    print O ' ?== ' . $Win32::Registry::REG_BINARY . "\n";
-    print O ' ?== ' . $Win32::Registry::REG_EXPAND_SZ . "\n";
-    print O ' ?== ' . $Win32::Registry::REG_MULTI_SZ . "\n";
-    print O ' ?== ' . $Win32::Registry::REG_SZ . "\n";
+    print O ' ?== ' . Win32::Registry::REG_DWORD . "\n";
+    print O ' ?== ' . Win32::Registry::REG_BINARY . "\n";
+    print O ' ?== ' . Win32::Registry::REG_EXPAND_SZ . "\n";
+    print O ' ?== ' . Win32::Registry::REG_MULTI_SZ . "\n";
+    print O ' ?== ' . Win32::Registry::REG_SZ . "\n";
     close O;
 
     my $value;
