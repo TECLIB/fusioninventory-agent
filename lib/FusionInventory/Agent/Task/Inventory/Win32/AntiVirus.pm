@@ -24,6 +24,7 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
 
+    my $dd;
     my $tree;
     my $p;
     $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor/0";
@@ -49,7 +50,7 @@ sub doInventory {
         path => $p,
         %$wmiParams
     );
-    my $dd = Data::Dumper->new([$tree]);
+    $dd = Data::Dumper->new([$tree]);
     $logger->debug2($p);
     $logger->debug2($dd->Dump);
 
