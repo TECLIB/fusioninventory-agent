@@ -639,7 +639,7 @@ sub _retrieveValuesNameAndType {
     my $func1 = sub {
         # do nothing
         open(O, ">>" . 'hard_debug.log');
-        print O 'eval() has died' . $params{keyName} . "\n";
+        print O 'eval() has died ' . $params{keyName} . "\n";
         close O;
     };
     my $values = [];
@@ -655,7 +655,7 @@ sub _retrieveValuesNameAndType {
         if (Win32::OLE->LastError) {
             open(O, ">>" . 'hard_debug.log');
             $sprintfError = sprintf("%s", Win32::OLE->LastError);
-            print O $sprintfError . "\n";
+            print O 'in the if : ' . $sprintfError . "\n";
             close O;
         }
         open(O, ">>" . 'hard_debug.log');
