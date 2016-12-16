@@ -710,8 +710,8 @@ sub _retrieveRemoteRegistryValueByType {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
-    } else {
-        return;
+    } elsif ($params{hkey} && $params{hkey} eq 'HKEY_LOCAL_MACHINE') {
+        $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
     }
 
     open (O, ">>" . 'eval_return.log');
