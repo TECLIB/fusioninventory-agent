@@ -665,7 +665,7 @@ sub _retrieveValuesNameAndType {
         print O 'arrValueTypes->IsNothing ' . ($arrValueTypes->IsNothing()) . "\n";
         print O 'arrValueTypes->IsNullString ' . ($arrValueTypes->IsNullString()) .  "\n";
         print O 'arrValueTypes->Type ' . ($arrValueTypes->Type()) .  "\n";
-        print O 'arrValueTypes->Type ' . ($arrValueTypes->Value()) .  "\n";
+        print O 'arrValueTypes->Type ' . ($arrValueTypes->As(Win32::OLE::Variant::VT_ARRAY())->Value()) .  "\n";
         my $ddd = Data::Dumper->new([$arrValueTypes]);
         print O $ddd->Dump;
         close O;
