@@ -581,20 +581,10 @@ sub _retrieveSubKeyList {
 }
 
 sub retrieveValuesNameAndType {
-    my (%params) = @_;
-
-    unless ($params{root}) {
-        if ($params{path} =~ m{^(HKEY_\S+)/(.+)}) {
-            $params{root} = $1;
-            $params{keyName} = $2;
-        } else {
-            return;
-        }
-    }
     my $win32_ole_dependent_api = {
         funct => '_retrieveValuesNameAndType',
         array => 1,
-        args  => \%params
+        args  => \@_
     };
 
     return _call_win32_ole_dependent_api($win32_ole_dependent_api);
@@ -606,6 +596,15 @@ sub _retrieveValuesNameAndType {
     open(O, ">>" . 'hard_debug.log');
     print O '_retrieveValuesNameAndType() ' . $params{path} . "\n";
     close O;
+
+    unless ($params{root}) {
+        if ($params{path} =~ m{^(HKEY_\S+)/(.+)}) {
+            $params{root} = $1;
+            $params{keyName} = $2;
+        } else {
+            return;
+        }
+    }
 
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
