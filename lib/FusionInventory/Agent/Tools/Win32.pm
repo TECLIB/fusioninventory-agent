@@ -671,7 +671,7 @@ sub _retrieveValuesNameAndType {
         print O $ddd->Dump;
         close O;
         my $eval = eval {
-            $arrValueTypes->Value;
+            in($arrValueTypes);
         };
         &$func1('nested eval') if ($@ || !$eval);
         if (defined $return && $return == 0) {
