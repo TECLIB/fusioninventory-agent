@@ -700,9 +700,9 @@ sub _retrieveRemoteRegistryValueByType {
     open (O, ">" . 'eval_return.log');
     print O 'in _retrieveRemoteRegistryValueByType' . "\n";
     close O;
-    return unless $params{valueType} && $params{objReg};
+    return unless $params{valueType} && $params{objReg} && $params{keyName};
 
-    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
+    if ($params{root} && $params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
