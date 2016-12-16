@@ -327,21 +327,6 @@ sub _getRegistryValueFromWMI {
 sub _retrieveValueFromRemoteRegistry {
     my (%params) = @_;
 
-    my $logger;
-    if (
-        FusionInventory::Agent::Logger->require()
-            && FusionInventory::Agent::Logger::Backend->require()
-            && FusionInventory::Agent::Logger::File->require()
-    ) {
-        FusionInventory::Agent::Logger->import();
-        FusionInventory::Agent::Logger::Backend->import();
-        FusionInventory::Agent::Logger::File->import();
-        $logger = FusionInventory::Agent::Logger->new(
-            backends => [ 'File' ],
-            logfile => 'debug.log'
-        );
-        $logger->debug2('in _retrieveValueFromRemoteRegistry');
-    }
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -351,36 +336,11 @@ sub _retrieveValueFromRemoteRegistry {
     } else {
         return;
     }
-    my $dd = Data::Dumper->new([\%params]);
-    $logger->debug2($dd->Dump) if $logger;
-    $logger->debug2($hkey) if $logger;
 
-    my $func = sub {
-        # fatal error catched !
-    };
-    my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF()|Win32::OLE::Variant::VT_BSTR(),0);
-    my $return;
-    my $value;
-    $dd = Data::Dumper->new([\%params]);
-    open(O, ">>" . 'hard_debug.log');
-    print O 'avant eval()' . "\n";
-    print O $dd->Dump;
-    close O;
-    eval {
-        $return = $params{objReg}->GetStringValue($hkey, $params{keyName}, $params{valueName}, $result);
-        open(O, ">>" . 'hard_debug.log');
-        print O 'dans eval()' . "\n";
-        close O;
-        if (defined $return && $return == 0 && $result) {
-            $value = sprintf($result);
-        }
-    };
-    &$func if $@;
-    open(O, ">>" . 'hard_debug.log');
-    print O 'après eval()' . "\n";
-    close O;
-
-    return $value;
+    return _retrieveRemoteRegistryValueByType(
+        %params,
+        valueType => Win32::TieRegistry::REG_DWORD,
+    );
 }
 
 sub isDefinedRemoteRegistryKey {
