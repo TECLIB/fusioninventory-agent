@@ -56,6 +56,7 @@ our @EXPORT = qw(
     isDefinedRemoteRegistryKey
     getRegistryTreeFromWMI
     getRegistryValuesFromWMI
+    retrieveValuesNameAndType
 );
 
 sub is64bit {
@@ -579,6 +580,25 @@ sub _retrieveSubKeyList {
     return $subKeys;
 }
 
+sub retrieveValuesNameAndType {
+    my (%params) = @_;
+
+    unless ($params{root}) {
+        if ($params{path} =~ m{^(HKEY_\S+)/(.+)}) {
+            $params{root} = $1;
+            $params{keyName} = $2;
+        } else {
+            return;
+        }
+    }
+    my $win32_ole_dependent_api = {
+        funct => '_retrieveValuesNameAndType',
+        args  => \%params
+    };
+
+    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+}
+
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
 
@@ -599,49 +619,60 @@ sub _retrieveValuesNameAndType {
         return;
     }
 
+    unless ($params{objReg}) {
+        return unless $params{WMIService};
+        my $WMIService = _connectToService(
+            $params{WMIService}->{hostname},
+            $params{WMIService}->{user},
+            $params{WMIService}->{pass},
+            "root\\default"
+        );
+        if (!$WMIService) {
+            return;
+        }
+        my $objReg = $WMIService->Get("StdRegProv");
+        if (!$objReg) {
+            return;
+        }
+        $params{objReg} = $objReg;
+    }
+
     my $func1 = sub {
         # do nothing
+        open(O, ">>" . 'hard_debug.log');
+        print O 'eval() has died' . $params{keyName} . "\n";
+        close O;
     };
-    my $return;
-    my $types;
-    my $arrValueNames;
+    my $values;
     eval {
+        my $types;
         my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
-        $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
-        $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
-        if (defined $return && $return == 0 && $arrValueTypes && $arrValueNames) {
+        my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
+        my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
+        if (defined $return && $return == 0) {
             $types = [];
             foreach my $item (in( $arrValueTypes->Value )) {
                 push @$types, sprintf $item;
+            }
+            if (scalar (@$types) > 0) {
+                my $i = 0;
+                $values = { };
+                foreach my $item (in( $arrValueNames->Value )) {
+                    $values->{sprintf $item} = _retrieveRemoteRegistryValueByType(
+                        valueType => $types->[$i],
+                        keyName   => $params{path},
+                        valueName => (sprintf $item),
+                        objReg    => $params{objReg},
+                        hkey      => $hkey
+                    );
+                    $i++;
+                }
             }
         }
     };
     &$func1 if $@;
     open(O, ">>" . 'hard_debug.log');
-    print O 'apres eval 1)() ' . $params{path} . "\n";
-    close O;
-    return unless $types;
-    my $func2 = sub {
-        # do nothing
-    };
-    my $values;
-    eval {
-        my $i = 0;
-        $values = {};
-        foreach my $item ( in( $arrValueNames->Value ) ) {
-            $values->{sprintf $item} = _retrieveRemoteRegistryValueByType(
-                valueType => $types->[$i],
-                keyName => $params{path},
-                valueName => (sprintf $item),
-                objReg => $params{objReg},
-                hkey => $hkey
-            );
-            $i++;
-        }
-    };
-    &$func2 if $@;
-    open(O, ">>" . 'hard_debug.log');
-    print O 'apres eval 2)() ' . $params{path} . "\n";
+    print O 'apres eval() ' . $params{path} . "\n";
     close O;
     return $values;
 }
