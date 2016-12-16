@@ -655,6 +655,7 @@ sub _retrieveValuesNameAndType {
         open(O, ">>" . 'hard_debug.log');
         print O 'sprintfError : ' . $sprintfError . "\n;";
         print O 'ref arrValueTypes ' . (ref $arrValueTypes) . "\n";
+        print O 'arrValueTypes->Value ' . ($arrValueTypes->Value) . "\n";
         close O;
         if (defined $return && $return == 0) {
             $types = [];
