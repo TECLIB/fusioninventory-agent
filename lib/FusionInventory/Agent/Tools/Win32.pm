@@ -592,9 +592,6 @@ sub retrieveValuesNameAndType {
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
 
-    Win32::OLE->use('in');
-    Win32::OLE->Option(Warn => 3);
-
     open(O, ">>" . 'hard_debug.log');
     print O '_retrieveValuesNameAndType() ' . $params{path} . "\n";
     close O;
