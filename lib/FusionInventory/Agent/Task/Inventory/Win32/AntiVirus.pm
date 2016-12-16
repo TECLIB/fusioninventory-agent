@@ -24,6 +24,7 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
 
+    my $tree;
     my $p;
     $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor/0";
     #    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
@@ -40,7 +41,6 @@ sub doInventory {
 
     # super test
     $p = 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}';
-    my $tree;
 #    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
 #        path => $p,
 #        %$wmiParams
