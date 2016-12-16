@@ -652,7 +652,8 @@ sub _retrieveValuesNameAndType {
         close O;
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         my $sprintfError = '';
-        Win32::OLE->LastError;
+        if (Win32::OLE->LastError) {
+        }
         open(O, ">>" . 'hard_debug.log');
         print O Win32::OLE->LastError . "\n";
         close O;
