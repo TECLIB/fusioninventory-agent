@@ -670,10 +670,6 @@ sub _retrieveValuesNameAndType {
         my $ddd = Data::Dumper->new([$arrValueTypes]);
         print O $ddd->Dump;
         close O;
-        my $eval = eval {
-            defined $arrValueTypes;
-        };
-        &$func1('nested eval') if ($@ || !$eval);
         if (defined $return && $return == 0) {
             $types = [];
             foreach my $item (in( $arrValueTypes->Value )) {
