@@ -654,12 +654,14 @@ sub _retrieveValuesNameAndType {
         my $sprintfError = '';
         if (Win32::OLE->LastError) {
             open(O, ">>" . 'hard_debug.log');
-            print O Win32::OLE->LastError . "\n";
-            close O;
             $sprintfError = sprintf("%s", Win32::OLE->LastError);
+            print O $sprintfError . "\n";
+            close O;
         }
         open(O, ">>" . 'hard_debug.log');
-        print O $sprintfError . "\n";
+        print O 'sprintfError : ' . $sprintfError . "\n";
+        print O 'ref arrValueTypes ' . (ref $arrValueTypes) . "\n";
+        print O 'arrValueTypes->Value ' . (keys %$arrValueTypes) . "\n";
         close O;
         if (defined $return && $return == 0) {
             $types = [];
