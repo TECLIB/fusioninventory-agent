@@ -16,11 +16,6 @@ use Data::Dumper;
 use constant KEY_WOW64_64 => 0x100;
 use constant KEY_WOW64_32 => 0x200;
 
-use constant REG_DWORD => 'REG_DWORD';
-use constant REG_BINARY =>  "REG_BINARY";
-use constant REG_EXPAND_SZ =>  "REG_EXPAND_SZ";
-use constant REG_MULTI_SZ => "REG_MULTI_SZ";
-use constant REG_SZ => 'REG_SZ';
 
 use Cwd;
 use Encode;
@@ -702,7 +697,7 @@ sub _retrieveValuesNameAndType {
 
 sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
-    open (O, ">" . 'eval_return.log');
+    open (O, ">>" . 'eval_return.log');
     print O 'in _retrieveRemoteRegistryValueByType' . "\n";
     my $dd = Data::Dumper->new([\%params]);
     print O $dd->Dump;
@@ -742,7 +737,6 @@ sub _retrieveRemoteRegistryValueByType {
         $params{logger}->error('_retrieveRemoteRegistryValueByType() : wrong valueType !') if $params{logger};
     }
 
-    close O;
     return $value;
 }
 
