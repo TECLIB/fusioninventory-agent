@@ -748,7 +748,7 @@ sub _retrieveRemoteRegistryValueByType {
     }
 
     open (O, ">>" . 'eval_return.log');
-    print O 'return : <' . $value . '>' . "\n";
+    print O 'return : <' . sprintf($value) . '>' . "\n";
     close O;
 
     return $value;
