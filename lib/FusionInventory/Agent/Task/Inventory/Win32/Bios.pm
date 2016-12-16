@@ -40,6 +40,7 @@ sub doInventory {
     if ($wmiParams->{WMIService}) {
         $value = getRegistryValueFromWMI(
             path => $path,
+            valueType => REG_DWORD,
             logger => $logger,
             %$wmiParams
         );
