@@ -714,6 +714,8 @@ sub _retrieveRemoteRegistryValueByType {
         $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
     }
 
+    Win32::OLE::Registry->use(qw/REG_DWORD REG_BINARY REG_EXPAND_SZ REG_MULTI_SZ REG_SZ/);
+
     open (O, ">>" . 'eval_return.log');
     print O 'valueType : ' . $params{valueType};
     print O ' ?== ' . Win32::Registry::REG_DWORD() . "\n";
