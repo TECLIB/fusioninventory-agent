@@ -26,7 +26,7 @@ use Win32::Job;
 use Win32::TieRegistry (
     Delimiter   => '/',
     ArrayValues => 0,
-    qw/KEY_READ/
+    qw/KEY_READ REG_SZ REG_EXPAND_SZ REG_DWORD REG_BINARY REG_MULTI_SZ/
 );
 
 use FusionInventory::Agent::Tools;
@@ -714,15 +714,13 @@ sub _retrieveRemoteRegistryValueByType {
         $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
     }
 
-    Win32::OLE::Registry->use(qw/REG_DWORD REG_BINARY REG_EXPAND_SZ REG_MULTI_SZ REG_SZ/);
-
     open (O, ">>" . 'eval_return.log');
     print O 'valueType : ' . $params{valueType};
-    print O ' ?== ' . REG_DWORD() . "\n";
-    print O ' ?== ' . Win32::Registry::REG_BINARY() . "\n";
-    print O ' ?== ' . Win32::Registry::REG_EXPAND_SZ() . "\n";
-    print O ' ?== ' . Win32::Registry::REG_MULTI_SZ() . "\n";
-    print O ' ?== ' . Win32::Registry::REG_SZ() . "\n";
+    print O ' ?== ' . REG_DWORD . "\n";
+    print O ' ?== ' . REG_BINARY . "\n";
+    print O ' ?== ' . REG_EXPAND_SZ . "\n";
+    print O ' ?== ' . REG_MULTI_SZ . "\n";
+    print O ' ?== ' . REG_SZ . "\n";
     close O;
 
     my $value;
