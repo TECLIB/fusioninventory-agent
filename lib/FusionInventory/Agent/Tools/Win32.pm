@@ -656,7 +656,7 @@ sub _retrieveValuesNameAndType {
             open(O, ">>" . 'hard_debug.log');
             print O Win32::OLE->LastError . "\n";
             close O;
-            $sprintfError = Win32::OLE->LastError;
+            $sprintfError = sprintf(Win32::OLE->LastError);
         }
         open(O, ">>" . 'hard_debug.log');
         print O $sprintfError . "\n";
