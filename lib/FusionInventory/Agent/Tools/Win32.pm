@@ -695,6 +695,7 @@ sub _retrieveRemoteRegistryValueByType {
         my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         if (defined $return && $return == 0) {
             $value = $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
+            $value .= ' - ' . $result->As(VT_I4)->Value;
         }
     } elsif ($params{valueType} == REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
