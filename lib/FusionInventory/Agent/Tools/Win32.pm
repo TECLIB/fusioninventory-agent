@@ -700,6 +700,8 @@ sub _retrieveRemoteRegistryValueByType {
             $value .= ' - ' . $result->Value();
             $value .= ' - ' . sprintf($result);
         }
+        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
+        $value = $params{objReg}->GetStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
     } elsif ($params{valueType} == REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
