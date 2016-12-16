@@ -592,7 +592,8 @@ sub retrieveValuesNameAndType {
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
 
-    Win32::OLE->Option(Warn => 3);
+    Win32::OLE->use('in');
+
     open(O, ">>" . 'hard_debug.log');
     print O '_retrieveValuesNameAndType() ' . $params{path} . "\n";
     close O;
@@ -1078,6 +1079,7 @@ sub _win32_ole_worker {
     Win32::OLE::Variant->require() or return;
     Win32::OLE::NLS->require() or return;
     Win32::OLE->Option(CP => Win32::OLE::CP_UTF8());
+    Win32::OLE->Option(Warn => 3);
 
     while (1) {
         # Always block until semaphore is made available by main thread
