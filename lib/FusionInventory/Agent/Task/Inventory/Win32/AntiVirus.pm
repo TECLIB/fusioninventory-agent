@@ -40,35 +40,6 @@ sub doInventory {
     $logger->debug2($p);
     $logger->debug2($dd->Dump);
 
-    # super test
-    $p = 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}';
-#    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
-#        path => $p,
-#        %$wmiParams
-#    );
-    $tree = FusionInventory::Agent::Tools::Win32::retrieveValuesNameAndType(
-        path => $p,
-        %$wmiParams
-    );
-    $dd = Data::Dumper->new([$tree]);
-    $logger->debug2($p);
-    $logger->debug2($dd->Dump);
-
-    $p = 'HARDWARE/DESCRIPTION/System/CentralProcessor';
-
-    $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor/";
-#    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
-#        path => $p,
-#        %$wmiParams
-#    );
-    $tree = FusionInventory::Agent::Tools::Win32::retrieveValuesNameAndType(
-        path => $p,
-        %$wmiParams
-    );
-    $dd = Data::Dumper->new([$tree]);
-    $logger->debug2($p);
-    $logger->debug2($dd->Dump);
-
     my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
     foreach my $antivirus (@antiviruses) {
         # McAfee data
