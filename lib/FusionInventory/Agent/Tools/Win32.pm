@@ -653,11 +653,9 @@ sub _retrieveValuesNameAndType {
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         my $sprintfError = '';
         Win32::OLE->LastError;
-        sleep 1;
-        sleep 1;
-        sleep 1;
-        sleep 1;
-        sleep 1;
+        open(O, ">>" . 'hard_debug.log');
+        print O Win32::OLE->LastError . "\n";
+        close O;
         if (defined $return && $return == 0) {
             $types = [];
             foreach my $item (in( $arrValueTypes->Value )) {
