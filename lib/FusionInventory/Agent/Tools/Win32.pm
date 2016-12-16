@@ -583,7 +583,6 @@ sub _retrieveSubKeyList {
 sub retrieveValuesNameAndType {
     my $win32_ole_dependent_api = {
         funct => '_retrieveValuesNameAndType',
-        array => 1,
         args  => \@_
     };
 
