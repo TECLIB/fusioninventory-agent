@@ -646,8 +646,8 @@ sub _retrieveValuesNameAndType {
     my $values = [];
     eval {
         my $types;
-        my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_ERROR() , [1,1] );
-        my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_ERROR()  , [1,1] );
+        my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
+        my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
         open(O, ">>" . 'hard_debug.log');
         print O 'avant EnumValues' . "\n";
         close O;
