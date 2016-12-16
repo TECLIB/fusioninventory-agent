@@ -648,12 +648,13 @@ sub _retrieveValuesNameAndType {
         my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
         my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF()  , [1,1] );
         open(O, ">>" . 'hard_debug.log');
-        print O 'avant EnumValues' . "\n;";
+        print O 'avant EnumValues' . "\n";
         close O;
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         my $sprintfError = sprintf("%s", Win32::OLE->LastError);
         open(O, ">>" . 'hard_debug.log');
         print O 'sprintfError : ' . $sprintfError . "\n;";
+        print O 'ref arrValueTypes ' . (ref $arrValueTypes) . "\n";
         close O;
         if (defined $return && $return == 0) {
             $types = [];
