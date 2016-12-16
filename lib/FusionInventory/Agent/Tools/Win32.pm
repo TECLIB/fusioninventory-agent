@@ -29,6 +29,8 @@ use Win32::TieRegistry (
     qw/KEY_READ REG_SZ REG_EXPAND_SZ REG_DWORD REG_BINARY REG_MULTI_SZ/
 );
 
+use constant REG_DWORD => Win32::TieRegistry::REG_DWORD;
+
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Network;
 
@@ -339,7 +341,7 @@ sub _retrieveValueFromRemoteRegistry {
 
     return _retrieveRemoteRegistryValueByType(
         %params,
-        valueType => Win32::TieRegistry::REG_DWORD,
+        valueType => '',
     );
 }
 
