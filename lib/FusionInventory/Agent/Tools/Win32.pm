@@ -704,7 +704,7 @@ sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
     open (O, ">" . 'eval_return.log');
     print O 'in _retrieveRemoteRegistryValueByType' . "\n";
-    my $dd = Data::Dumper->([\%params]);
+    my $dd = Data::Dumper->new([\%params]);
     print O $dd->Dump;
     close O;
     return unless $params{valueType} && $params{objReg} && $params{keyName};
