@@ -693,8 +693,8 @@ sub _retrieveRemoteRegistryValueByType {
     } elsif ($params{valueType} == REG_DWORD) {
         $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 0);
         my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
-        if (defined $return && $return == 0 && $result) {
-            $value .= ' - '.$result->Date('yyyy-MM-dd');
+        if (defined $return && $return == 0) {
+            $value = $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
         }
     } elsif ($params{valueType} == REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
