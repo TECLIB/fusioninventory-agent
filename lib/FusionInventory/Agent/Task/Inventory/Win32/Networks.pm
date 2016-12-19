@@ -119,7 +119,7 @@ sub _getMediaTypeFromRemote {
             %$wmiParams
         );
         $keyName = 'PnpInstanceID';
-        next unless $values->{$keyName};
+        next unless $values && $values->{$keyName};
         $logger->debug2('PnpInstanceID ?eq $deviceId : ' . $values->{$keyName} . ' ?eq ' . $deviceId);
         next unless $values->{$keyName} eq $deviceId;
 
