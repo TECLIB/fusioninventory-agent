@@ -30,6 +30,10 @@ use Win32::TieRegistry (
 );
 
 use constant REG_DWORD => Win32::TieRegistry::REG_DWORD;
+use constant REG_BINARY => Win32::TieRegistry::REG_BINARY;
+use constant REG_EXPAND_SZ => Win32::TieRegistry::REG_EXPAND_SZ;
+use constant REG_MULTI_SZ => Win32::TieRegistry::REG_MULTI_SZ;
+use constant REG_SZ => Win32::TieRegistry::REG_SZ;
 
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Network;
