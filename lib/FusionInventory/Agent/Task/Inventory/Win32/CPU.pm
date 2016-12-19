@@ -158,6 +158,9 @@ sub _retrieveCpuIdFromRemoteRegistry {
         %params,
         path => $cpuIdPath,
     );
+    my $dd = Data::Dumper->new([$values]);
+    $params{logger}->debug2('_retrieveCpuIdFromRemoteRegistry retrieveValuesNameAndType ' . $cpuIdPath);
+    $params{logger}->debug2($dd->Dump);
     return unless $values;
     my @filtered_keys = grep { exists $values->{$_} } keys %$wantedKeys;
     @{%$wantedKeys}{@filtered_keys} = @{%$values}{@filtered_keys};
