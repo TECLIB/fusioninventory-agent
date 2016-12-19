@@ -105,7 +105,7 @@ sub _getMediaTypeFromRemote {
             logger => $logger,
             %$wmiParams
         );
-        next unless @$subKeyKeys;
+        next unless $subKeyKeys;
 
         my %keys = map { $_ => 1 } @$subKeyKeys;
         my $keyName = 'Connection';
