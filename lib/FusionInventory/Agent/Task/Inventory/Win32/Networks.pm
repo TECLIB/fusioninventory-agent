@@ -86,7 +86,7 @@ sub _getMediaType {
 sub _getMediaTypeFromRemote {
     my ($path, $deviceId, $logger, $wmiParams) = @_;
 
-    my $subKeys = getRegistryKeyFromWMI(
+    my $subKeys = getRegistryKey(
         path   => $path,
         logger => $logger,
         %$wmiParams
