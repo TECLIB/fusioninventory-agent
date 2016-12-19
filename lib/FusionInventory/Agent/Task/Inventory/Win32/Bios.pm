@@ -36,15 +36,12 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     my $path = "HKEY_LOCAL_MACHINE/Hardware/Description/System/BIOS/BIOSReleaseDate";
-    my $value;
-    unless ($wmiParams->{WMIService}) {
-        $value = getRegistryValue(
-            path   => $path,
-            logger => $logger,
-            valueType => FusionInventory::Agent::Tools::Win32::REG_DWORD,
-            %$wmiParams
-        );
-    }
+    my $value = getRegistryValue(
+        path   => $path,
+        logger => $logger,
+        valueType => FusionInventory::Agent::Tools::Win32::REG_DWORD,
+        %$wmiParams
+    );
     my $bios = {
         BDATE => _dateFromIntString($value)
     };
