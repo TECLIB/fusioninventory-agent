@@ -614,7 +614,7 @@ sub _retrieveValuesNameAndType {
         print O $@ . "\n";
         close O;
     };
-    my $values = [];
+    my $values;
     eval {
         my $types;
         my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
