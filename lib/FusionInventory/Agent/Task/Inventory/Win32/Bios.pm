@@ -39,7 +39,7 @@ sub doInventory {
     my $value = getRegistryValue(
         path   => $path,
         logger => $logger,
-        valueType => FusionInventory::Agent::Tools::Win32::REG_DWORD,
+        valueType => FusionInventory::Agent::Tools::Win32::REG_SZ,
         %$wmiParams
     );
     my $bios = {
