@@ -82,10 +82,10 @@ sub _getCPUs {
         if ($params{WMIService}) {
             $params{logger}->debug2('with WMIService, launching _retrieveCpuIdFromRemoteRegistry');
             $cpu = _retrieveCpuIdFromRemoteRegistry(
+                %params,
                 cpuId => $cpuId,
                 path => $path,
-                object => $object,
-                %params
+                object => $object
             );
         } else {
             my $dmidecodeInfo = @dmidecodeInfos && $dmidecodeInfos[$cpuId] ? $dmidecodeInfos[$cpuId] : undef;
@@ -156,10 +156,12 @@ sub _retrieveCpuIdFromRemoteRegistry {
     };
     for my $wantedKey (keys %$wantedKeys) {
         my $keyPath = $cpuIdPath . '/' . $wantedKey;
+        $params{logger}->debug2('getRegistryValue ' . $keyPath . ' now');
         $wantedKeys->{$wantedKey} = getRegistryValue(
             %params,
             path => $keyPath
         );
+        $params{logger}->debug2('getRegistryValue ' . $keyPath . ' done');
     }
 
     my $wmi_threads;
