@@ -52,12 +52,14 @@ sub _getMediaType {
 
     return unless defined $deviceId;
 
+    my $path = "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}";
+
     if ($wmiParams && $wmiParams->{WMIService}) {
-        return _getMediaTypeFromRemote($deviceId, $logger, $wmiParams);
+        return _getMediaTypeFromRemote($path, $deviceId, $logger, $wmiParams);
     }
 
     my $key = getRegistryKey(
-        path   => "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}",
+        path   => $path,
         logger => $logger
     );
 
@@ -82,9 +84,8 @@ sub _getMediaType {
 }
 
 sub _getMediaTypeFromRemote {
-    my ($deviceId, $logger, $wmiParams) = @_;
+    my ($path, $deviceId, $logger, $wmiParams) = @_;
 
-    my $path = "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}";
     my $subKeys = getRegistryKeyFromWMI(
         path   => $path,
         logger => $logger,
