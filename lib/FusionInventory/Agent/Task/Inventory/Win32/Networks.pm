@@ -96,27 +96,27 @@ sub _getMediaTypeFromRemote {
         # skip variables
         next if $subkey_name =~ m{^/};
 
-        next unless isDefinedRemoteRegistryKey(
-            path => $path . '/' . $subkey_name,
+        my $subKeyKeys = getRegistryKey(
+            path   => $path,
             logger => $logger,
-            %$wmiParams
-        ) && isDefinedRemoteRegistryKey(
-            path => $path . '/' . $subkey_name . '/Connection',
-            logger => $logger,
-            %$wmiParams
-        ) && isDefinedRemoteRegistryKey(
-            path => $path . '/' . $subkey_name . '/Connection/PnpInstanceID',
-            logger => $logger,
-            %$wmiParams
-        ) && getRegistryValueFromWMI(
-            path => $path . '/' . $subkey_name . '/Connection/PnpInstanceID',
-            %$wmiParams
-        ) eq $deviceId;
-
-        my $subtype = getRegistryValueFromWMI(
-            path => $path . '/' . $subkey_name . '/Connection/MediaSubType',
             %$wmiParams
         );
+        next unless @$subKeyKeys;
+
+        my %keys = map { $_ => 1 } @$subKeyKeys;
+        my $keyName = 'Connection';
+        next unless $keys{$keyName};
+
+        $path = $path . '/' . $subkey_name . '/' . $keyName;
+        my $values = retrieveValuesNameAndType(
+            path => $path,
+            %$wmiParams
+        );
+        $keyName = 'PnpInstanceID';
+        next unless $values->{$keyName} && $values->{$keyName} eq $deviceId;
+
+        my $subtype = $values->{MediaSubType};
+
         return
                 !defined $subtype        ? 'ethernet' :
                 $subtype eq '0x00000001' ? 'ethernet' :
