@@ -361,7 +361,7 @@ sub isDefinedRemoteRegistryKey {
 
     my $val = _call_win32_ole_dependent_api($win32_ole_dependent_api);
 
-    $params{logger}->debug2($params{logger} . ' : ' . $val);
+    $params{logger}->debug2($params{path} . ' : ' . $val);
 
     return $val;
 }

@@ -98,12 +98,15 @@ sub _getMediaTypeFromRemote {
 
         next unless isDefinedRemoteRegistryKey(
             path => $path . '/' . $subkey_name,
+            logger => $logger,
             %$wmiParams
         ) && isDefinedRemoteRegistryKey(
             path => $path . '/' . $subkey_name . '/Connection',
+            logger => $logger,
             %$wmiParams
         ) && isDefinedRemoteRegistryKey(
             path => $path . '/' . $subkey_name . '/Connection/PnpInstanceID',
+            logger => $logger,
             %$wmiParams
         ) && getRegistryValueFromWMI(
             path => $path . '/' . $subkey_name . '/Connection/PnpInstanceID',
