@@ -162,8 +162,12 @@ sub _retrieveCpuIdFromRemoteRegistry {
     $params{logger}->debug2('_retrieveCpuIdFromRemoteRegistry retrieveValuesNameAndType ' . $cpuIdPath);
     $params{logger}->debug2($dd->Dump);
     return unless $values;
-    my @filtered_keys = grep { exists $values->{$_} } keys %$wantedKeys;
-    @{%$wantedKeys}{@filtered_keys} = @{%$values}{@filtered_keys};
+    my %values = %$values;
+    my %wantedKeys = %$wantedKeys;
+    my @filtered_keys = grep { exists $values{$_} } keys %wantedKeys;
+    @wantedKeys{@filtered_keys} = @values{@filtered_keys};
+
+    $wantedKeys = \%wantedKeys;
 
     my $wmi_threads;
     if ($object->{NumberOfCores}) {
