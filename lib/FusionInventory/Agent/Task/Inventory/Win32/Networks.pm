@@ -32,6 +32,8 @@ sub doInventory {
 
         delete $interface->{dns};
         $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID}, $params{logger}, $wmiParams);
+        my $interfaceType = $interface->{TYPE} ? $interface->{TYPE} : 'UNDEF';
+        $params{logger}->debug2('networks > ' . $interface->{PNPDEVICEID} . ' : ' . $interfaceType);
 
         $inventory->addEntry(
             section => 'NETWORKS',
