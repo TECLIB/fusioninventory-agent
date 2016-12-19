@@ -717,6 +717,7 @@ sub _retrieveRemoteRegistryValueByType {
         $params{logger}->error('_retrieveRemoteRegistryValueByType() : wrong valueType !') if $params{logger};
     }
 
+    $value = '' if !$value;
     open (O, ">>" . 'eval_return.log');
     print O 'return ' . $params{keyName} . ' ' . $params{valueName} . ' : <' . sprintf($value) . '>' . "\n";
     close O;
