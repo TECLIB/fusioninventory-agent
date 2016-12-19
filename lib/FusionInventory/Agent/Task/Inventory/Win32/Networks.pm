@@ -96,6 +96,8 @@ sub _getMediaTypeFromRemote {
         # skip variables
         next if $subkey_name =~ m{^/};
 
+        $logger->debug2('Networks > found key : ' . $subkey_name);
+
         my $subKeyKeys = getRegistryKey(
             path   => $path,
             logger => $logger,
