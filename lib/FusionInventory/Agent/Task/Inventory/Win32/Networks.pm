@@ -31,7 +31,7 @@ sub doInventory {
             if $interface->{IPADDRESS};
 
         delete $interface->{dns};
-        $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID}, $wmiParams);
+        $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID}, $params{logger}, $wmiParams);
 
         $inventory->addEntry(
             section => 'NETWORKS',
