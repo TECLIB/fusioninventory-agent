@@ -350,12 +350,20 @@ sub _retrieveValueFromRemoteRegistry {
 }
 
 sub isDefinedRemoteRegistryKey {
+    my (%params)  =@_;
+
     my $win32_ole_dependent_api = {
         funct => '_isDefinedRemoteRegistryKey',
         args  => \@_
     };
 
-    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+    $params{logger}->debug2('isDefinedRemoteRegistryKey() ');
+
+    my $val = _call_win32_ole_dependent_api($win32_ole_dependent_api);
+
+    $params{logger}->debug2($params{logger} . ' : ' . $val);
+
+    return $val;
 }
 
 sub _isDefinedRemoteRegistryKey {
