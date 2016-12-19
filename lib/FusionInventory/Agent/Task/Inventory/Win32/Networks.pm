@@ -94,7 +94,8 @@ sub _getMediaTypeFromRemote {
 
     foreach my $subkey_name (@$subKeys) {
         # skip variables
-        next if $subkey_name =~ m{^/};
+        next if $subkey_name =~ m{^/}
+            || $subkey_name =~ /Descriptions/;
 
         $logger->debug2('Networks > found key : ' . $subkey_name);
 
