@@ -345,7 +345,7 @@ sub _retrieveValueFromRemoteRegistry {
 
     return _retrieveRemoteRegistryValueByType(
         %params,
-        valueType => '',
+        valueType => 'REG_SZ',
     );
 }
 
