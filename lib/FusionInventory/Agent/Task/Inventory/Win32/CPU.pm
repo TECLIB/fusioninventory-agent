@@ -154,15 +154,13 @@ sub _retrieveCpuIdFromRemoteRegistry {
         ProcessorNameString => undef,
         VendorIdentifier => undef
     };
-    for my $wantedKey (keys %$wantedKeys) {
-        my $keyPath = $cpuIdPath . '/' . $wantedKey;
-        $params{logger}->debug2('getRegistryValue ' . $keyPath . ' now');
-        $wantedKeys->{$wantedKey} = getRegistryValue(
-            %params,
-            path => $keyPath
-        );
-        $params{logger}->debug2('getRegistryValue ' . $keyPath . ' done');
-    }
+    my $values = retrieveValuesNameAndType(
+        %params,
+        path => $cpuIdPath,
+    );
+    return unless $values;
+    my @filtered_keys = grep { exists $values->{$_} } keys %$wantedKeys;
+    @{%$wantedKeys}{@filtered_keys} = @{%$values}{@filtered_keys};
 
     my $wmi_threads;
     if ($object->{NumberOfCores}) {
