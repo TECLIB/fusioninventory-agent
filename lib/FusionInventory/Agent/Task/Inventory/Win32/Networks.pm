@@ -101,7 +101,7 @@ sub _getMediaTypeFromRemote {
 
         $logger->debug2('Networks > found key : ' . $subkey_name);
 
-        my $subkeyPath = '/' . $subkey_name;
+        my $subkeyPath = $path . '/' . $subkey_name;
         my $subKeyKeys = getRegistryKey(
             path   => $subkeyPath,
             logger => $logger,
@@ -113,7 +113,7 @@ sub _getMediaTypeFromRemote {
         my $keyName = 'Connection';
         next unless $keys{$keyName};
 
-        $subkeyPath = '/' . $keyName;
+        $subkeyPath .= $subkeyPath . '/' . $keyName;
         my $values = retrieveValuesNameAndType(
             path => $subkeyPath,
             %$wmiParams
