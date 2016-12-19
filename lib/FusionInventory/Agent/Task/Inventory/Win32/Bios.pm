@@ -41,7 +41,7 @@ sub doInventory {
         $value = getRegistryValue(
             path   => $path,
             logger => $logger,
-            valueType => REG_DWORD,
+            valueType => FusionInventory::Agent::Tools::Win32::REG_DWORD,
             %$wmiParams
         );
     }
