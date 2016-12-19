@@ -679,6 +679,10 @@ sub _retrieveRemoteRegistryValueByType {
 #    close O;
     return unless $params{valueType} && $params{objReg} && $params{keyName};
 
+    open (O, ">>" . 'eval_return.log');
+    print O 'return ' . $params{keyName} . ' ' . $params{valueName} . ' ' . $params{valueType} . "\n";
+    close O;
+
     if ($params{root} && $params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
         my $keyName = $1 . '/' . $params{keyName};
@@ -687,15 +691,6 @@ sub _retrieveRemoteRegistryValueByType {
     } elsif ($params{hkey} && $params{hkey} eq 'HKEY_LOCAL_MACHINE') {
         $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
     }
-
-    open (O, ">>" . 'eval_return.log');
-    print O 'valueType : ' . $params{valueType};
-    print O ' ?== ' . Win32::TieRegistry::REG_DWORD . "\n";
-    print O ' ?== ' . REG_BINARY . "\n";
-    print O ' ?== ' . REG_EXPAND_SZ . "\n";
-    print O ' ?== ' . REG_MULTI_SZ . "\n";
-    print O ' ?== ' . REG_SZ . "\n";
-    close O;
 
     my $value;
     my $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
