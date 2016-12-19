@@ -41,6 +41,7 @@ sub doInventory {
         $value = getRegistryValue(
             path   => $path,
             logger => $logger,
+            valueType => REG_DWORD,
             %$wmiParams
         );
     }
