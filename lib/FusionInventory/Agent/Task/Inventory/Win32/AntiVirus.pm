@@ -24,7 +24,7 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
 
-    if ($wmiParams{WMIService}) {
+    if ($wmiParams->{WMIService}) {
         my $dd;
         my $tree;
         my $p;
