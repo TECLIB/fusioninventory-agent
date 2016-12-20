@@ -3,6 +3,8 @@ package FusionInventory::Agent::Task::Inventory::Win32::Networks;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Network;
 use FusionInventory::Agent::Tools::Win32;
@@ -123,7 +125,7 @@ sub _getMediaTypeFromRemote {
         $keyName = 'PnpInstanceID';
         next unless $values;
         $logger->debug2('values found');
-        my $dd = Data::Dumper->([$values]);
+        my $dd = Data::Dumper->new([$values]);
         $logger->debug2($dd->Dump);
         next unless $values->{$keyName};
         $logger->debug2('PnpInstanceID is a value found');
