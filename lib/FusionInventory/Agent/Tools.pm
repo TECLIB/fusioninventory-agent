@@ -500,7 +500,7 @@ sub runFunction {
 
     if ($EVAL_ERROR) {
         my $message = $EVAL_ERROR eq "alarm\n" ?
-            "$params{module} killed by a timeout"             :
+            "$params{module} killed by a timeout ($params{timeout})"             :
             "unexpected error in $params{module}: $EVAL_ERROR";
         $logger->debug($message) if $logger;
     }
