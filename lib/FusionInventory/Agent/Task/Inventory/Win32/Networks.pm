@@ -23,6 +23,11 @@ sub doInventory {
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     my (@gateways, @dns, @ips);
 
+    my $dataFromRegistry = _getDataFromRemote(
+        %$wmiParams,
+        path => "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}"
+    );
+
     foreach my $interface (getInterfaces(%$wmiParams)) {
         push @gateways, $interface->{IPGATEWAY}
             if $interface->{IPGATEWAY};
@@ -33,7 +38,14 @@ sub doInventory {
             if $interface->{IPADDRESS};
 
         delete $interface->{dns};
-        $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID}, $params{logger}, $wmiParams);
+        if ($wmiParams->{WMIService}) {
+            if ($dataFromRegistry->{$interface->{PNPDEVICEID}}) {
+
+                $interface->{TYPE} = $dataFromRegistry->{$interface->{PNPDEVICEID}};
+            }
+        } else {
+            $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID}, $params{logger}, $wmiParams);
+        }
         my $interfaceType = $interface->{TYPE} ? $interface->{TYPE} : 'UNDEF';
         $params{logger}->debug2('networks > ' . $interface->{PNPDEVICEID} . ' : ' . $interfaceType);
 
@@ -57,11 +69,6 @@ sub _getMediaType {
     return unless defined $deviceId;
 
     my $path = "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}";
-
-    if ($wmiParams && $wmiParams->{WMIService}) {
-        return _getMediaTypeFromRemote($path, $deviceId, $logger, $wmiParams);
-    }
-
     my $key = getRegistryKey(
         path   => $path,
         logger => $logger
@@ -87,15 +94,21 @@ sub _getMediaType {
     return undef;
 }
 
-sub _getMediaTypeFromRemote {
-    my ($path, $deviceId, $logger, $wmiParams) = @_;
+sub _getDataFromRemote {
+    my (%params) = @_;
+
+    my $path = $params{path};
+    my $logger = $params{logger};
+    my $wmiParams = {
+        WMIService => $params{WMIService}
+    };
 
     my $subKeys = getRegistryKey(
         path   => $path,
         logger => $logger,
         %$wmiParams
     );
-
+    my $data = {};
     foreach my $subkey_name (@$subKeys) {
         # skip variables
         next if $subkey_name =~ m{^/}
@@ -129,12 +142,10 @@ sub _getMediaTypeFromRemote {
         $logger->debug2($dd->Dump);
         next unless $values->{$keyName};
         $logger->debug2('PnpInstanceID is a value found');
-        $logger->debug2('PnpInstanceID ?eq $deviceId : ' . $values->{$keyName} . ' ?eq ' . $deviceId);
-        next unless $values->{$keyName} eq $deviceId;
 
         my $subtype = $values->{MediaSubType};
 
-        return
+        $data->{$values->{$keyName}} =
                 !defined $subtype        ? 'ethernet' :
                 $subtype eq '0x00000001' ? 'ethernet' :
                     $subtype eq '0x00000002' ? 'wifi'     :
@@ -142,7 +153,7 @@ sub _getMediaTypeFromRemote {
     }
 
     ## no critic (ExplicitReturnUndef)
-    return undef;
+    return $data;
 }
 
 1;
