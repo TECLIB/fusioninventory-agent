@@ -25,7 +25,8 @@ sub doInventory {
 
     my $dataFromRegistry = _getDataFromRemote(
         %$wmiParams,
-        path => "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}"
+        path => "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}",
+        logger => $params{logger}
     );
 
     foreach my $interface (getInterfaces(%$wmiParams)) {
@@ -40,7 +41,6 @@ sub doInventory {
         delete $interface->{dns};
         if ($wmiParams->{WMIService}) {
             if ($dataFromRegistry->{$interface->{PNPDEVICEID}}) {
-
                 $interface->{TYPE} = $dataFromRegistry->{$interface->{PNPDEVICEID}};
             }
         } else {
