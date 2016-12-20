@@ -115,7 +115,7 @@ sub _getMediaTypeFromRemote {
         next unless $keys{$keyName};
         $logger->debug2('Connection is found');
 
-        $subkeyPath .= $subkeyPath . '/' . $keyName;
+        $subkeyPath .= '/' . $keyName;
         my $values = retrieveValuesNameAndType(
             path => $subkeyPath,
             %$wmiParams
