@@ -43,7 +43,7 @@ sub doInventory {
         %$wmiParams
     );
     my $bios = {
-        BDATE => _dateFromIntString($value)
+        BDATE => _dateFromIntString($value) || undef
     };
 
     $bios = appendBiosDataFromWMI(
