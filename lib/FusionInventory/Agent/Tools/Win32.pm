@@ -546,7 +546,7 @@ sub _retrieveSubKeyList {
                 if ($subKeysWithValues{$wantedKey}) {
                     my $wantedKeyPath = $params{root} . '/' . $params{keyname} . '/' . $wantedKey;
                     open(O, ">>" . 'hard_debug.log');
-                    print O 'on envoie _retrieveValuesNameAndType ' .  . "\n";
+                    print O 'on envoie _retrieveValuesNameAndType ' . $wantedKeyPath . "\n";
                     close O;
                     $subKeysWithValues{$wantedKey} = _retrieveValuesNameAndType(
                         objReg => $params{objReg},
