@@ -29,7 +29,7 @@ sub doInventory {
         logger => $params{logger}
     );
 
-    foreach my $interface (getInterfaces(%$wmiParams)) {
+    foreach my $interface (getInterfaces(%$wmiParams, logger => $params{logger})) {
         push @gateways, $interface->{IPGATEWAY}
             if $interface->{IPGATEWAY};
         push @dns, $interface->{dns}

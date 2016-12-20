@@ -887,7 +887,7 @@ sub getInterfaces {
                            IPSubnet/  ],
         @_
     )) {
-
+        $_{logger}->debug2('found Win32_NetworkAdapterConfiguration') if $_{logger};
         my $configuration = {
             DESCRIPTION => $object->{Description},
             STATUS      => $object->{IPEnabled} ? "Up" : "Down",
@@ -924,6 +924,8 @@ sub getInterfaces {
     )) {
         # http://comments.gmane.org/gmane.comp.monitoring.fusion-inventory.devel/34
         next unless $object->{PNPDeviceID};
+
+        $_{logger}->debug2('found Win32_NetworkAdapter') if $_{logger};
 
         my $pciid;
         if ($object->{PNPDeviceID} =~ /PCI\\VEN_(\w{4})&DEV_(\w{4})&SUBSYS_(\w{4})(\w{4})/) {
