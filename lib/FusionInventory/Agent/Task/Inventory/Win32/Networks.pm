@@ -120,26 +120,24 @@ sub _getDataFromRemote {
         my $subKeyKeys = getRegistryKey(
             path   => $subkeyPath,
             logger => $logger,
+            retrieveValuesForKeyName => ['Connection']
             %$wmiParams
         );
         next unless $subKeyKeys;
         $logger->debug2('found subKeys');
 
-        my %keys = map { $_ => 1 } @$subKeyKeys;
+        my %keys = map { $_ => 1 } keys %$subKeyKeys;
         my $keyName = 'Connection';
         next unless $keys{$keyName};
         $logger->debug2('Connection is found');
 
-        $subkeyPath .= '/' . $keyName;
-        my $values = retrieveValuesNameAndType(
-            path => $subkeyPath,
-            %$wmiParams
-        );
-        $keyName = 'PnpInstanceID';
+        my $values = $subKeyKeys->{$keyName};
         next unless $values;
         $logger->debug2('values found');
         my $dd = Data::Dumper->new([$values]);
         $logger->debug2($dd->Dump);
+
+        $keyName = 'PnpInstanceID';
         next unless $values->{$keyName};
         $logger->debug2('PnpInstanceID is a value found');
 
