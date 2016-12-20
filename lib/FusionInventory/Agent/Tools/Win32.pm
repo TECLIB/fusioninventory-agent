@@ -550,6 +550,7 @@ sub _retrieveSubKeyList {
                     );
                 }
             }
+            $subKeys = \%subKeysWithValues;
         }
     };
     &$func if $@;
