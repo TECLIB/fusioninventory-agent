@@ -56,10 +56,6 @@ sub _getCPUs {
             path => $path,
             %params
         );
-        $registryInfos = getRegistryKey(
-            path => "HKEY_LOCAL_MACHINE/Hardware/Description",
-            %params
-        );
     }
 
     my $val = getRegistryValue(
