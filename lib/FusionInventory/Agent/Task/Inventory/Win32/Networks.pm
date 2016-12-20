@@ -113,7 +113,7 @@ sub _getMediaTypeFromRemote {
         my %keys = map { $_ => 1 } @$subKeyKeys;
         my $keyName = 'Connection';
         next unless $keys{$keyName};
-        $logger->debug2->('Connection is found');
+        $logger->debug2('Connection is found');
 
         $subkeyPath .= $subkeyPath . '/' . $keyName;
         my $values = retrieveValuesNameAndType(
@@ -121,7 +121,11 @@ sub _getMediaTypeFromRemote {
             %$wmiParams
         );
         $keyName = 'PnpInstanceID';
-        next unless $values && $values->{$keyName};
+        next unless $values;
+        $logger->debug2('values found');
+        my $dd = Data::Dumper->([$values]);
+        $logger->debug2($dd->Dump);
+        next unless $values->{$keyName};
         $logger->debug2('PnpInstanceID is a value found');
         $logger->debug2('PnpInstanceID ?eq $deviceId : ' . $values->{$keyName} . ' ?eq ' . $deviceId);
         next unless $values->{$keyName} eq $deviceId;
