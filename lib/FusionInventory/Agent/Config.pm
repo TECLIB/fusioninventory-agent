@@ -12,7 +12,7 @@ require FusionInventory::Agent::Tools;
 
 my $default = {
     'additional-content'      => undef,
-    'backend-collect-timeout' => 600,
+    'backend-collect-timeout' => 1800,
     'ca-cert-dir'             => undef,
     'ca-cert-file'            => undef,
     'color'                   => undef,
