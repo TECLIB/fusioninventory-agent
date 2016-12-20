@@ -77,7 +77,7 @@ sub _getCPUs {
         properties => [ qw/NumberOfCores NumberOfLogicalProcessors ProcessorId MaxClockSpeed/ ],
         %params
     )) {
-
+        $params{logger}->debug2('cpus foreach ' . $cpuId);
         my $cpu;
         if ($params{WMIService}) {
             $params{logger}->debug2('with WMIService, launching _retrieveCpuIdFromRemoteRegistry');
