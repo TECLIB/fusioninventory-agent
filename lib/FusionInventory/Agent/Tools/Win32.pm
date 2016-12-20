@@ -514,7 +514,7 @@ sub _retrieveSubKeyList {
 
     my $func = sub {
         open (O, ">" . 'eval_return.log');
-        print O 'eval is fatal error !!!' . "\n";
+        print O 'eval is fatal errootror !!!' . "\n";
         close O;
     };
     my $return;
@@ -537,6 +537,18 @@ sub _retrieveSubKeyList {
             foreach my $item (in( $arr->Value )) {
                 next unless $item;
                 push @$subKeys, $item;
+            }
+        }
+        if ($params{retrieveValuesForKeyName}
+            && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
+            my %subKeysWithValues = map { $_ => 1 } @$subKeys;
+            for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
+                if ($subKeysWithValues{$wantedKey}) {
+                    $subKeysWithValues{$wantedKey} = _retrieveValuesNameAndType(
+                        objReg => $params{objReg},
+                        path   => $params{root}.'/'.$params{keyname}.'/'.$wantedKey
+                    );
+                }
             }
         }
     };
