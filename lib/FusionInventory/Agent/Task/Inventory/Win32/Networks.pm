@@ -125,6 +125,8 @@ sub _getDataFromRemote {
         );
         next unless $subKeyKeys;
         $logger->debug2('found subKeys');
+        my $dd = Data::Dumper->new([$subKeyKeys]);
+        $logger->debug2($dd->Dump);
 
         my %keys = map { $_ => 1 } keys %$subKeyKeys;
         my $keyName = 'Connection';
@@ -134,7 +136,7 @@ sub _getDataFromRemote {
         my $values = $subKeyKeys->{$keyName};
         next unless $values;
         $logger->debug2('values found');
-        my $dd = Data::Dumper->new([$values]);
+        $dd = Data::Dumper->new([$values]);
         $logger->debug2($dd->Dump);
 
         $keyName = 'PnpInstanceID';
