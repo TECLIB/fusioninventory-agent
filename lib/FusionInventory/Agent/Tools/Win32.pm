@@ -593,8 +593,9 @@ sub retrieveValuesNameAndType {
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
 
+    my $truc = $params{path} ? $params{path} : $params{keyName} ? $params{keyName} : 'UNDEF';
     open(O, ">>" . 'hard_debug.log');
-    print O '_retrieveValuesNameAndType() ' . $params{path} . "\n";
+    print O '_retrieveValuesNameAndType() ' . $truc . "\n";
     close O;
 
     unless ($params{root}) {
@@ -607,14 +608,14 @@ sub _retrieveValuesNameAndType {
     }
 
     my $hkey;
-    if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
+    if ($params{root} && $params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     } elsif ($params{hkey} && $params{hkey} eq 'HKEY_LOCAL_MACHINE') {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
-    }
+    } else {
         $params{logger}->error(
             "Failed to parse '$params{path}'. Does it start with HKEY_?"
         ) if $params{logger};
