@@ -537,12 +537,23 @@ sub _retrieveSubKeyList {
             foreach my $item (in( $arr->Value )) {
                 next unless $item;
                 push @$subKeys, $item;
-                push @$subKeys, ref $item;
             }
         }
         if ($params{retrieveValuesForKeyName}
             && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
             my %subKeysWithValues = map { $_ => 1 } @$subKeys;
+            for my $item (@$subKeys) {
+                if (ref($item) eq 'Win32::TieRegistry') {
+                    open(O, ">>" . 'hard_debug.log');
+                    print O 'Win32::TieRegistry object found' . "\n";
+                    my @mbn = $item->MemberNames();
+                    my @vn = $item->ValueNames();
+                    my @skn = $item->SubKeyNames();
+                    my $ddd = Data::Dumper->new([\@mbn, \@vn, \@skn]);
+                    print O $ddd->Dump;
+                    close O;
+                }
+            }
             for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
                 if ($subKeysWithValues{$wantedKey}) {
                     my $wantedKeyPath = $params{root} . '/' . $params{keyname} . '/' . $wantedKey;
