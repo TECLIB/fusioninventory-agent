@@ -563,7 +563,8 @@ sub _retrieveSubKeyList {
                     close O;
                     $subKeysWithValues{$wantedKey} = _retrieveValuesNameAndType(
                         objReg => $params{objReg},
-                        keyName   => $wantedKeyPath
+                        keyName   => $wantedKeyPath,
+                        hkey => 'HKEY_LOCAL_MACHINE'
                     );
                 }
             }
@@ -611,7 +612,9 @@ sub _retrieveValuesNameAndType {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
-    } else {
+    } elsif ($params{hkey} && $params{hkey} eq 'HKEY_LOCAL_MACHINE') {
+        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
+    }
         $params{logger}->error(
             "Failed to parse '$params{path}'. Does it start with HKEY_?"
         ) if $params{logger};
