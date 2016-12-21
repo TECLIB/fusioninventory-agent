@@ -539,6 +539,7 @@ sub _retrieveSubKeyList {
                 push @$subKeys, $item;
             }
         }
+        $DB::single = 1;
         if ($params{retrieveValuesForKeyName}
             && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
             my %subKeysWithValues = map { $_ => 1 } @$subKeys;
