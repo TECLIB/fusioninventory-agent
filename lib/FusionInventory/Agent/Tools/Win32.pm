@@ -699,9 +699,6 @@ sub _retrieveValuesNameAndType {
         }
     };
     &$func1 if $@;
-    open(O, ">>" . 'hard_debug.log');
-    print O 'apres eval() ' . $params{path} . "\n";
-    close O;
     return $values;
 }
 
