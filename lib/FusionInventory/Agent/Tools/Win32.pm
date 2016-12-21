@@ -557,7 +557,7 @@ sub _retrieveSubKeyList {
             for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
                 $DB::single = 1;
                 if ($subKeysWithValues{$wantedKey}) {
-                    my $wantedKeyPath = $params{root} . '/' . $params{keyName} . '/' . $wantedKey;
+                    my $wantedKeyPath = $params{keyName} . "\\" . $wantedKey;
                     open(O, ">>" . 'hard_debug.log');
                     print O 'on envoie _retrieveValuesNameAndType ' . $wantedKeyPath . "\n";
                     close O;
