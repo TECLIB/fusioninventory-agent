@@ -599,7 +599,7 @@ sub _retrieveValuesNameAndType {
     close O;
 
     unless ($params{root}) {
-        if ($params{path} =~ m{^(HKEY_\S+)/(.+)}) {
+        if ($params{path} && $params{path} =~ m{^(HKEY_\S+)/(.+)}) {
             $params{root} = $1;
             $params{keyName} = $2;
         } elsif (!($params{keyName})) {
