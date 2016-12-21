@@ -128,6 +128,7 @@ sub _getDataFromRemote {
         my $dd = Data::Dumper->new([$subKeyKeys]);
         $logger->debug2($dd->Dump);
 
+        next unless ref $subKeyKeys eq 'HASH';
         my %keys = map { $_ => 1 } keys %$subKeyKeys;
         my $keyName = 'Connection';
         next unless $keys{$keyName};
