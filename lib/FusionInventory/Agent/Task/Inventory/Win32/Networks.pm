@@ -120,7 +120,6 @@ sub _getDataFromRemote {
         my $subKeyKeys = getRegistryKey(
             path   => $subkeyPath,
             logger => $logger,
-            retrieveValuesForKeyName => ['Connection']
             %$wmiParams
         );
         next unless $subKeyKeys;

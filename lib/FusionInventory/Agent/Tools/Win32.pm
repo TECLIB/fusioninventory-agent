@@ -539,23 +539,6 @@ sub _retrieveSubKeyList {
                 push @$subKeys, $item;
             }
         }
-        if ($params{retrieveValuesForKeyName}
-            && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
-            my %subKeysWithValues = map { $_ => 1 } @$subKeys;
-            for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
-                if ($subKeysWithValues{$wantedKey}) {
-                    my $wantedKeyPath = $params{root} . '/' . $params{keyname} . '/' . $wantedKey;
-                    open(O, ">>" . 'hard_debug.log');
-                    print O 'on envoie _retrieveValuesNameAndType ' . $wantedKeyPath . "\n";
-                    close O;
-                    $subKeysWithValues{$wantedKey} = _retrieveValuesNameAndType(
-                        objReg => $params{objReg},
-                        path   => $wantedKeyPath
-                    );
-                }
-            }
-            $subKeys = \%subKeysWithValues;
-        }
     };
     &$func if $@;
 #    print O 'après eval' . "\n";
