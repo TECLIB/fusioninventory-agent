@@ -539,7 +539,6 @@ sub _retrieveSubKeyList {
                 push @$subKeys, $item;
             }
         }
-        $DB::single = 1;
         if ($params{retrieveValuesForKeyName}
             && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
             my %subKeysWithValues = map { $_ => 1 } @$subKeys;
@@ -556,6 +555,7 @@ sub _retrieveSubKeyList {
                 }
             }
             for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
+                $DB::single = 1;
                 if ($subKeysWithValues{$wantedKey}) {
                     my $wantedKeyPath = $params{root} . '/' . $params{keyname} . '/' . $wantedKey;
                     open(O, ">>" . 'hard_debug.log');
@@ -576,6 +576,7 @@ sub _retrieveSubKeyList {
 #    print O 'mais alors ! ' . "\n";
 #    print O $@ if $@;
 #    close O;
+    $DB::single = 1;
     return $subKeys;
 }
 
