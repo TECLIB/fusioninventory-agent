@@ -43,9 +43,6 @@ sub doInventory {
         $logger->debug2($p);
         $logger->debug2($dd->Dump);
 
-        my $dd;
-        my $tree;
-        my $p;
         $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor/1";
         #    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
         #        path => $p,
