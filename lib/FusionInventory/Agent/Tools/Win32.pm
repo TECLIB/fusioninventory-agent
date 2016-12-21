@@ -563,7 +563,7 @@ sub _retrieveSubKeyList {
                     close O;
                     $subKeysWithValues{$wantedKey} = _retrieveValuesNameAndType(
                         objReg => $params{objReg},
-                        path   => $wantedKeyPath
+                        keyName   => $wantedKeyPath
                     );
                 }
             }
@@ -600,7 +600,7 @@ sub _retrieveValuesNameAndType {
         if ($params{path} =~ m{^(HKEY_\S+)/(.+)}) {
             $params{root} = $1;
             $params{keyName} = $2;
-        } else {
+        } elsif (!($params{keyName})) {
             return;
         }
     }
