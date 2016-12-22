@@ -289,7 +289,7 @@ sub _getRegistryValuesFromWMI {
             keyName => $keyName,
             valueName => $valueName,
             objReg => $objReg,
-            valueType => $params{path}->{$path};
+            valueType => $params{path}->{$path}
         );
     }
     return $values;
