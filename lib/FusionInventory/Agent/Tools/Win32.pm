@@ -273,7 +273,6 @@ sub _getRegistryValuesFromWMI {
     my $objReg = $WMIService->Get("StdRegProv");
     return unless $objReg;
 
-    $DB::single = 1;
     if (ref($params{path}) eq 'ARRAY') {
         my %hash = ();
         %hash = map { $_ => 1 } @{$params{path}};
@@ -546,6 +545,9 @@ sub _retrieveSubKeyList {
                 next unless $item;
                 push @$subKeys, $item;
             }
+        }
+        if ($params{retrieveValuesForAllKeys}) {
+            $params{retrieveValuesForKeyName} = $subKeys;
         }
         if ($params{retrieveValuesForKeyName}
             && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
