@@ -274,7 +274,7 @@ sub _getRegistryValuesFromWMI {
     return unless $objReg;
 
     $DB::single = 1;
-    if (ref($params{path} eq 'ARRAY')) {
+    if (ref($params{path}) eq 'ARRAY') {
         my %hash = ();
         %hash = map { $_ => 1 } @{$params{path}};
         $params{path} = \%hash;
