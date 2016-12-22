@@ -45,18 +45,19 @@ sub doInventory {
     );
 
     $params{logger}->debug2('avant getRegistryValues');
+    my $wantedValues = [
+        'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId',
+        'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId4',
+        'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/lanmanserver/Parameters/srvcomment'
+    ];
     my $values = getRegistryValuesFromWMI(
-        path => [
-            'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId',
-            'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId4',
-            'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/lanmanserver/Parameters/srvcomment'
-        ],
+        path => $wantedValues,
         logger => $params{logger},
         %$wmiParams
     );
-    my $raw1 = $values->[0];
-    my $raw2 = $values->[1];
-    my $raw3 = $values->[2];
+    my $raw1 = $values->{$wantedValues->[0]};
+    my $raw2 = $values->{$wantedValues->[1]};
+    my $raw3 = $values->{$wantedValues->[2]};
     $params{logger}->debug2('après getRegistryValues');
     my $key =
         decodeMicrosoftKey($raw1) ||
