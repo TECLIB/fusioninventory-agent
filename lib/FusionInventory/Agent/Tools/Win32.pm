@@ -261,7 +261,7 @@ sub getRegistryValuesFromWMI {
 sub _getRegistryValuesFromWMI {
     my (%params) = @_;
 
-    return unless ref($params{path}) eq 'ARRAY';
+    return unless ref($params{path}) eq 'ARRAY' || ref($params{path}) eq 'HASH';
 
     my $WMIService = _connectToService(
         $params{WMIService}->{hostname},
@@ -273,18 +273,23 @@ sub _getRegistryValuesFromWMI {
     my $objReg = $WMIService->Get("StdRegProv");
     return unless $objReg;
 
-    my $values = [];
-    for my $path (@{$params{path}}) {
+    if (ref($params{path} eq 'ARRAY') {
+        %{$params{path}} = map { $_ => 1 } @{$params{path}};
+    }
+
+    my $values = {};
+    for my $path (keys %{$params{path}}) {
         next unless $path =~ m{^(HKEY_\S+)/(.+)/([ ^ /]+)};
         my $root = $1;
         my $keyName = $2;
         my $valueName = $3;
-        push @$values, _retrieveValueFromRemoteRegistry(
+        $values->{$path} = _retrieveRemoteRegistryValueByType(
             %params,
             root => $root,
             keyName => $keyName,
             valueName => $valueName,
-            objReg => $objReg
+            objReg => $objReg,
+            valueType => $params{path}->{$path};
         );
     }
     return $values;
