@@ -32,7 +32,7 @@ sub doInventory {
 
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
-    if ($wmiParams{WMIService}) {
+    if ($wmiParams->{WMIService}) {
         my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
             %params,
             is64bit   => 1
