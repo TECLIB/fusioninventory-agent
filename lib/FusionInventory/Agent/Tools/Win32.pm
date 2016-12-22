@@ -273,7 +273,7 @@ sub _getRegistryValuesFromWMI {
     my $objReg = $WMIService->Get("StdRegProv");
     return unless $objReg;
 
-    if (ref($params{path} eq 'ARRAY') {
+    if (ref($params{path} eq 'ARRAY')) {
         %{$params{path}} = map { $_ => 1 } @{$params{path}};
     }
 
