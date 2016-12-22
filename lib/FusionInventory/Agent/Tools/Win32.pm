@@ -55,7 +55,7 @@ our @EXPORT = qw(
     FileTimeToSystemTime
     getUsersFromRegistry
     isDefinedRemoteRegistryKey
-    getRegistryTreeFromWMI
+    getRegistryKeyFromWMI
     getRegistryValuesFromWMI
     retrieveValuesNameAndType
 );
