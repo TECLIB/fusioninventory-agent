@@ -560,7 +560,6 @@ sub _retrieveSubKeyList {
                 }
             }
             for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
-                $DB::single = 1;
                 if ($subKeysWithValues{$wantedKey}) {
                     my $wantedKeyPath = $params{keyName} . "\\" . $wantedKey;
                     open(O, ">>" . 'hard_debug.log');
@@ -582,7 +581,6 @@ sub _retrieveSubKeyList {
 #    print O 'mais alors ! ' . "\n";
 #    print O $@ if $@;
 #    close O;
-    $DB::single = 1;
     return $subKeys;
 }
 

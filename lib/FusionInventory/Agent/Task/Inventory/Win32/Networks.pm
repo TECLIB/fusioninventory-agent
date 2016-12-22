@@ -109,7 +109,6 @@ sub _getDataFromRemote {
         %$wmiParams
     );
     my $data = {};
-    $DB::single = 1;
     foreach my $subkey_name (@$subKeys) {
         # skip variables
         next if $subkey_name =~ m{^/}
