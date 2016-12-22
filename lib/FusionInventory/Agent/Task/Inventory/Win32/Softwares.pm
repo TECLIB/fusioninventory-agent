@@ -150,7 +150,7 @@ sub doInventory {
 sub _retrieveSoftwareFromRemoteRegistry {
     my (%params) = @_;
 
-    my $pathRegularSoftware = "SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall";
+    my $pathRegularSoftware = "HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall";
     my $softwaresFromRemote = getRegistryKeyFromWMI(
         %params,
         path => $pathRegularSoftware
