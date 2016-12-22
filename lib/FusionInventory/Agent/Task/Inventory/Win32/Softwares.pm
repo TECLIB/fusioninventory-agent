@@ -30,6 +30,26 @@ sub doInventory {
 
     my $is64bit = is64bit();
 
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    if ($wmiParams{WMIService}) {
+        my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
+            %params,
+            is64bit   => 1
+        );
+        $DB::single = 1;
+        my $softwares =_extractSoftwareDataFromHash(
+            softwares => $softwaresFromRemote,
+            is64bit   => 1,
+        );
+        $DB::single = 1;
+        foreach my $software (@$softwares) {
+            _addSoftware(inventory => $inventory, entry => $software);
+        }
+        $DB::single = 1;
+
+        return;
+    }
 
     if ($is64bit) {
 
@@ -125,6 +145,74 @@ sub doInventory {
         _addSoftware(inventory => $inventory, entry => $hotfix);
     }
 
+}
+
+sub _retrieveSoftwareFromRemoteRegistry {
+    my (%params) = @_;
+
+    my $pathRegularSoftware = "SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall";
+    my $softwaresFromRemote = getRegistryKeyFromWMI(
+        %params,
+        path => $pathRegularSoftware
+    );
+
+    return $softwaresFromRemote;
+}
+
+sub _extractSoftwareDataFromHash {
+    my (%params) = @_;
+
+    my $softwares = $params{softwares};
+
+    my @list;
+
+    return unless $softwares;
+
+    foreach my $rawGuid (keys %$softwares) {
+        # skip variables
+        next if $rawGuid =~ m{^/};
+
+        # only keep subkeys with more than 1 value
+        my $data = $softwares->{$rawGuid};
+        next unless keys %$data > 1;
+
+        my $guid = $rawGuid;
+        $guid =~ s/\/$//; # drop the tailing /
+
+        my $software = {
+            FROM             => "registry",
+            NAME             => encodeFromRegistry($data->{'DisplayName'}) ||
+                encodeFromRegistry($guid), # folder name
+            COMMENTS         => encodeFromRegistry($data->{'Comments'}),
+            HELPLINK         => encodeFromRegistry($data->{'HelpLink'}),
+            RELEASE_TYPE     => encodeFromRegistry($data->{'ReleaseType'}),
+            VERSION          => encodeFromRegistry($data->{'DisplayVersion'}),
+            PUBLISHER        => encodeFromRegistry($data->{'Publisher'}),
+            URL_INFO_ABOUT   => encodeFromRegistry($data->{'URLInfoAbout'}),
+            UNINSTALL_STRING => encodeFromRegistry($data->{'UninstallString'}),
+            INSTALLDATE      => _dateFormat($data->{'InstallDate'}),
+            VERSION_MINOR    => hex2dec($data->{'MinorVersion'}),
+            VERSION_MAJOR    => hex2dec($data->{'MajorVersion'}),
+            NO_REMOVE        => hex2dec($data->{'NoRemove'}),
+            ARCH             => $params{is64bit} ? 'x86_64' : 'i586',
+            GUID             => $guid,
+            USERNAME         => $params{username},
+            USERID           => $params{userid},
+        };
+
+        # Workaround for #415
+        $software->{VERSION} =~ s/[\000-\037].*// if $software->{VERSION};
+
+        # TODO : see what we can do here, remotely thinking...
+        # Set install date to last registry key update time
+#        if (!defined($software->{INSTALLDATE})) {
+#            $software->{INSTALLDATE} = _dateFormat(_keyLastWriteDateString($data));
+#        }
+
+        push @list, $software;
+    }
+
+    return \@list;
 }
 
 sub _loadUserSoftware {
