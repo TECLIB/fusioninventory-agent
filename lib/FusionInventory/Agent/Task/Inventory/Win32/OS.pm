@@ -96,7 +96,6 @@ sub doInventory {
     } else {
         $installDate = _getInstallDate(logger => $params{logger});
     }
-    $DB::single = 1;
     $inventory->setOperatingSystem({
         NAME           => "Windows",
         ARCH           => $arch,
