@@ -64,7 +64,7 @@ sub doInventory {
             softwares => $softwaresKey64,
             is64bit   => 1,
         );
-        foreach my $software (@$softwares64) {@
+        foreach my $software (@$softwares64) {
             _addSoftware(inventory => $inventory, entry => $software);
         }
         _processMSIE(
