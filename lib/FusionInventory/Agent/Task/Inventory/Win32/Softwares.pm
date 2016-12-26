@@ -64,7 +64,7 @@ sub doInventory {
             softwares => $softwaresKey64,
             is64bit   => 1,
         );
-        foreach my $software (@$softwares64) {
+        foreach my $software (@$softwares64) {@
             _addSoftware(inventory => $inventory, entry => $software);
         }
         _processMSIE(
@@ -151,7 +151,8 @@ sub _retrieveSoftwareFromRemoteRegistry {
     my $pathRegularSoftware = "HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall";
     my $softwaresFromRemote = getRegistryKeyFromWMI(
         %params,
-        path => $pathRegularSoftware
+        path => $pathRegularSoftware,
+        retrieveValuesForAllKeys => 1
     );
 
     return $softwaresFromRemote;
