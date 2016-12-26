@@ -676,6 +676,10 @@ sub _retrieveValuesNameAndType {
         print O 'arrValueTypes->IsNothing ' . $arrValueTypes->IsNothing() . "\n";
         print O 'arrValueTypes->IsNullString ' . $arrValueTypes->IsNullString() .  "\n";
         print O 'arrValueTypes->Type ' . $arrValueTypes->Type() .  "\n";
+        close O;
+        sleep 1;
+        open(O, ">>" . 'hard_debug.log');
+        print O 'arrValueTypes->Value ' . $arrValueTypes->Value() .  "\n";
         my $ddd = Data::Dumper->new([$arrValueTypes]);
         print O $ddd->Dump;
         close O;
