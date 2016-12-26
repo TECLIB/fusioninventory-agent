@@ -18,12 +18,7 @@ sub isEnabled {
 }
 
 sub getModules {
-    return (
-        'FusionInventory::Agent::Task::Inventory::Generic',
-        'FusionInventory::Agent::Task::Inventory::Win32',
-        'FusionInventory::Agent::Task::Inventory::Win32::OS'
-    );
-#    return grep { $_ =~ /^FusionInventory::Agent::Task::Inventory::Win32::/ } FusionInventory::Agent::Task::Inventory->getModules('Win32');
+    #TODO : overwrite...
 }
 
 sub run {
@@ -42,6 +37,11 @@ sub run {
         }
     );
     $params{inventory} = $inventory;
+    $params{enabledModules} = [
+        'FusionInventory::Agent::Task::Inventory::Generic',
+        'FusionInventory::Agent::Task::Inventory::Win32',
+        'FusionInventory::Agent::Task::Inventory::Win32::Softwares'
+    ];
     $self->SUPER::run(%params);
 
     if (2==1) {
