@@ -37,16 +37,13 @@ sub doInventory {
             %params,
             is64bit   => 1
         );
-        $DB::single = 1;
         my $softwares =_extractSoftwareDataFromHash(
             softwares => $softwaresFromRemote,
             is64bit   => 1,
         );
-        $DB::single = 1;
         foreach my $software (@$softwares) {
             _addSoftware(inventory => $inventory, entry => $software);
         }
-        $DB::single = 1;
 
         return;
     }
