@@ -35,7 +35,7 @@ sub doInventory {
     if ($wmiParams->{WMIService}) {
         $DB::single = 1;
         my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
-            %params,
+            %$wmiParams,
             is64bit   => 1
         );
         my $softwares =_extractSoftwareDataFromHash(
