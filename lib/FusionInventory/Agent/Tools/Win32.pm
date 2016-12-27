@@ -687,7 +687,8 @@ sub _retrieveValuesNameAndType {
             close O;
         };
         my $ret = eval {
-            valof($arrValueTypes) or return;
+            my $val = valof($arrValueTypes);
+            print 'val is : ' . $val . "\n";
         };
         &$f2 if (!$ret || $@);
         open(O, ">>" . 'hard_debug.log');
