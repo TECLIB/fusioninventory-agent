@@ -690,7 +690,8 @@ sub _retrieveValuesNameAndType {
             close O;
         };
         my $ret2 = eval {
-            $arrValueTypes->isa('Win32::OLE');
+            my $isa = $arrValueTypes->isa('Win32::OLE');
+            print '$arrValueTypes is a Win32::OLE fucking object' . "\n";
         };
         &$f2 if (!$ret2 || $@);
         my $ret = eval {
