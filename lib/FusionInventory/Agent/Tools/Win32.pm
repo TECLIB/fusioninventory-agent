@@ -12,7 +12,7 @@ use threads::shared;
 #use sigtrap 'handler', \&errorHandler, 'error-signals';
 #use sigtrap qw(handler errorHandler error-signals);
 #use sigtrap qw(handler errorHandler old-interface-signals);
-use sigtrap qw(handler my_handler untrapped);
+#use sigtrap qw(handler my_handler untrapped);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
@@ -1142,10 +1142,10 @@ sub _win32_ole_worker {
         close O;
         $DB::single = 1;
     };
-#    $SIG{SEGV} = \&$errorHandler;
-#    $SIG{TERM} = \&$errorHandler;
-#    $SIG{ABRT} = \&$errorHandler;
-#    $SIG{ILL} = \&$errorHandler;
+    $SIG{SEGV} = \&$errorHandler;
+    $SIG{TERM} = \&$errorHandler;
+    $SIG{ABRT} = \&$errorHandler;
+    $SIG{ILL} = \&$errorHandler;
 
     my $evalHandler = sub {
         open(O, ">>" . 'hard_debug.log');
