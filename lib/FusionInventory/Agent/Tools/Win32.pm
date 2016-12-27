@@ -1132,6 +1132,7 @@ sub _win32_ole_worker {
         open(O, ">>" . 'hard_debug.log');
         print O 'errorHandler now, we trapped this signal !' . "\n";
         close O;
+        return;
     };
     $SIG{SEGV} = \&$errorHandler;
 
