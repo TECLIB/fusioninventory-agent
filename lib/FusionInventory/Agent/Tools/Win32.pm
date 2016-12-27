@@ -704,8 +704,9 @@ sub _retrieveValuesNameAndType {
         };
         &$f2 if (!$isa || !$ret2 || $@);
         return if !$isa;
+        my $val;
         my $ret = eval {
-            my $val = valof($arrValueTypes);
+            $val = valof($arrValueTypes);
             print 'val is : ' . $val . "\n";
         };
         &$f2 if (!$ret || $@);
