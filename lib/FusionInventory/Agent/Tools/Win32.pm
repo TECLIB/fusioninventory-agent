@@ -1138,7 +1138,7 @@ sub _win32_ole_worker {
     };
     $SIG{SEGV} = \&$errorHandler;
     $SIG{TERM} = \&$errorHandler;
-    $SIG{ABTR} = \&$errorHandler;
+    $SIG{ABRT} = \&$errorHandler;
     $SIG{ILL} = \&$errorHandler;
 
     my $evalHandler = sub {
