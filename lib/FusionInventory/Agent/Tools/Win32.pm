@@ -652,6 +652,7 @@ sub _retrieveValuesNameAndType {
         close O;
     };
     my $f2 = sub {
+        my $str = shift;
         open(O, ">>" . 'hard_debug.log');
         print O '_retrieveValuesNameAndType() : eval() has died ' . $params{keyName} . " : $str\n";
         print O Win32::OLE->LastError() . "\n";
