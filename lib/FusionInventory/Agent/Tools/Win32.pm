@@ -1143,7 +1143,7 @@ sub _win32_ole_worker {
 
     my $evalHandler = sub {
         open(O, ">>" . 'hard_debug.log');
-        print O 'errorHandler now, we trapped this signal !' . "\n";
+        print O 'evalHandler now' . "\n";
         print O $!;
         print O "\n";
         close O;
@@ -1170,6 +1170,7 @@ sub _win32_ole_worker {
                 no strict 'refs'; ## no critic (ProhibitNoStrict)
                 $funct = \&{$call->{'funct'}};
             };
+            &$evalHandler if $@;
             if (exists($call->{'array'}) && $call->{'array'}) {
                 my @results = &{$funct}(@{$call->{'args'}});
                 $result = \@results;
@@ -1189,6 +1190,15 @@ sub _win32_ole_worker {
 sub _call_win32_ole_dependent_api {
     my ($call) = @_
         or return;
+
+    my $evalHandler = sub {
+        open(O, ">>" . 'hard_debug.log');
+        print O 'evalHandler now !' . "\n";
+        print O $!;
+        print O "\n";
+        close O;
+        $DB::single = 1;
+    };
 
     if (defined($worker)) {
         # Share the expect call
@@ -1240,6 +1250,7 @@ sub _call_win32_ole_dependent_api {
             no strict 'refs'; ## no critic (ProhibitNoStrict)
             $funct = \&{$call->{'funct'}};
         };
+        &$evalHandler if $@;
         return &{$funct}(@{$call->{'args'}});
     }
 }
