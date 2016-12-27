@@ -687,8 +687,7 @@ sub _retrieveValuesNameAndType {
         $DB::single = 1;
         sleep 1;
         my $ret = eval {
-            valof($arrValueTypes);
-            $arrValueTypes->Value();
+            valof($arrValueTypes) or return;
         };
         &$f2 if !$ret || $@;
         open(O, ">>" . 'hard_debug.log');
