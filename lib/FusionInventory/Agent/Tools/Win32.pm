@@ -10,7 +10,7 @@ use threads 'exit' => 'threads_only';
 use threads::shared;
 
 #use sigtrap 'handler', \&errorHandler, 'error-signals';
-use sigtrap qw(handler my_handler error-signals);
+use sigtrap qw(handler my_handler error-signals old-interface-signals);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
