@@ -1133,8 +1133,6 @@ sub _win32_ole_worker {
         print O 'errorHandler now, we trapped this signal !' . "\n";
         print O $!;
         print O "\n";
-        print O $@;
-        print O "\n";
         close O;
         $DB::single = 1;
     };
