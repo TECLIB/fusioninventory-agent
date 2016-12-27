@@ -11,7 +11,7 @@ use threads::shared;
 
 #use sigtrap 'handler', \&errorHandler, 'error-signals';
 #use sigtrap qw(handler errorHandler error-signals);
-use sigtrap qw(handler errorHandler old-interface-signals);
+#use sigtrap qw(handler errorHandler old-interface-signals);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
