@@ -10,6 +10,7 @@ use threads 'exit' => 'threads_only';
 use threads::shared;
 
 use UNIVERSAL::require();
+use UNIVERSAL;
 
 use Data::Dumper;
 
@@ -688,6 +689,10 @@ sub _retrieveValuesNameAndType {
             print O $@ . "\n";
             close O;
         };
+        my $ret2 = eval {
+            $arrValueTypes->isa('Win32::OLE');
+        };
+        &$f2 if (!$ret2 || $@);
         my $ret = eval {
             my $val = valof($arrValueTypes);
             print 'val is : ' . $val . "\n";
