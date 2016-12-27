@@ -697,9 +697,6 @@ sub _retrieveValuesNameAndType {
             print O $@ . "\n";
             close O;
         };
-        my $isa;
-
-        return if !$isa;
         my $val = valof($arrValueTypes);
     print 'val is : ' . $val . "\n";
         return if !$val;
