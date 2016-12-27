@@ -528,7 +528,7 @@ sub _retrieveSubKeyList {
 
     my $func = sub {
         open (O, ">" . 'eval_return.log');
-        print O 'eval is fatal errootror !!!' . "\n";
+        print O '_retrieveSubKeyList() : eval is fatal error !!!' . "\n";
         close O;
     };
     my $return;
