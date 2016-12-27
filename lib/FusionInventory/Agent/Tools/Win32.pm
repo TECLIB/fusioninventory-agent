@@ -700,14 +700,16 @@ sub _retrieveValuesNameAndType {
         my $isa;
         my $ret2 = eval {
             $isa = $arrValueTypes->isa('Win32::OLE');
-            print '$arrValueTypes is a Win32::OLE fucking object' . "\n";
+            print '$arrValueTypes is a Win32::OLE fucking object' . "\n" if $isa;
         };
         &$f2 if (!$isa || !$ret2 || $@);
+        return if !$isa;
         my $ret = eval {
             my $val = valof($arrValueTypes);
             print 'val is : ' . $val . "\n";
         };
         &$f2 if (!$ret || $@);
+        return if !$val;
         open(O, ">>" . 'hard_debug.log');
         print O 'arrValueTypes->Value ' . $arrValueTypes->Value() .  "\n";
         my $ddd = Data::Dumper->new([$arrValueTypes]);
