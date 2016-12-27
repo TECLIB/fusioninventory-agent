@@ -544,7 +544,7 @@ sub _retrieveSubKeyList {
     my $subKeys;
 #    open(O, ">" . 'debug_' . time());
 #    print O 'avant eval' . "\n";
-    eval {
+
         open(O, ">>" . 'hard_debug.log');
         print O 'keyName : ' . $params{keyName} . "\n";
         close O;
@@ -582,7 +582,7 @@ sub _retrieveSubKeyList {
             }
             $subKeys = \%subKeysWithValues;
         }
-    };
+
     &$func if $@;
 #    print O 'après eval' . "\n";
 #    print O 'mais heu' . "\n" if $@;
@@ -663,7 +663,7 @@ sub _retrieveValuesNameAndType {
         close O;
     };
     my $values;
-    eval {
+
         my $types;
         my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
         my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
@@ -698,18 +698,10 @@ sub _retrieveValuesNameAndType {
             close O;
         };
         my $isa;
-        my $ret2 = eval {
-            $isa = $arrValueTypes->isa('Win32::OLE');
-            print '$arrValueTypes is a Win32::OLE fucking object' . "\n" if $isa;
-        };
-        &$f2('isa') if (!$isa || !$ret2 || $@);
+
         return if !$isa;
-        my $val;
-        my $ret = eval {
-            $val = valof($arrValueTypes);
-            print 'val is : ' . $val . "\n";
-        };
-        &$f2('valof') if (!$ret || $@);
+        my $val = valof($arrValueTypes);
+    print 'val is : ' . $val . "\n";
         return if !$val;
         open(O, ">>" . 'hard_debug.log');
         print O 'arrValueTypes->Value ' . $arrValueTypes->Value() .  "\n";
@@ -737,7 +729,6 @@ sub _retrieveValuesNameAndType {
                 }
             }
         }
-    };
     &$func1 if $@;
     return $values;
 }
