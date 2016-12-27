@@ -1131,6 +1131,8 @@ sub _win32_ole_worker {
     my $errorHandler = sub {
         open(O, ">>" . 'hard_debug.log');
         print O 'errorHandler now, we trapped this signal !' . "\n";
+        print O $!;
+        print O "\n";
         close O;
         $DB::single = 1;
         return;
