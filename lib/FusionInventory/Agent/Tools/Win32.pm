@@ -595,6 +595,8 @@ sub retrieveValuesNameAndType {
 sub _retrieveValuesNameAndType {
     my (%params) = @_;
 
+    Win32::OLE->use('valof');
+
     my $truc = $params{path} ? $params{path} : $params{keyName} ? $params{keyName} : 'UNDEF';
     open(O, ">>" . 'hard_debug.log');
     print O '_retrieveValuesNameAndType() ' . $truc . "\n";
