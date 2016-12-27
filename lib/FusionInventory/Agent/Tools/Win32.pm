@@ -702,14 +702,14 @@ sub _retrieveValuesNameAndType {
             $isa = $arrValueTypes->isa('Win32::OLE');
             print '$arrValueTypes is a Win32::OLE fucking object' . "\n" if $isa;
         };
-        &$f2 if (!$isa || !$ret2 || $@);
+        &$f2('isa') if (!$isa || !$ret2 || $@);
         return if !$isa;
         my $val;
         my $ret = eval {
             $val = valof($arrValueTypes);
             print 'val is : ' . $val . "\n";
         };
-        &$f2 if (!$ret || $@);
+        &$f2('valof') if (!$ret || $@);
         return if !$val;
         open(O, ">>" . 'hard_debug.log');
         print O 'arrValueTypes->Value ' . $arrValueTypes->Value() .  "\n";
