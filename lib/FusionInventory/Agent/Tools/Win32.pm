@@ -1133,11 +1133,21 @@ sub _win32_ole_worker {
         print O 'errorHandler now, we trapped this signal !' . "\n";
         print O $!;
         print O "\n";
+        print O $@;
+        print O "\n";
         close O;
         $DB::single = 1;
-        return;
     };
     $SIG{SEGV} = \&$errorHandler;
+
+    my $evalHandler = sub {
+        open(O, ">>" . 'hard_debug.log');
+        print O 'errorHandler now, we trapped this signal !' . "\n";
+        print O $!;
+        print O "\n";
+        close O;
+        $DB::single = 1;
+    };
 
     while (1) {
         # Always block until semaphore is made available by main thread
