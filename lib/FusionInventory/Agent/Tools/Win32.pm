@@ -1128,6 +1128,13 @@ sub _win32_ole_worker {
     Win32::OLE::NLS->require() or return;
     Win32::OLE->Option(CP => Win32::OLE::CP_UTF8());
 
+    my $errorHandler = sub {
+        open(O, ">>" . 'hard_debug.log');
+        print O 'errorHandler now, we trapped this signal !' . "\n";
+        close O;
+    };
+    $SIG{SEGV} = \&$errorHandler;
+
     while (1) {
         # Always block until semaphore is made available by main thread
         $worker_semaphore->down();
