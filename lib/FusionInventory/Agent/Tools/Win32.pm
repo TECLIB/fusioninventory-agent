@@ -13,6 +13,7 @@ use threads::shared;
 #use sigtrap qw(handler errorHandler error-signals);
 #use sigtrap qw(handler errorHandler old-interface-signals);
 #use sigtrap qw(handler my_handler untrapped);
+use sigtrap qw(handler errorHandler untrapped);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
@@ -75,6 +76,7 @@ sub errorHandler {
     open(O, ">>" . 'hard_debug.log');
     print O 'errorHandler now, we trapped this signal !' . "\n";
     close O;
+    die;
 }
 
 sub is64bit {
