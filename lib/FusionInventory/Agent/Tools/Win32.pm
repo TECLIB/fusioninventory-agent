@@ -9,6 +9,8 @@ use threads;
 use threads 'exit' => 'threads_only';
 use threads::shared;
 
+use sigtrap 'handler', \&errorHandler, 'error-signals';
+
 use UNIVERSAL::require();
 use UNIVERSAL;
 
@@ -60,6 +62,12 @@ our @EXPORT = qw(
     getRegistryValuesFromWMI
     retrieveValuesNameAndType
 );
+
+sub errorHandler {
+    open(O, ">>" . 'hard_debug.log');
+    print O 'errorHandler now, we trapped this signal !' . "\n";
+    close O;
+}
 
 sub is64bit {
     return
