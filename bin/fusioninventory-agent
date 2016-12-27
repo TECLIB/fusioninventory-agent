@@ -13,14 +13,8 @@ use FusionInventory::Agent;
 Getopt::Long::Configure( "no_ignorecase" );
 
 BEGIN {
-    $SIG{INT} = sub { print "c'est pas grave, on s'en fout\n" };
-    $SIG{TERM} = sub { print "c'est pas grave, on s'en fout\n" };
-    $SIG{SEGV} = sub { print "c'est pas grave, on s'en fout\n" };
-    $SIG{HUP} = sub { print "c'est pas grave, on s'en fout\n" };
-    $SIG{STOP} = sub { print "c'est pas grave, on s'en fout\n" };
-    $SIG{QUIT} = sub { print "c'est pas grave, on s'en fout\n" };
-    $SIG{ABRT} = sub { print "c'est pas grave, on s'en fout\n" };
-    $SIG{ILL} = sub { print "c'est pas grave, on s'en fout\n" };
+#    use sigtrap qw(handler shutdown normal-signals);
+    use sigtrap qw(die untrapped normal-signals stack-trace any error-signals);
 }
 my $options = {};
 
