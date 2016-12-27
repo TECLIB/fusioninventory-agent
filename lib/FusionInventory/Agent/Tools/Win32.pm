@@ -1145,6 +1145,7 @@ sub _win32_ole_worker {
         print O "\n";
         close O;
         $DB::single = 1;
+        die;
     };
     $SIG{SEGV} = \&$errorHandler;
     $SIG{TERM} = \&$errorHandler;
