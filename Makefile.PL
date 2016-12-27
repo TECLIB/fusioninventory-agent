@@ -22,12 +22,6 @@ if ($OSNAME =~ /darwin/i) {
     requires 'Tie::IxHash'        => '0';
 }
 
-if ($OSNAME eq 'MSWin32') {
-    requires 'Win32::OLE'         => '0';
-    requires 'Win32::TieRegistry' => '0';
-    requires 'Win32::Job'         => '0';
-}
-
 recommends 'Compress::Zlib'       => '0';
 recommends 'HTTP::Daemon'         => '0';
 recommends 'IO::Socket::SSL'      => '1.14';
