@@ -651,14 +651,6 @@ sub _retrieveValuesNameAndType {
         print O $@ . "\n";
         close O;
     };
-    my $f2 = sub {
-        my $str = shift;
-        open(O, ">>" . 'hard_debug.log');
-        print O '_retrieveValuesNameAndType() : eval() has died ' . $params{keyName} . " : $str\n";
-        print O Win32::OLE->LastError() . "\n";
-        print O $@ . "\n";
-        close O;
-    };
     my $values;
     eval {
         my $types;
@@ -686,10 +678,18 @@ sub _retrieveValuesNameAndType {
         close O;
         $DB::single = 1;
         sleep 1;
+        my $f2 = sub {
+            my $str = shift;
+            open(O, ">>" . 'hard_debug.log');
+            print O '_retrieveValuesNameAndType() : eval() has died ' . $params{keyName} . " : $str\n";
+            print O Win32::OLE->LastError() . "\n";
+            print O $@ . "\n";
+            close O;
+        };
         my $ret = eval {
             valof($arrValueTypes) or return;
         };
-        &$f2 if !$ret || $@;
+        &$f2 if (!$ret || $@);
         open(O, ">>" . 'hard_debug.log');
         print O 'arrValueTypes->Value ' . $arrValueTypes->Value() .  "\n";
         my $ddd = Data::Dumper->new([$arrValueTypes]);
