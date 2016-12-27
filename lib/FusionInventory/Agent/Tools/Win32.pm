@@ -549,7 +549,6 @@ sub _retrieveSubKeyList {
             close O;
             $subKeys = [ ];
             foreach my $item (in( $arr->Value )) {
-                next unless $item;
                 push @$subKeys, $item;
             }
         }
