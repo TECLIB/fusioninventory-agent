@@ -676,6 +676,7 @@ sub _retrieveValuesNameAndType {
         print O 'arrValueTypes->IsNullString ' . $arrValueTypes->IsNullString() .  "\n";
         print O 'arrValueTypes->Type ' . $arrValueTypes->Type() .  "\n";
         close O;
+        $DB::single = 1;
         sleep 1;
         open(O, ">>" . 'hard_debug.log');
         print O 'arrValueTypes->Value ' . $arrValueTypes->Value() .  "\n";
