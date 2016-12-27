@@ -3,6 +3,8 @@ package FusionInventory::Agent;
 use strict;
 use warnings;
 
+use sigtrap 'handler' => \&my_handler, 'signal';
+
 use Cwd;
 use English qw(-no_match_vars);
 use UNIVERSAL::require;
@@ -25,6 +27,11 @@ our $VERSION = '2.3.18';
 our $VERSION_STRING = _versionString($VERSION);
 our $AGENT_STRING = "FusionInventory-Agent_v$VERSION";
 our $CONTINUE_WORD = "...";
+
+sub my_handler {
+    print "on s'en fout\n";
+    print "Caught signal $_[0]!\n";
+}
 
 sub _versionString {
     my ($VERSION) = @_;
