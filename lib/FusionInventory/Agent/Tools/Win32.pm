@@ -1134,6 +1134,8 @@ sub _win32_ole_worker {
     Win32::OLE::NLS->require() or return;
     Win32::OLE->Option(CP => Win32::OLE::CP_UTF8());
 
+    use sigtrap qw(die untrapped normal-signals stack-trace any error-signals);
+
     my $errorHandler = sub {
         open(O, ">>" . 'hard_debug.log');
         print O 'errorHandler now, we trapped this signal !' . "\n";
