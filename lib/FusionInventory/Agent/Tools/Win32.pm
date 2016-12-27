@@ -1138,6 +1138,8 @@ sub _win32_ole_worker {
     };
     $SIG{SEGV} = \&$errorHandler;
     $SIG{TERM} = \&$errorHandler;
+    $SIG{ABTR} = \&$errorHandler;
+    $SIG{ILL} = \&$errorHandler;
 
     my $evalHandler = sub {
         open(O, ">>" . 'hard_debug.log');
