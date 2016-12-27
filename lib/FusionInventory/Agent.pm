@@ -732,6 +732,8 @@ sub _installSignalHandlers {
     $SIG{HUP}    = sub { print "c'est pas grave, on s'en fout\n" };
     $SIG{STOP}    = sub { print "c'est pas grave, on s'en fout\n" };
     $SIG{QUIT}    = sub { print "c'est pas grave, on s'en fout\n" };
+    $SIG{ABRT}    = sub { print "c'est pas grave, on s'en fout\n" };
+    $SIG{ILL}    = sub { print "c'est pas grave, on s'en fout\n" };
 }
 
 sub _reloadConfIfNeeded {
