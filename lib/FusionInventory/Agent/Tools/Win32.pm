@@ -12,6 +12,7 @@ use threads::shared;
 #use sigtrap 'handler', \&errorHandler, 'error-signals';
 #use sigtrap qw(handler errorHandler error-signals);
 #use sigtrap qw(handler errorHandler old-interface-signals);
+use sigtrap qw(handler my_handler untrapped);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
@@ -64,6 +65,11 @@ our @EXPORT = qw(
     getRegistryValuesFromWMI
     retrieveValuesNameAndType
 );
+
+sub my_handler {
+    print "on s'en fout\n";
+    print "Caught signal $_[0]!\n";
+}
 
 sub errorHandler {
     open(O, ">>" . 'hard_debug.log');
