@@ -715,8 +715,10 @@ sub _retrieveValuesNameAndType {
         my $ddd = Data::Dumper->new([$arrValueTypes]);
         print O $ddd->Dump;
         close O;
+    {
+        local SIG{SEGV} = 'IGNORE';
         if (defined $return && $return == 0) {
-            $types = [];
+            $types = [ ];
             foreach my $item (in( $arrValueTypes->Value )) {
                 push @$types, sprintf $item;
             }
@@ -736,6 +738,7 @@ sub _retrieveValuesNameAndType {
                 }
             }
         }
+    }
     &$func1 if $@;
     return $values;
 }
