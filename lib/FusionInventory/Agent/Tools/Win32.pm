@@ -1154,6 +1154,14 @@ sub _win32_ole_worker {
         close O;
         $DB::single = 1;
 #        return 1;
+
+        # TODO : record problematic call
+        # file named with IP o hostname containing :
+        # - function (enumNamesAndValues)
+        # - keyName
+        # - eventually also keyValue
+        # Then, at each call, look if this call has been problematic, don't do it again !
+        #
         threads->exit;
     };
     $SIG{SEGV} = 'IGNORE';
