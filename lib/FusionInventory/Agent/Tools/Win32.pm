@@ -76,6 +76,8 @@ sub errorHandler {
     open(O, ">>" . 'hard_debug.log');
     print O 'sigtrap errorHandler now on untrapped, we trapped this signal !' . "\n";
     close O;
+    warn('aïe aïe aïe');
+    return 1;
 #    die;
 }
 
@@ -1151,7 +1153,7 @@ sub _win32_ole_worker {
 #        return 1;
         threads->exit;
     };
-    $SIG{SEGV} = \&$errorHandler;
+    $SIG{SEGV} = 'IGNORE';
 #    $SIG{TERM} = \&$errorHandler;
 #    $SIG{ABRT} = \&$errorHandler;
 #    $SIG{ILL} = \&$errorHandler;
