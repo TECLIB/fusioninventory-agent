@@ -1148,8 +1148,8 @@ sub _win32_ole_worker {
         print O "\n";
         close O;
         $DB::single = 1;
-        return 1;
-#        threads->exit;
+#        return 1;
+        threads->exit;
     };
     $SIG{SEGV} = \&$errorHandler;
 #    $SIG{TERM} = \&$errorHandler;
