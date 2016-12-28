@@ -74,9 +74,9 @@ sub my_handler {
 
 sub errorHandler {
     open(O, ">>" . 'hard_debug.log');
-    print O 'errorHandler now, we trapped this signal !' . "\n";
+    print O 'sigtrap errorHandler now on untrapped, we trapped this signal !' . "\n";
     close O;
-    die;
+#    die;
 }
 
 sub is64bit {
