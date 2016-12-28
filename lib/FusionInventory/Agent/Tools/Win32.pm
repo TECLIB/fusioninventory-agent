@@ -716,7 +716,7 @@ sub _retrieveValuesNameAndType {
         print O $ddd->Dump;
         close O;
     {
-        local SIG{SEGV} = 'IGNORE';
+        local $SIG{SEGV} = 'IGNORE';
         if (defined $return && $return == 0) {
             $types = [ ];
             foreach my $item (in( $arrValueTypes->Value )) {
