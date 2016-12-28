@@ -1218,6 +1218,10 @@ sub _call_win32_ole_dependent_api {
         $DB::single = 1;
     };
 
+    unless (defined($worker)) {
+        start_Win32_OLE_Worker();
+    }
+
     if (defined($worker)) {
         # Share the expect call
         my $call = shared_clone($call);
