@@ -733,12 +733,12 @@ sub _installSignalHandlers {
 
     $SIG{INT}     = sub { $self->terminate(); exit 0; };
     $SIG{TERM}    = sub { $self->terminate(); exit 0; };
-    $SIG{SEGV}    = sub { print "SEGV c'est pas grave, on s'en fout\n" };
-    $SIG{HUP}    = sub { print "HUP c'est pas grave, on s'en fout\n" };
-    $SIG{STOP}    = sub { print "STOP c'est pas grave, on s'en fout\n" };
-    $SIG{QUIT}    = sub { print "QUIT c'est pas grave, on s'en fout\n" };
-    $SIG{ABRT}    = sub { print "ABRT c'est pas grave, on s'en fout\n" };
-    $SIG{ILL}    = sub { print "ILL c'est pas grave, on s'en fout\n" };
+#    $SIG{SEGV}    = sub { print "SEGV c'est pas grave, on s'en fout\n" };
+#    $SIG{HUP}    = sub { print "HUP c'est pas grave, on s'en fout\n" };
+#    $SIG{STOP}    = sub { print "STOP c'est pas grave, on s'en fout\n" };
+#    $SIG{QUIT}    = sub { print "QUIT c'est pas grave, on s'en fout\n" };
+#    $SIG{ABRT}    = sub { print "ABRT c'est pas grave, on s'en fout\n" };
+#    $SIG{ILL}    = sub { print "ILL c'est pas grave, on s'en fout\n" };
 }
 
 sub _reloadConfIfNeeded {

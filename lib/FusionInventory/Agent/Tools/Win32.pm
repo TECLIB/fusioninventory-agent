@@ -13,7 +13,7 @@ use threads::shared;
 #use sigtrap qw(handler errorHandler error-signals);
 #use sigtrap qw(handler errorHandler old-interface-signals);
 #use sigtrap qw(handler my_handler untrapped);
-use sigtrap qw(handler errorHandler untrapped);
+#use sigtrap qw(handler errorHandler untrapped);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
@@ -1139,7 +1139,7 @@ sub _win32_ole_worker {
     Win32::OLE::NLS->require() or return;
     Win32::OLE->Option(CP => Win32::OLE::CP_UTF8());
 
-    use sigtrap qw(die untrapped normal-signals stack-trace any error-signals);
+#    use sigtrap qw(die untrapped normal-signals stack-trace any error-signals);
 
     my $errorHandler = sub {
         open(O, ">>" . 'hard_debug.log');
@@ -1150,10 +1150,10 @@ sub _win32_ole_worker {
         $DB::single = 1;
         die;
     };
-    $SIG{SEGV} = \&$errorHandler;
-    $SIG{TERM} = \&$errorHandler;
-    $SIG{ABRT} = \&$errorHandler;
-    $SIG{ILL} = \&$errorHandler;
+#    $SIG{SEGV} = \&$errorHandler;
+#    $SIG{TERM} = \&$errorHandler;
+#    $SIG{ABRT} = \&$errorHandler;
+#    $SIG{ILL} = \&$errorHandler;
 
     my $evalHandler = sub {
         open(O, ">>" . 'hard_debug.log');
