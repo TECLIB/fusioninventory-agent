@@ -712,9 +712,6 @@ sub _retrieveValuesNameAndType {
             print O $@ . "\n";
             close O;
         };
-        my $val = valof($arrValueTypes);
-    print 'val is : ' . $val . "\n";
-        return if !$val;
         open(O, ">>" . 'hard_debug.log');
         print O 'arrValueTypes->Value ' . $arrValueTypes->Value() .  "\n";
         my $ddd = Data::Dumper->new([$arrValueTypes]);
@@ -1143,6 +1140,7 @@ sub _win32_ole_worker {
     Win32::OLE::Variant->require() or return;
     Win32::OLE::NLS->require() or return;
     Win32::OLE->Option(CP => Win32::OLE::CP_UTF8());
+    Win32::OLE->use('in');
 
 #    use sigtrap qw(die untrapped normal-signals stack-trace any error-signals);
 
