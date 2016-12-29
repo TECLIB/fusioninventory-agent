@@ -637,28 +637,28 @@ sub _retrieveSubKeyList {
                 push @$subKeys, $item;
             }
         }
-        if ($params{retrieveValuesForAllKeys}) {
-            $params{retrieveValuesForKeyName} = $subKeys;
-        }
-        if ($params{retrieveValuesForKeyName}
-            && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
-            my %subKeysWithValues = map { $_ => 1 } @$subKeys;
-            for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
-                if ($subKeysWithValues{$wantedKey}) {
-                    my $wantedKeyPath = $params{keyName} . "\\" . $wantedKey;
-                    open(O, ">>" . 'hard_debug.log');
-                    print O 'on envoie _retrieveValuesNameAndType ' . $wantedKeyPath . "\n";
-                    close O;
-                    $subKeysWithValues{$wantedKey} = _retrieveValuesNameAndType(
-                        WMIService => $params{WMIService},
-                        objReg => $params{objReg},
-                        keyName   => $wantedKeyPath,
-                        hkey => 'HKEY_LOCAL_MACHINE'
-                    );
-                }
-            }
-            $subKeys = \%subKeysWithValues;
-        }
+#        if ($params{retrieveValuesForAllKeys}) {
+#            $params{retrieveValuesForKeyName} = $subKeys;
+#        }
+#        if ($params{retrieveValuesForKeyName}
+#            && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
+#            my %subKeysWithValues = map { $_ => 1 } @$subKeys;
+#            for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
+#                if ($subKeysWithValues{$wantedKey}) {
+#                    my $wantedKeyPath = $params{keyName} . "\\" . $wantedKey;
+#                    open(O, ">>" . 'hard_debug.log');
+#                    print O 'on envoie _retrieveValuesNameAndType ' . $wantedKeyPath . "\n";
+#                    close O;
+#                    $subKeysWithValues{$wantedKey} = _retrieveValuesNameAndType(
+#                        WMIService => $params{WMIService},
+#                        objReg => $params{objReg},
+#                        keyName   => $wantedKeyPath,
+#                        hkey => 'HKEY_LOCAL_MACHINE'
+#                    );
+#                }
+#            }
+#            $subKeys = \%subKeysWithValues;
+#        }
 
     &$func if $@;
 #    print O 'après eval' . "\n";
