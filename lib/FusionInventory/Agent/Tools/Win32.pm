@@ -726,7 +726,7 @@ sub _retrieveValuesNameAndType {
     # record call
     _recordWmiCallAsFailed($wmiCall);
     eval {
-        $SIG{SEGV} = \&$func1;
+        $SIG{SEGV} = &$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : ' . $return . "\n";
