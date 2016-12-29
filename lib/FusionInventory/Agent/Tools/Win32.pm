@@ -725,7 +725,7 @@ sub _retrieveValuesNameAndType {
     $DB::single = 1;
     # record call
     _recordWmiCallAsFailed($wmiCall);
-    my $eval = eval {
+    eval {
         $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
@@ -784,7 +784,7 @@ sub _retrieveValuesNameAndType {
             }
         }
     }
-    &$func1 if $@ or !$eval;
+    &$func1 if $@;
 
     _forgetWmiCall($wmiCall);
     return $values;
