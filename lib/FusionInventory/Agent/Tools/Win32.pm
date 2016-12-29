@@ -93,6 +93,12 @@ sub _forgetWmiCall {
     close O;
 }
 
+sub _isWmiCallFailed {
+    my ($call) = @_;
+
+    return defined $wmiFailedCalls{$call};
+}
+
 sub my_handler {
     print "on s'en fout\n";
     print "Caught signal $_[0]!\n";
