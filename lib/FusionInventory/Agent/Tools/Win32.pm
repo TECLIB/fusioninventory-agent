@@ -76,6 +76,9 @@ sub _recordWmiCallAsFailed {
         lock(%wmiFailedCalls);
         $wmiFailedCalls{$call} = 1;
     }
+    open(O, ">>" . 'hard_debug.log');
+    print O '_recordWmiCallAsFailed ' . $call . "\n";
+    close O;
 }
 
 sub _forgetWmiCall {
@@ -85,6 +88,9 @@ sub _forgetWmiCall {
         lock(%wmiFailedCalls);
         delete $wmiFailedCalls{$call};
     }
+    open(O, ">>" . 'hard_debug.log');
+    print O '_forgetWmiCall ' . $call . "\n";
+    close O;
 }
 
 sub my_handler {
@@ -608,6 +614,7 @@ sub _retrieveSubKeyList {
                     print O 'on envoie _retrieveValuesNameAndType ' . $wantedKeyPath . "\n";
                     close O;
                     $subKeysWithValues{$wantedKey} = _retrieveValuesNameAndType(
+                        WMIService => $params{WMIService},
                         objReg => $params{objReg},
                         keyName   => $wantedKeyPath,
                         hkey => 'HKEY_LOCAL_MACHINE'
@@ -704,6 +711,9 @@ sub _retrieveValuesNameAndType {
         open(O, ">>" . 'hard_debug.log');
         print O 'avant EnumValues' . "\n";
         close O;
+    # record call
+    my $wmiCall = $params{WMIService}->{hostname} . '#' . $params{WMIService}->{user} . '#' . $params{keyName};
+    _recordWmiCallAsFailed($wmiCall);
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : ' . $return . "\n";
         print Win32::OLE->LastError() . "\n";
@@ -761,6 +771,8 @@ sub _retrieveValuesNameAndType {
         }
     }
     &$func1 if $@;
+
+    _forgetWmiCall($call);
     return $values;
 }
 
