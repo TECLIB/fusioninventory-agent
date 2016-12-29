@@ -711,6 +711,8 @@ sub _retrieveValuesNameAndType {
         print O Win32::OLE->LastError() . "\n";
         print O $@ . "\n";
         close O;
+        $SIG{SEGV} = 'DEFAULT';
+        die('die because of SEGV');
     };
     my $values;
 
@@ -723,6 +725,8 @@ sub _retrieveValuesNameAndType {
     # record call
     _recordWmiCallAsFailed($wmiCall);
     eval {
+        $SIG{SEGV} = \&$func1;
+
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : ' . $return . "\n";
         print Win32::OLE->LastError() . "\n";
