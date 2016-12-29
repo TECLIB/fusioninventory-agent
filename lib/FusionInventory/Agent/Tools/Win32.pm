@@ -682,6 +682,9 @@ sub _retrieveValuesNameAndType {
         return;
     }
 
+    my $wmiCall = $params{WMIService}->{hostname} . '#' . $params{WMIService}->{user} . '#' . $params{keyName};
+    return if _isWmiCallFailed($wmiCall);
+
     unless ($params{objReg}) {
         return unless $params{WMIService};
         my $WMIService = _connectToService(
@@ -718,7 +721,6 @@ sub _retrieveValuesNameAndType {
         print O 'avant EnumValues' . "\n";
         close O;
     # record call
-    my $wmiCall = $params{WMIService}->{hostname} . '#' . $params{WMIService}->{user} . '#' . $params{keyName};
     _recordWmiCallAsFailed($wmiCall);
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : ' . $return . "\n";
