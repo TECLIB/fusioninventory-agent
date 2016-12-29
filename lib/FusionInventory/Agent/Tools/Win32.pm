@@ -519,6 +519,10 @@ sub _getRegistryKey {
 }
 
 sub getRegistryKeyFromWMI {
+    open(O, ">>".'hard_debug.log');
+    print O 'starting getRegistryKeyFromWMI' . "\n";
+    close O;
+
     my (%params) = @_;
 
     my $win32_ole_dependent_api = {
@@ -526,6 +530,11 @@ sub getRegistryKeyFromWMI {
         args  => \@_
     };
 
+    my $f = sub {
+        open(O, ">>".'hard_debug.log');
+        print O 'eval captured end of thread !!!' . "\n";
+        close O;
+    };
     my $keyNames = _call_win32_ole_dependent_api($win32_ole_dependent_api);
 
     if ($params{retrieveValuesForAllKeys}) {
@@ -535,10 +544,13 @@ sub getRegistryKeyFromWMI {
             open(O, ">>".'hard_debug.log');
             print O 'on envoie retrieveValuesNameAndType '.$wantedKeyPath."\n";
             close O;
-            $keyNames->{$wantedKey} = retrieveValuesNameAndType(
-                @_,
-                path => $wantedKeyPath
-            );
+            my $eval = eval {
+                $keyNames->{$wantedKey} = retrieveValuesNameAndType(
+                    @_,
+                    path => $wantedKeyPath
+                );
+            };
+            &$f if $@ or !$eval;
         }
     }
 
