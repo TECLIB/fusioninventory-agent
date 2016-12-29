@@ -711,8 +711,6 @@ sub _retrieveValuesNameAndType {
         print O Win32::OLE->LastError() . "\n";
         print O $@ . "\n";
         close O;
-        $SIG{SEGV} = 'DEFAULT';
-        die('die because of SEGV');
     };
     my $values;
 
@@ -722,12 +720,8 @@ sub _retrieveValuesNameAndType {
         open(O, ">>" . 'hard_debug.log');
         print O 'avant EnumValues' . "\n";
         close O;
-    $DB::single = 1;
     # record call
     _recordWmiCallAsFailed($wmiCall);
-    eval {
-#        $SIG{SEGV} = \&$func1;
-
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : ' . $return . "\n";
         print Win32::OLE->LastError() . "\n";
@@ -760,8 +754,8 @@ sub _retrieveValuesNameAndType {
         my $ddd = Data::Dumper->new([$arrValueTypes]);
         print O $ddd->Dump;
         close O;
+    my $retEval = eval {
 #        local $SIG{SEGV} = 'IGNORE';
-#    my $retEval = eval {
         if (defined $return && $return == 0) {
             $types = [ ];
             foreach my $item (in( $arrValueTypes->Value )) {
@@ -785,6 +779,7 @@ sub _retrieveValuesNameAndType {
         }
     }
     &$func1 if $@;
+
     _forgetWmiCall($wmiCall);
     return $values;
 }
@@ -1206,7 +1201,7 @@ sub _win32_ole_worker {
         #
         threads->exit;
     };
-#    local $SIG{SEGV} = 'IGNORE';
+    local $SIG{SEGV} = 'IGNORE';
 #    $SIG{TERM} = \&$errorHandler;
 #    $SIG{ABRT} = \&$errorHandler;
 #    $SIG{ILL} = \&$errorHandler;
