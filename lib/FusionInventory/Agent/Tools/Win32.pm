@@ -535,6 +535,7 @@ sub getRegistryKeyFromWMI {
         print O 'eval captured end of thread !!!' . "\n";
         close O;
     };
+    $DB::single = 1;
     my $keyNames = _call_win32_ole_dependent_api($win32_ole_dependent_api);
 
     if ($params{retrieveValuesForAllKeys}) {
