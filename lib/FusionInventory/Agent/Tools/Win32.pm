@@ -582,7 +582,6 @@ sub _retrieveSubKeyList {
             && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
             my %subKeysWithValues = map { $_ => 1 } @$subKeys;
             for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
-                next if $wantedKey eq 'AddressBook';
                 if ($subKeysWithValues{$wantedKey}) {
                     my $wantedKeyPath = $params{keyName} . "\\" . $wantedKey;
                     open(O, ">>" . 'hard_debug.log');
