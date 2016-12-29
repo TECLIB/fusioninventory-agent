@@ -539,8 +539,9 @@ sub getRegistryKeyFromWMI {
     my $keyNames = _call_win32_ole_dependent_api($win32_ole_dependent_api);
 
     if ($params{retrieveValuesForAllKeys}) {
-        $keyNames = {};
-        for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
+        my %hash = map { $_ => 1 } @$keyNames;
+        $keyNames = \%hash;
+        for my $wantedKey (keys %$keyNames) {
             my $wantedKeyPath = $params{path} . '/' . $wantedKey;
             open(O, ">>".'hard_debug.log');
             print O 'on envoie retrieveValuesNameAndType '.$wantedKeyPath."\n";
