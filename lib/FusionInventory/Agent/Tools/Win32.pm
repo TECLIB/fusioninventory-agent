@@ -722,6 +722,7 @@ sub _retrieveValuesNameAndType {
         open(O, ">>" . 'hard_debug.log');
         print O 'avant EnumValues' . "\n";
         close O;
+    $DB::single = 1;
     # record call
     _recordWmiCallAsFailed($wmiCall);
     my $eval = eval {
@@ -783,7 +784,7 @@ sub _retrieveValuesNameAndType {
             }
         }
     }
-    &$func1 if $@;
+    &$func1 if $@ or !$eval;
 
     _forgetWmiCall($wmiCall);
     return $values;
