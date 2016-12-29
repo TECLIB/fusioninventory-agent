@@ -152,7 +152,7 @@ sub _retrieveSoftwareFromRemoteRegistry {
     my $softwaresFromRemote = getRegistryKeyFromWMI(
         %params,
         path => $pathRegularSoftware,
-        retrieveValuesForAllKeys => 1
+#        retrieveValuesForAllKeys => 1
     );
 
     return $softwaresFromRemote;

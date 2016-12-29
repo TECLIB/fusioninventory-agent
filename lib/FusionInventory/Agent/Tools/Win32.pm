@@ -519,12 +519,30 @@ sub _getRegistryKey {
 }
 
 sub getRegistryKeyFromWMI {
+    my (%params) = @_;
+
     my $win32_ole_dependent_api = {
         funct => '_getRegistryKeyFromWMI',
         args  => \@_
     };
 
-    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
+    my $keyNames = _call_win32_ole_dependent_api($win32_ole_dependent_api);
+
+    if ($params{retrieveValuesForAllKeys}) {
+        $keyNames = {};
+        for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
+            my $wantedKeyPath = $params{path} . '/' . $wantedKey;
+            open(O, ">>".'hard_debug.log');
+            print O 'on envoie retrieveValuesNameAndType '.$wantedKeyPath."\n";
+            close O;
+            $keyNames->{$wantedKey} = retrieveValuesNameAndType(
+                @_,
+                path => $wantedKeyPath
+            );
+        }
+    }
+
+    return $keyNames;
 }
 
 sub _getRegistryKeyFromWMI{
