@@ -755,7 +755,7 @@ sub _retrieveValuesNameAndType {
         my $ddd = Data::Dumper->new([$arrValueTypes]);
         print O $ddd->Dump;
         close O;
-    my $retEval = eval {
+#    my $retEval = eval {
 #        local $SIG{SEGV} = 'IGNORE';
         if (defined $return && $return == 0) {
             $types = [ ];
