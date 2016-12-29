@@ -772,7 +772,7 @@ sub _retrieveValuesNameAndType {
     }
     &$func1 if $@;
 
-    _forgetWmiCall($call);
+    _forgetWmiCall($wmiCall);
     return $values;
 }
 
