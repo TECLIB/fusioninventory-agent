@@ -67,6 +67,26 @@ our @EXPORT = qw(
     retrieveValuesNameAndType
 );
 
+my %wmiFailedCalls :shared;
+
+sub _recordWmiCallAsFailed {
+    my ($call) = @_;
+
+    {
+        lock(%wmiFailedCalls);
+        $wmiFailedCalls{$call} = 1;
+    }
+}
+
+sub _forgetWmiCall {
+    my ($call) = @_;
+
+    {
+        lock(%wmiFailedCalls);
+        delete $wmiFailedCalls{$call};
+    }
+}
+
 sub my_handler {
     print "on s'en fout\n";
     print "Caught signal $_[0]!\n";
