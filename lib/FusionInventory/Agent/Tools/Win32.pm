@@ -754,43 +754,44 @@ sub _retrieveValuesNameAndType {
         close O;
     # record call
     _recordWmiCallAsFailed($wmiCall);
-    eval {
+#    eval {
+    {
         $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
-        print 'error : ' . $return . "\n";
-        print Win32::OLE->LastError() . "\n";
+        print 'error : '.$return."\n";
+        print Win32::OLE->LastError()."\n";
         my $sprintfError = '';
         if (Win32::OLE->LastError()) {
-            open(O, ">>" . 'hard_debug.log');
+            open(O, ">>".'hard_debug.log');
             $sprintfError = sprintf("%s", Win32::OLE->LastError());
-            print O $sprintfError . "\n";
+            print O $sprintfError."\n";
             close O;
         }
-        open(O, ">>" . 'hard_debug.log');
-        print O 'sprintfError : ' . $sprintfError . "\n";
-        print O 'ref arrValueTypes ' . (ref $arrValueTypes) . "\n";
-        print O 'arrValueTypes->IsNothing ' . $arrValueTypes->IsNothing() . "\n";
-        print O 'arrValueTypes->IsNullString ' . $arrValueTypes->IsNullString() .  "\n";
-        print O 'arrValueTypes->Type ' . $arrValueTypes->Type() .  "\n";
+        open(O, ">>".'hard_debug.log');
+        print O 'sprintfError : '.$sprintfError."\n";
+        print O 'ref arrValueTypes '.(ref $arrValueTypes)."\n";
+        print O 'arrValueTypes->IsNothing '.$arrValueTypes->IsNothing()."\n";
+        print O 'arrValueTypes->IsNullString '.$arrValueTypes->IsNullString()."\n";
+        print O 'arrValueTypes->Type '.$arrValueTypes->Type()."\n";
         close O;
         $DB::single = 1;
         sleep 1;
         my $f2 = sub {
             my $str = shift;
-            open(O, ">>" . 'hard_debug.log');
-            print O '_retrieveValuesNameAndType() : eval() has died ' . $params{keyName} . " : $str\n";
-            print O Win32::OLE->LastError() . "\n";
-            print O $@ . "\n";
+            open(O, ">>".'hard_debug.log');
+            print O '_retrieveValuesNameAndType() : eval() has died '.$params{keyName}." : $str\n";
+            print O Win32::OLE->LastError()."\n";
+            print O $@."\n";
             close O;
         };
-        open(O, ">>" . 'hard_debug.log');
-        print O 'arrValueTypes->Value ' . $arrValueTypes->Value() .  "\n";
-        my $ddd = Data::Dumper->new([$arrValueTypes]);
+        open(O, ">>".'hard_debug.log');
+        print O 'arrValueTypes->Value '.$arrValueTypes->Value()."\n";
+        my $ddd = Data::Dumper->new([ $arrValueTypes ]);
         print O $ddd->Dump;
         close O;
-#    my $retEval = eval {
-#        local $SIG{SEGV} = 'IGNORE';
+        #    my $retEval = eval {
+        #        local $SIG{SEGV} = 'IGNORE';
         if (defined $return && $return == 0) {
             $types = [ ];
             foreach my $item (in( $arrValueTypes->Value )) {
@@ -812,8 +813,9 @@ sub _retrieveValuesNameAndType {
                 }
             }
         }
-    };
-    &$func1 if $@;
+    }
+#    };
+#    &$func1 if $@;
 
     _forgetWmiCall($wmiCall);
     return $values;
