@@ -1238,7 +1238,7 @@ sub _win32_ole_worker {
         #
         threads->exit;
     };
-    local $SIG{SEGV} = 'IGNORE';
+    local $SIG{SEGV} = 'DEFAULT';
 #    $SIG{TERM} = \&$errorHandler;
 #    $SIG{ABRT} = \&$errorHandler;
 #    $SIG{ILL} = \&$errorHandler;
