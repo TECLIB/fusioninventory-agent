@@ -722,6 +722,7 @@ sub _retrieveValuesNameAndType {
         close O;
     # record call
     _recordWmiCallAsFailed($wmiCall);
+    eval {
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : ' . $return . "\n";
         print Win32::OLE->LastError() . "\n";
@@ -777,7 +778,7 @@ sub _retrieveValuesNameAndType {
                 }
             }
         }
-    }
+    };
     &$func1 if $@;
 
     _forgetWmiCall($wmiCall);
