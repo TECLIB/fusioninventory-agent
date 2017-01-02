@@ -1212,7 +1212,7 @@ sub start_Win32_OLE_Worker {
 
         # Start a worker thread
         $worker = threads->create( \&_win32_ole_worker );
-        $worker->set_thread_exit_only(true);
+        $worker->set_thread_exit_only(1);
     }
 }
 
