@@ -12,7 +12,7 @@ use threads::shared;
 #use sigtrap 'handler', \&errorHandler, 'error-signals';
 #use sigtrap qw(handler errorHandler error-signals);
 #use sigtrap qw(handler errorHandler old-interface-signals);
-#use sigtrap qw(handler my_handler untrapped);
+use sigtrap qw(handler my_handler untrapped);
 #use sigtrap qw(handler errorHandler untrapped);
 
 use UNIVERSAL::require();
@@ -746,6 +746,11 @@ sub _retrieveValuesNameAndType {
         print O $dd->Dump;
         close O;
         $SIG{SEGV} = 'DEFAULT';
+        $dd = Data::Dumper->new([\%SIG]);
+        open(O, ">>" . 'hard_debug.log');
+        print O $dd->Dump;
+        close O;
+
         exit('die because of SEGV');
     };
     my $values;
