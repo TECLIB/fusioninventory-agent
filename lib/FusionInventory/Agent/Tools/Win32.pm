@@ -815,7 +815,7 @@ sub _retrieveValuesNameAndType {
                 }
             }
         }
-        $SIG{SEGV} = 'DEFAULT';
+#        $SIG{SEGV} = 'DEFAULT';
     }
 #    };
 #    &$func1 if $@;
