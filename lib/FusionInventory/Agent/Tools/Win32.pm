@@ -14,7 +14,6 @@ use threads::shared;
 #use sigtrap qw(handler errorHandler old-interface-signals);
 #use sigtrap qw(handler my_handler untrapped);
 #use sigtrap qw(handler errorHandler untrapped);
-use sigtrap qw(handler errorHandler SEGV);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
@@ -761,7 +760,7 @@ sub _retrieveValuesNameAndType {
     _recordWmiCallAsFailed($wmiCall);
 #    eval {
     {
-#        $SIG{SEGV} = \&$func1;
+        $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : '.$return."\n";
