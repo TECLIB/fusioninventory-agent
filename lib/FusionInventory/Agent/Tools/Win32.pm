@@ -758,7 +758,7 @@ sub _retrieveValuesNameAndType {
     _recordWmiCallAsFailed($wmiCall);
 #    eval {
     {
-        local $SIG{SEGV} = \&$func1;
+        $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : '.$return."\n";
@@ -1240,8 +1240,8 @@ sub _win32_ole_worker {
         #
         threads->exit;
     };
-    local $SIG{SEGV} = 'DEFAULT';
-#    $SIG{TERM} = \&$errorHandler;
+#    local $SIG{SEGV} = 'DEFAULT';
+    $SIG{TERM} = \&$errorHandler;
 #    $SIG{ABRT} = \&$errorHandler;
 #    $SIG{ILL} = \&$errorHandler;
 
