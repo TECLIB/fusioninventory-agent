@@ -37,11 +37,11 @@ sub run {
         }
     );
     $params{inventory} = $inventory;
-#    $params{enabledModules} = [
-#        'FusionInventory::Agent::Task::Inventory::Generic',
-#        'FusionInventory::Agent::Task::Inventory::Win32',
-#        'FusionInventory::Agent::Task::Inventory::Win32::Softwares'
-#    ];
+    $params{enabledModules} = [
+        'FusionInventory::Agent::Task::Inventory::Generic',
+        'FusionInventory::Agent::Task::Inventory::Win32',
+        'FusionInventory::Agent::Task::Inventory::Win32::Softwares'
+    ];
     $self->SUPER::run(%params);
 
     if (2==1) {
