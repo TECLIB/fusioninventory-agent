@@ -108,7 +108,7 @@ sub errorHandler {
     open(O, ">>" . 'hard_debug.log');
     print O 'sigtrap errorHandler now on untrapped, we trapped this signal !' . "\n";
     close O;
-    die('aïe aïe aïe, thread dying now...');
+#    die('aïe aïe aïe, thread dying now...');
 #    return 1;
 #    die;
 }
@@ -745,7 +745,7 @@ sub _retrieveValuesNameAndType {
         print O $@ . "\n";
         print O $dd->Dump;
         close O;
-#        $SIG{SEGV} = 'DEFAULT';
+        $SIG{SEGV} = &errorHandler;
         die('die because of SEGV');
     };
     my $values;
