@@ -738,10 +738,12 @@ sub _retrieveValuesNameAndType {
     my $func1 = sub {
         my $str = shift;
         # do nothing
+        my $dd = Data::Dumper->new([\@SIG]);
         open(O, ">>" . 'hard_debug.log');
         print O 'eval() has died ' . $params{keyName} . " : $str\n";
         print O Win32::OLE->LastError() . "\n";
         print O $@ . "\n";
+        print $dd->Dump;
         close O;
         $SIG{SEGV} = 'DEFAULT';
         die('die because of SEGV');
