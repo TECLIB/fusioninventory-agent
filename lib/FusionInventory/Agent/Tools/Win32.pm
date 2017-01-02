@@ -815,6 +815,7 @@ sub _retrieveValuesNameAndType {
                 }
             }
         }
+        $SIG{SEGV} = 'DEFAULT';
     }
 #    };
 #    &$func1 if $@;
@@ -1241,7 +1242,7 @@ sub _win32_ole_worker {
         threads->exit;
     };
 #    local $SIG{SEGV} = 'DEFAULT';
-    $SIG{TERM} = \&$errorHandler;
+#    $SIG{TERM} = \&$errorHandler;
 #    $SIG{ABRT} = \&$errorHandler;
 #    $SIG{ILL} = \&$errorHandler;
 
