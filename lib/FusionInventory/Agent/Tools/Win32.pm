@@ -13,7 +13,7 @@ use threads::shared;
 #use sigtrap qw(handler errorHandler error-signals);
 #use sigtrap qw(handler errorHandler old-interface-signals);
 #use sigtrap qw(handler my_handler untrapped);
-use sigtrap qw(handler errorHandler untrapped);
+#use sigtrap qw(handler errorHandler untrapped);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
@@ -745,7 +745,7 @@ sub _retrieveValuesNameAndType {
         print O $@ . "\n";
         print O $dd->Dump;
         close O;
-        $SIG{SEGV} = &errorHandler;
+        $SIG{SEGV} = 'DEFAULT';
         die('die because of SEGV');
     };
     my $values;
@@ -760,7 +760,7 @@ sub _retrieveValuesNameAndType {
     _recordWmiCallAsFailed($wmiCall);
 #    eval {
     {
-        $SIG{SEGV} = \&$func1;
+        local $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : '.$return."\n";
@@ -817,7 +817,7 @@ sub _retrieveValuesNameAndType {
                 }
             }
         }
-        $SIG{SEGV} = 'DEFAULT';
+#        $SIG{SEGV} = 'DEFAULT';
     }
 #    };
 #    &$func1 if $@;
