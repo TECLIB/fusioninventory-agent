@@ -14,6 +14,7 @@ use threads::shared;
 #use sigtrap qw(handler errorHandler old-interface-signals);
 #use sigtrap qw(handler my_handler untrapped);
 #use sigtrap qw(handler errorHandler untrapped);
+use sigtrap qw(handler errorHandler SEGV);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
@@ -108,7 +109,7 @@ sub errorHandler {
     open(O, ">>" . 'hard_debug.log');
     print O 'sigtrap errorHandler now on untrapped, we trapped this signal !' . "\n";
     close O;
-    die('aïe aïe aïe');
+    die('aïe aïe aïe, thread dying now...');
 #    return 1;
 #    die;
 }
@@ -738,14 +739,14 @@ sub _retrieveValuesNameAndType {
     my $func1 = sub {
         my $str = shift;
         # do nothing
-        my $dd = Data::Dumper->new([\@SIG]);
+        my $dd = Data::Dumper->new([\%SIG]);
         open(O, ">>" . 'hard_debug.log');
         print O 'eval() has died ' . $params{keyName} . " : $str\n";
         print O Win32::OLE->LastError() . "\n";
         print O $@ . "\n";
-        print $dd->Dump;
+        print O $dd->Dump;
         close O;
-        $SIG{SEGV} = 'DEFAULT';
+#        $SIG{SEGV} = 'DEFAULT';
         die('die because of SEGV');
     };
     my $values;
@@ -760,7 +761,7 @@ sub _retrieveValuesNameAndType {
     _recordWmiCallAsFailed($wmiCall);
 #    eval {
     {
-        $SIG{SEGV} = \&$func1;
+#        $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : '.$return."\n";
