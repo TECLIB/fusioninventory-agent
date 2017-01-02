@@ -746,7 +746,7 @@ sub _retrieveValuesNameAndType {
         print O $dd->Dump;
         close O;
         $SIG{SEGV} = 'DEFAULT';
-        die('die because of SEGV');
+        exit('die because of SEGV');
     };
     my $values;
 
@@ -1212,6 +1212,7 @@ sub start_Win32_OLE_Worker {
 
         # Start a worker thread
         $worker = threads->create( \&_win32_ole_worker );
+        $worker->set_thread_exit_only(true);
     }
 }
 
