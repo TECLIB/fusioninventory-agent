@@ -108,8 +108,8 @@ sub errorHandler {
     open(O, ">>" . 'hard_debug.log');
     print O 'sigtrap errorHandler now on untrapped, we trapped this signal !' . "\n";
     close O;
-    warn('aïe aïe aïe');
-    return 1;
+    die('aïe aïe aïe');
+#    return 1;
 #    die;
 }
 
@@ -758,7 +758,7 @@ sub _retrieveValuesNameAndType {
     _recordWmiCallAsFailed($wmiCall);
 #    eval {
     {
-        $SIG{SEGV} = \&$func1;
+        local $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : '.$return."\n";
