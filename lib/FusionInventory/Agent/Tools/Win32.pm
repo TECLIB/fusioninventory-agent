@@ -100,8 +100,10 @@ sub _isWmiCallFailed {
 }
 
 sub my_handler {
+    open(O, ">>" . 'hard_debug.log');
     print "on s'en fout\n";
-    print "Caught signal $_[0]!\n";
+    print "Caught signal $!\n";
+    close O;
 }
 
 sub errorHandler {
