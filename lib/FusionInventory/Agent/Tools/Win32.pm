@@ -1366,6 +1366,10 @@ sub _call_win32_ole_dependent_api {
         return (exists($call->{'array'}) && $call->{'array'}) ?
             @{$result || []} : $result ;
     } else {
+        open(O, ">>" . 'hard_debug.log');
+        print O '$worker not defined !!!' . "\n";
+        close O;
+
         # Load Win32::OLE as late as possible
         Win32::OLE->require() or return;
         Win32::OLE::Variant->require() or return;
