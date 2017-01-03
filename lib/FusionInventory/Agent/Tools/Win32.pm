@@ -1217,7 +1217,7 @@ sub start_Win32_OLE_Worker {
 
     unless (defined($worker)) {
         open(O, ">>" . 'hard_debug.log');
-        print O 'starting thread now ' . $call . "\n";
+        print O 'starting thread now ' . "\n";
         close O;
 
         # Request a semaphore on which worker blocks immediatly
