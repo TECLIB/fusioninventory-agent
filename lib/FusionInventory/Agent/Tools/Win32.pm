@@ -1216,6 +1216,10 @@ my @win32_ole_calls : shared;
 sub start_Win32_OLE_Worker {
 
     unless (defined($worker)) {
+        open(O, ">>" . 'hard_debug.log');
+        print O 'starting thread now ' . $call . "\n";
+        close O;
+
         # Request a semaphore on which worker blocks immediatly
         Thread::Semaphore->require();
         $worker_semaphore = Thread::Semaphore->new(0);
