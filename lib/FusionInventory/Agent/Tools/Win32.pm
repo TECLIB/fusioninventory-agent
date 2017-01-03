@@ -536,6 +536,7 @@ sub getRegistryKeyFromWMI {
         open(O, ">>".'hard_debug.log');
         print O 'eval captured end of thread !!!' . "\n";
         close O;
+        $worker = undef;
     };
     $DB::single = 1;
     my $keyNames = _call_win32_ole_dependent_api($win32_ole_dependent_api);
@@ -757,8 +758,8 @@ sub _retrieveValuesNameAndType {
         close O;
 
 #        die('die because of SEGV');
-        threads->detach();
-#        threads->exit(0);
+#        threads->detach();
+        threads->exit(0);
     };
     my $values;
 
