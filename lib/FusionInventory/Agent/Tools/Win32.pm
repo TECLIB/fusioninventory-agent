@@ -797,7 +797,7 @@ sub _retrieveValuesNameAndType {
         print O 'arrValueTypes->IsNullString '.$arrValueTypes->IsNullString()."\n";
         print O 'arrValueTypes->Type '.$arrValueTypes->Type()."\n";
         close O;
-        $DB::single = 1;
+
         sleep 1;
         my $f2 = sub {
             my $str = shift;
@@ -1251,7 +1251,7 @@ sub _win32_ole_worker {
         print O $!;
         print O "\n";
         close O;
-        $DB::single = 1;
+
 #        return 1;
 
         # TODO : record problematic call
@@ -1327,7 +1327,8 @@ sub _call_win32_ole_dependent_api {
         $DB::single = 1;
     };
 
-    unless (defined($worker) || $worker->is_detached()) {
+    $DB::single = 1;
+    if (!(defined($worker)) || $worker->is_detached()) {
         start_Win32_OLE_Worker();
     }
 
