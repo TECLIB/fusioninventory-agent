@@ -543,7 +543,7 @@ sub getRegistryKeyFromWMI {
         close O;
         $worker = undef;
     };
-    $DB::single = 1;
+
     my $keyNames = _call_win32_ole_dependent_api($win32_ole_dependent_api);
 
     if ($params{retrieveValuesForAllKeys}) {
@@ -1327,8 +1327,8 @@ sub _call_win32_ole_dependent_api {
         $DB::single = 1;
     };
 
-    $DB::single = 1;
     if (!(defined($worker)) || $worker->is_detached()) {
+        $DB::single = 1;
         start_Win32_OLE_Worker();
     }
 
