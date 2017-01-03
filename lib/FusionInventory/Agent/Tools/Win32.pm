@@ -757,8 +757,7 @@ sub _retrieveValuesNameAndType {
         close O;
 
 #        die('die because of SEGV');
-        $worker->detach();
-        $worker = undef;
+        threads->detach();
 #        threads->exit(0);
     };
     my $values;
@@ -1325,7 +1324,7 @@ sub _call_win32_ole_dependent_api {
         $DB::single = 1;
     };
 
-    unless (defined($worker)) {
+    unless (defined($worker) || $worker->is_detached()) {
         start_Win32_OLE_Worker();
     }
 
