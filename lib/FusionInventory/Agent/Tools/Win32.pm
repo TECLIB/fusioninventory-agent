@@ -69,6 +69,11 @@ our @EXPORT = qw(
 
 my %wmiFailedCalls :shared;
 
+my $worker ;
+my $worker_semaphore;
+
+my @win32_ole_calls : shared;
+
 sub _recordWmiCallAsFailed {
     my ($call) = @_;
 
@@ -1211,10 +1216,7 @@ sub FileTimeToSystemTime {
     return @times;
 }
 
-my $worker ;
-my $worker_semaphore;
 
-my @win32_ole_calls : shared;
 
 sub start_Win32_OLE_Worker {
 
