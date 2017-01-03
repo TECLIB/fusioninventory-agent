@@ -757,7 +757,9 @@ sub _retrieveValuesNameAndType {
         close O;
 
 #        die('die because of SEGV');
-        threads->exit(0);
+        $worker->detach();
+        $worker = undef;
+#        threads->exit(0);
     };
     my $values;
 
