@@ -747,7 +747,7 @@ sub _retrieveValuesNameAndType {
         print O $@ . "\n";
         print O $dd->Dump;
         close O;
-        $SIG{SEGV} = 'DEFAULT';
+        $SIG{SEGV} = undef;
         $SIG{INT} = undef;
         $SIG{ALRM} = undef;
         $SIG{TERM} = undef;
@@ -770,7 +770,7 @@ sub _retrieveValuesNameAndType {
     _recordWmiCallAsFailed($wmiCall);
 #    eval {
     {
-        local $SIG{SEGV} = \&$func1;
+        $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : '.$return."\n";
