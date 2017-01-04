@@ -65,6 +65,7 @@ our @EXPORT = qw(
     getRegistryKeyFromWMI
     getRegistryValuesFromWMI
     retrieveValuesNameAndType
+    retrieveKeyValuesFromRemote
 );
 
 my %wmiFailedCalls :shared;
@@ -563,6 +564,23 @@ sub getRegistryKeyFromWMI {
     return $keyNames;
 }
 
+sub retrieveKeyValuesFromRemote {
+    my $values;
+
+    my $f = sub {
+        open(O, ">>".'hard_debug.log');
+        print O 'eval captured end of thread !!!' . "\n";
+        close O;
+    };
+    my $eval = eval {
+        $values = retrieveValuesNameAndType(
+            @_
+        );
+    };
+    &$f if $@ or !$eval;
+    return $values;
+}
+
 sub _getRegistryKeyFromWMI{
     my (%params) = @_;
 
@@ -607,6 +625,11 @@ sub _retrieveSubKeyList {
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
+        my $keyName = $1 . '/' . $params{keyName};
+        $keyName =~ tr#/#\\#;
+        $params{keyName} = $keyName;
+    } elsif ($params{root} =~ /^HKEY_USERS(?:\\|\/)(.*)$/) {
+        $hkey = $Win32::Registry::HKEY_USERS;
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
@@ -709,8 +732,15 @@ sub _retrieveValuesNameAndType {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
+    } elsif ($params{root} && $params{root} =~ /^HKEY_USERS(?:\\|\/)(.*)$/) {
+        $hkey = $Win32::Registry::HKEY_USERS;
+        my $keyName = $1 . '/' . $params{keyName};
+        $keyName =~ tr#/#\\#;
+        $params{keyName} = $keyName;
     } elsif ($params{hkey} && $params{hkey} eq 'HKEY_LOCAL_MACHINE') {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
+    } elsif ($params{hkey} && $params{hkey} eq 'HKEY_USERS') {
+        $hkey = $Win32::Registry::HKEY_USERS;
     } else {
         $params{logger}->error(
             "Failed to parse '$params{path}'. Does it start with HKEY_?"
@@ -853,8 +883,15 @@ sub _retrieveRemoteRegistryValueByType {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
+    } elsif ($params{root} && $params{root} =~ /^HKEY_USERS(?:\\|\/)(.*)$/) {
+        $params{hkey} = $Win32::Registry::HKEY_USERS;
+        my $keyName = $1 . '/' . $params{keyName};
+        $keyName =~ tr#/#\\#;
+        $params{keyName} = $keyName;
     } elsif ($params{hkey} && $params{hkey} eq 'HKEY_LOCAL_MACHINE') {
         $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
+    } elsif ($params{hkey} && $params{hkey} eq 'HKEY_USERS') {
+        $params{hkey} = $Win32::Registry::HKEY_USERS;
     }
 
     my $value;
@@ -1383,7 +1420,50 @@ sub _call_win32_ole_dependent_api {
     }
 }
 
+
 sub getUsersFromRegistry {
+    my (%params) = @_;
+
+    $params{pathToUserList} = 'SOFTWARE/Microsoft/Windows NT/CurrentVersion/ProfileList';
+    my $userList;
+    if ($params{WMIService}) {
+        $userList = _getUsersFromRemoteRegistry(%params);
+    } else {
+        $userList = _getUsersFromLocalRegistry(%params);
+    }
+}
+
+sub _getUsersFromRemoteRegistry {
+    my (%params) = @_;
+
+    my $logger = $params{logger};
+    my $dataFromRegistry = getRegistryKeyFromWMI(
+        %params,
+        path => 'HKEY_LOCAL_MACHINE/' . $params{pathToUserList},
+        retrieveValuesForAllKeys => 1
+    );
+    next unless $dataFromRegistry;
+
+    my $userList;
+    foreach my $profileName (keys %$dataFromRegistry) {
+        $params{logger}->debug2('profileName : ' . $profileName);
+        next unless $profileName =~ m{/$};
+        next unless length($profileName) > 10;
+        my $profilePath = $dataFromRegistry->{$profileName}->{'ProfileImagePath'};
+        my $sid = $dataFromRegistry->{$profileName}->{'Sid'};
+        next unless $sid;
+        next unless $profilePath;
+        my $user = basename($profilePath);
+        $userList->{$profileName} = $user;
+    }
+
+    if ($params{logger}) {
+        $params{logger}->debug2('getUsersFromRegistry() : retrieved ' . scalar(keys %$userList) . ' users');
+    }
+    return $userList;
+}
+
+sub _getUsersFromLocalRegistry {
     my (%params) = @_;
 
     my $logger = $params{logger};
@@ -1398,7 +1478,7 @@ sub getUsersFromRegistry {
     }
     $logger->debug2('getUsersFromRegistry() : opened LMachine registry key');
     my $profileList =
-        $machKey->{"SOFTWARE/Microsoft/Windows NT/CurrentVersion/ProfileList"};
+        $machKey->{$params{pathToUserList}};
     next unless $profileList;
 
     my $userList;
