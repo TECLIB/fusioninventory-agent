@@ -42,6 +42,9 @@ sub run {
         'FusionInventory::Agent::Task::Inventory::Win32',
         'FusionInventory::Agent::Task::Inventory::Win32::AntiVirus',
         'FusionInventory::Agent::Task::Inventory::Win32::Bios',
+        'FusionInventory::Agent::Task::Inventory::Win32::Chassis',
+        'FusionInventory::Agent::Task::Inventory::Win32::Controllers',
+        'FusionInventory::Agent::Task::Inventory::Win32::CPU',
         'FusionInventory::Agent::Task::Inventory::Win32::Networks',
         'FusionInventory::Agent::Task::Inventory::Win32::Softwares'
     ];
