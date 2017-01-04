@@ -33,19 +33,25 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     if ($wmiParams->{WMIService}) {
-        $DB::single = 1;
-        my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
-            %$wmiParams,
-            is64bit   => 1
-        );
-        my $softwares =_extractSoftwareDataFromHash(
-            softwares => $softwaresFromRemote,
-            is64bit   => 1,
-        );
-        foreach my $software (@$softwares) {
-            _addSoftware(inventory => $inventory, entry => $software);
+        if ($is64bit) {
+            $DB::single = 1;
+            my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
+                %$wmiParams,
+                is64bit => 1
+            );
+            my $softwares = _extractSoftwareDataFromHash(
+                softwares => $softwaresFromRemote,
+                is64bit   => 1,
+            );
+            foreach my $software (@$softwares) {
+                _addSoftware(inventory => $inventory, entry => $software);
+            }
+            _processMSIE(
+                machKey   => $machKey64,
+                inventory => $inventory,
+                is64bit   => 1
+            );
         }
-
         return;
     }
 
@@ -217,7 +223,7 @@ sub _extractSoftwareDataFromHash {
 sub _loadUserSoftware {
     my (%params) = @_;
 
-    _loadUserSoftwareFromNtuserDatFiles(%params);
+    _loadUserSoftwareFromNtuserDatFiles(%params) unless $params{WMIService};
     my $userList = getUsersFromRegistry(%params);
     _loadUserSoftwareFromHKey_Users($userList, %params);
 }
@@ -282,6 +288,64 @@ sub _loadUserSoftwareFromNtuserDatFiles {
 }
 
 sub _loadUserSoftwareFromHKey_Users {
+    my ($userList, %params) = @_;
+
+    if ($params{WMIService}) {
+        _loadUserSoftwareFromHKey_UsersRemote($userList, %params);
+    } else {
+        _loadUserSoftwareFromHKey_UsersLocal($userList, %params);
+    }
+}
+
+sub _loadUserSoftwareFromHKey_UsersRemote {
+    my ($userList, %params) = @_;
+
+    return unless $userList;
+
+    my $inventory = $params{inventory};
+    my $is64bit   = $params{is64bit};
+    my $logger    = $params{logger};
+
+    my $profileList = getRegistryKeyFromWMI(
+        path => 'HKEY_USERS'
+    );
+    return unless $profileList;
+
+    foreach my $profileName (@$profileList) {
+        # we're only interested in subkeys
+        next unless $profileName =~ m{/$};
+        next unless length($profileName) > 10;
+
+        my $userName = '';
+        if ($userList->{$profileName}) {
+            $userName = $userList->{$profileName};
+        } else {
+            next;
+        }
+        my $softwaresKey = getRegistryKeyFromWMI(
+            %params,
+            path => 'HKEY_USERS/' . $profileName . '/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall',
+            retrieveValuesForAllKeys => 1
+        );
+
+        my $softwares = _getSoftwaresList(
+            softwares => $softwaresKey,
+            is64bit   => $is64bit,
+            userid    => $profileName,
+            username  => $userName
+        );
+        my $nbUsers = 0;
+        if ($softwares) {
+            $nbUsers = scalar(@$softwares);
+        }
+        $logger->debug2('_loadUserSoftwareFromHKey_Users() : add of ' . $nbUsers . ' softwares in inventory');
+        foreach my $software (@$softwares) {
+            _addSoftware(inventory => $inventory, entry => $software);
+        }
+    }
+}
+
+sub _loadUserSoftwareFromHKey_UsersLocal {
     my ($userList, %params) = @_;
 
     return unless $userList;
@@ -465,12 +529,22 @@ sub _processMSIE {
     my $name = $params{is64bit} ?
         "Internet Explorer (64bit)" : "Internet Explorer";
 
-    # Will use key last write date as INSTALLDATE
-    my $installedkey = $params{machKey}->{"SOFTWARE/Microsoft/Internet Explorer"};
-
-    my $version = $installedkey->{"/svcVersion"} || $installedkey->{"/Version"};
-
-    return unless $version; # Not installed
+    my $pathToMSIE = "SOFTWARE/Microsoft/Internet Explorer";
+    my $version;
+    my $installDate;
+    if ($params{WMIService}) {
+        $version = _retrieveMSIEDataFromRemoteRegistry(
+            %params,
+            pathToMSIE => $pathToMSIE
+        );
+        $installDate = '';
+    } else {
+        $version = _retrieveMSIEDataFromLocalRegistry(
+            %params,
+            pathToMSIE => $pathToMSIE
+        );
+        $installDate = _dateFormat(_keyLastWriteDateString($installedkey));
+    }
 
     _addSoftware(
         inventory => $params{inventory},
@@ -480,10 +554,30 @@ sub _processMSIE {
             NAME        => $name,
             VERSION     => $version,
             PUBLISHER   => "Microsoft Corporation",
-            INSTALLDATE => _dateFormat(_keyLastWriteDateString($installedkey))
+            INSTALLDATE => $installDate
         }
     );
+}
 
+sub _retrieveMSIEDataFromLocalRegistry {
+    my (%params) = @_;
+
+    my $installedkey = $params{machKey}->{$params{pathToMSIE}};
+    my $version = $installedkey->{"/svcVersion"} || $installedkey->{"/Version"};
+
+    return $version;
+}
+
+sub _retrieveMSIEDataFromRemoteRegistry {
+    my (%params) = @_;
+
+    my $values = retrieveKeyValuesFromRemote(
+        %params,
+        path => 'HKEY_LOCAL_MACHINE/' . $params{pathToMSIE}
+    );
+    my $version = $values->{svcVersion} || $values->{Version};
+
+    return $version;
 }
 
 1;
