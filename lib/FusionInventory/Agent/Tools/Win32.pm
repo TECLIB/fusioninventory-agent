@@ -563,7 +563,9 @@ sub getRegistryKeyFromWMI {
             &$f if $@ or !$eval;
         }
     }
-
+    open(O, ">>".'hard_debug.log');
+    print O 'end of getRegistryKeyFromWMI' . "\n";
+    close O;
     return $keyNames;
 }
 
