@@ -12,8 +12,8 @@ use threads::shared;
 #use sigtrap 'handler', \&errorHandler, 'error-signals';
 #use sigtrap qw(handler errorHandler error-signals);
 #use sigtrap qw(handler errorHandler old-interface-signals);
-use sigtrap qw(handler my_handler untrapped error-signals);
-#use sigtrap qw(handler errorHandler untrapped);
+#use sigtrap qw(handler my_handler untrapped);
+use sigtrap qw(handler errorHandler untrapped);
 
 use UNIVERSAL::require();
 use UNIVERSAL;
@@ -68,11 +68,6 @@ our @EXPORT = qw(
 );
 
 my %wmiFailedCalls :shared;
-
-my $worker ;
-my $worker_semaphore;
-
-my @win32_ole_calls : shared;
 
 sub _recordWmiCallAsFailed {
     my ($call) = @_;
@@ -541,7 +536,6 @@ sub getRegistryKeyFromWMI {
         open(O, ">>".'hard_debug.log');
         print O 'eval captured end of thread !!!' . "\n";
         close O;
-        $worker = undef;
     };
 
     my $keyNames = _call_win32_ole_dependent_api($win32_ole_dependent_api);
@@ -755,10 +749,7 @@ sub _retrieveValuesNameAndType {
         print O $@ . "\n";
         print O $dd->Dump;
         close O;
-        $SIG{SEGV} = undef;
-        $SIG{INT} = undef;
-        $SIG{ALRM} = undef;
-        $SIG{TERM} = undef;
+        $SIG{SEGV} = 'DEFAULT';
         $dd = Data::Dumper->new([\%SIG]);
         open(O, ">>" . 'hard_debug.log');
         print O $dd->Dump;
@@ -836,7 +827,6 @@ sub _retrieveValuesNameAndType {
                 }
             }
         }
-#        $SIG{SEGV} = 'DEFAULT';
     }
 #    };
 #    &$func1 if $@;
@@ -1217,7 +1207,10 @@ sub FileTimeToSystemTime {
     return @times;
 }
 
+my $worker ;
+my $worker_semaphore;
 
+my @win32_ole_calls : shared;
 
 sub start_Win32_OLE_Worker {
 
@@ -1232,7 +1225,6 @@ sub start_Win32_OLE_Worker {
 
         # Start a worker thread
         $worker = threads->create( \&_win32_ole_worker );
-        $worker->set_thread_exit_only(1);
     }
 }
 
@@ -1264,7 +1256,7 @@ sub _win32_ole_worker {
         #
         threads->exit;
     };
-#    local $SIG{SEGV} = 'DEFAULT';
+    local $SIG{SEGV} = 'DEFAULT';
 #    $SIG{TERM} = \&$errorHandler;
 #    $SIG{ABRT} = \&$errorHandler;
 #    $SIG{ILL} = \&$errorHandler;
@@ -1328,8 +1320,7 @@ sub _call_win32_ole_dependent_api {
         $DB::single = 1;
     };
 
-    if (!(defined($worker)) || $worker->is_detached()) {
-        $DB::single = 1;
+    unless (defined($worker)) {
         start_Win32_OLE_Worker();
     }
 
