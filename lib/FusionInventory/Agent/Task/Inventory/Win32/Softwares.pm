@@ -48,7 +48,6 @@ sub doInventory {
                 _addSoftware(inventory => $inventory, entry => $software);
             }
             _processMSIE(
-                machKey   => $machKey64,
                 inventory => $inventory,
                 is64bit   => 1
             );
@@ -531,20 +530,18 @@ sub _processMSIE {
         "Internet Explorer (64bit)" : "Internet Explorer";
 
     my $pathToMSIE = "SOFTWARE/Microsoft/Internet Explorer";
-    my $version;
-    my $installDate;
+    my $data;
     if ($params{WMIService}) {
-        $version = _retrieveMSIEDataFromRemoteRegistry(
+        $data = _retrieveMSIEDataFromRemoteRegistry(
             %params,
             pathToMSIE => $pathToMSIE
         );
-        $installDate = '';
     } else {
-        $version = _retrieveMSIEDataFromLocalRegistry(
+        $data = _retrieveMSIEDataFromLocalRegistry(
             %params,
             pathToMSIE => $pathToMSIE
         );
-        $installDate = _dateFormat(_keyLastWriteDateString($installedkey));
+
     }
 
     _addSoftware(
@@ -553,9 +550,9 @@ sub _processMSIE {
             FROM        => "registry",
             ARCH        => $params{is64bit} ? 'x86_64' : 'i586',
             NAME        => $name,
-            VERSION     => $version,
+            VERSION     => $data->{version},
             PUBLISHER   => "Microsoft Corporation",
-            INSTALLDATE => $installDate
+            INSTALLDATE => $data->{installDate}
         }
     );
 }
@@ -563,10 +560,12 @@ sub _processMSIE {
 sub _retrieveMSIEDataFromLocalRegistry {
     my (%params) = @_;
 
+    my $data = {};
     my $installedkey = $params{machKey}->{$params{pathToMSIE}};
-    my $version = $installedkey->{"/svcVersion"} || $installedkey->{"/Version"};
+    $data->{version} = $installedkey->{"/svcVersion"} || $installedkey->{"/Version"};
+    $data->{installDate} = _dateFormat(_keyLastWriteDateString($installedkey));
 
-    return $version;
+    return $data;
 }
 
 sub _retrieveMSIEDataFromRemoteRegistry {
@@ -576,9 +575,10 @@ sub _retrieveMSIEDataFromRemoteRegistry {
         %params,
         path => 'HKEY_LOCAL_MACHINE/' . $params{pathToMSIE}
     );
-    my $version = $values->{svcVersion} || $values->{Version};
+    $data->{version} = $values->{svcVersion} || $values->{Version};
+    $data->{installDate} = '';
 
-    return $version;
+    return $data;
 }
 
 1;
