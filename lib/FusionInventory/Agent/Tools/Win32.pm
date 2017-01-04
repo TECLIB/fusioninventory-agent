@@ -762,9 +762,8 @@ sub _retrieveValuesNameAndType {
         print O $dd->Dump;
         close O;
 
-#        die('die because of SEGV');
-#        threads->detach();
-        threads->exit(0);
+        threads->detach();
+        die('die because of SEGV');
     };
     my $values;
 
