@@ -44,7 +44,7 @@ sub doInventory {
                 $interface->{TYPE} = $dataFromRegistry->{$interface->{PNPDEVICEID}};
             }
         } else {
-            $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID}, $params{logger}, $wmiParams);
+            $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID}, $params{logger});
         }
         my $interfaceType = $interface->{TYPE} ? $interface->{TYPE} : 'UNDEF';
         $params{logger}->debug2('networks > ' . $interface->{PNPDEVICEID} . ' : ' . $interfaceType);
@@ -64,7 +64,7 @@ sub doInventory {
 }
 
 sub _getMediaType {
-    my ($deviceId, $logger, $wmiParams) = @_;
+    my ($deviceId, $logger) = @_;
 
     return unless defined $deviceId;
 
