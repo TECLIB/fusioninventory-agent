@@ -571,6 +571,7 @@ sub _retrieveMSIEDataFromLocalRegistry {
 sub _retrieveMSIEDataFromRemoteRegistry {
     my (%params) = @_;
 
+    my $data = {};
     my $values = retrieveKeyValuesFromRemote(
         %params,
         path => 'HKEY_LOCAL_MACHINE/' . $params{pathToMSIE}
