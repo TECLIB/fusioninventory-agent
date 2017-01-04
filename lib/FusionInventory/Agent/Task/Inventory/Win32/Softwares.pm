@@ -28,10 +28,11 @@ sub doInventory {
     my $inventory = $params{inventory};
     my $logger    = $params{logger};
 
-    my $is64bit = is64bit();
-
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+
+    my $is64bit = is64bit(%$wmiParams);
+
     if ($wmiParams->{WMIService}) {
         if ($is64bit) {
             $DB::single = 1;
