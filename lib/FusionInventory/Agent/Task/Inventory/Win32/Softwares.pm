@@ -234,6 +234,7 @@ sub _extractSoftwareDataFromHash {
 sub _loadUserSoftware {
     my (%params) = @_;
 
+    $$DB::single = 1;
     _loadUserSoftwareFromNtuserDatFiles(%params) unless $params{WMIService};
     $$DB::single = 1;
     my $userList = getUsersFromRegistry(%params);
