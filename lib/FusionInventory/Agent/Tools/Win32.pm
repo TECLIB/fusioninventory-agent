@@ -1304,7 +1304,6 @@ sub _win32_ole_worker {
         print O $!;
         print O "\n";
         close O;
-        $DB::single = 1;
     };
 
     while (1) {
@@ -1354,7 +1353,6 @@ sub _call_win32_ole_dependent_api {
         print O $!;
         print O "\n";
         close O;
-        $DB::single = 1;
     };
 
     unless (defined($worker)) {
