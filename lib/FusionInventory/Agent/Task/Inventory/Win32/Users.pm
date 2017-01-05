@@ -31,8 +31,11 @@ sub doInventory {
     my $inventory = $params{inventory};
     my $logger    = $params{logger};
 
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+
     if (!$params{no_category}->{local_user}) {
-        foreach my $user (_getLocalUsers(logger => $logger)) {
+        foreach my $user (_getLocalUsers(logger => $logger, %$wmiParams)) {
             $inventory->addEntry(
                 section => 'LOCAL_USERS',
                 entry   => $user
@@ -41,7 +44,7 @@ sub doInventory {
     }
 
     if (!$params{no_category}->{local_group}) {
-        foreach my $group (_getLocalGroups(logger => $logger)) {
+        foreach my $group (_getLocalGroups(logger => $logger, %$wmiParams)) {
             $inventory->addEntry(
                 section => 'LOCAL_GROUPS',
                 entry   => $group
@@ -49,30 +52,41 @@ sub doInventory {
         }
     }
 
-    foreach my $user (_getLoggedUsers(logger => $logger)) {
-        $inventory->addEntry(
-            section => 'USERS',
-            entry   => $user
-        );
+    unless ($wmiParams) {
+        foreach my $user (_getLoggedUsers(logger => $logger, %$wmiParams)) {
+            $inventory->addEntry(
+                section => 'USERS',
+                entry   => $user
+            );
+        }
     }
 
     $inventory->setHardware({
-        LASTLOGGEDUSER => _getLastUser(logger => $logger)
+        LASTLOGGEDUSER => _getLastUser(logger => $logger, %$wmiParams)
     });
 }
 
 sub _getLocalUsers {
+    my (%params) = @_;
 
-    my $WMIService = Win32::OLE->GetObject("winmgmts:\\\\.\\root\\CIMV2")
-        or die "WMI connection failed: " . Win32::OLE->LastError();
+    my $wmiParams = {};
+    if ($params{WMIService}) {
+        $wmiParams = {
+            WMIService => $params{WMIService}
+        };
+    }
 
-    my $query =
-        "SELECT * FROM Win32_UserAccount " .
-        "WHERE LocalAccount='True' AND Disabled='False' and Lockout='False'";
-
-    my @users;
-
-    foreach my $object (in $WMIService->ExecQuery($query)) {
+    my @users = ();
+    foreach my $object (getWMIObjects (
+        moniker => "winmgmts:\\\\.\\root\\CIMV2",
+        query => "SELECT * FROM Win32_UserAccount ".
+            "WHERE LocalAccount='True' AND Disabled='False' and Lockout='False'",
+        properties => [
+            'Name',
+            'SID'
+        ],
+        %$wmiParams
+    )) {
         my $user = {
             NAME => $object->{Name},
             ID   => $object->{SID},
@@ -85,17 +99,26 @@ sub _getLocalUsers {
 }
 
 sub _getLocalGroups {
+    my (%params) = @_;
 
-    my $WMIService = Win32::OLE->GetObject("winmgmts:\\\\.\\root\\CIMV2")
-        or die "WMI connection failed: " . Win32::OLE->LastError();
+    my $wmiParams = {};
+    if ($params{WMIService}) {
+        $wmiParams = {
+            WMIService => $params{WMIService}
+        };
+    }
 
-    my $query =
-        "SELECT * FROM Win32_Group " .
-        "WHERE LocalAccount='True'";
-
-    my @groups;
-
-    foreach my $object (in $WMIService->ExecQuery($query)) {
+    my @groups = ();
+    foreach my $object (getWMIObjects (
+        moniker => "winmgmts:\\\\.\\root\\CIMV2",
+        query => "SELECT * FROM Win32_Group " .
+            "WHERE LocalAccount='True'",
+        properties => [
+            'Name',
+            'SID'
+        ],
+        %$wmiParams
+    )) {
         my $group = {
             NAME => $object->{Name},
             ID   => $object->{SID},
@@ -148,6 +171,48 @@ sub _getLoggedUsers {
 }
 
 sub _getLastUser {
+    my (%params) = @_;
+
+    my @paths = (
+        'SOFTWARE/Microsoft/Windows/CurrentVersion/Authentication/LogonUI/LastLoggedOnUser',
+        'SOFTWARE/Microsoft/Windows NT/CurrentVersion/Winlogon/DefaultUserName'
+    );
+    my $user;
+    if ($params{WMIService}) {
+        $user = _getLastUserFromRemoteRegistry(
+            path => \@paths,
+            WMIService => $params{WMIService}
+        );
+    } else {
+        $user = _getLastUserFromLocalRegistry(
+            path => \@paths
+        )
+    }
+    return unless $user;
+
+    $user =~ s,.*\\,,;
+    return $user;
+}
+
+sub _getLastUserFromRemoteRegistry {
+    my (%params) = @_;
+
+    my $user = encodeFromRegistry(
+        getRegistryValueFromWMI(
+            WMIService => $params{WMIService},
+            path => 'HKEY_LOCAL_MACHINE/' . $params{path}->[0]
+        )
+    ) || encodeFromRegistry(
+        getRegistryValueFromWMI(
+            WMIService => $params{WMIService},
+            path => 'HKEY_LOCAL_MACHINE/' . $params{path}->[1]
+        )
+    );
+    return $user;
+}
+
+sub _getLastUserFromLocalRegistry {
+    my (%params) = @_;
 
     # ensure native registry access, not the 32 bit view
     my $flags = is64bit() ? KEY_READ | KEY_WOW64_64 : KEY_READ;
@@ -157,11 +222,8 @@ sub _getLastUser {
     }) or die "Can't open HKEY_LOCAL_MACHINE key: $EXTENDED_OS_ERROR";
 
     my $user =
-        encodeFromRegistry($machKey->{"SOFTWARE/Microsoft/Windows/CurrentVersion/Authentication/LogonUI/LastLoggedOnUser"}) ||
-        encodeFromRegistry($machKey->{"SOFTWARE/Microsoft/Windows NT/CurrentVersion/Winlogon/DefaultUserName"});
-    return unless $user;
-
-    $user =~ s,.*\\,,;
+        encodeFromRegistry($machKey->{$params{path}->[0]}) ||
+        encodeFromRegistry($machKey->{$params{path}->[1]});
     return $user;
 }
 
