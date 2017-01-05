@@ -21,7 +21,9 @@ sub doInventory {
 
     my $hdparm = canRun('hdparm');
 
-    foreach my $storage (_getDrives(class => 'Win32_DiskDrive')) {
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    foreach my $storage (_getDrives(class => 'Win32_DiskDrive', %$wmiParams)) {
         if ($hdparm && $storage->{NAME} =~ /(\d+)$/) {
             my $info = getHdparmInfo(
                 device => "/dev/hd" . chr(ord('a') + $1),
@@ -39,7 +41,7 @@ sub doInventory {
         );
     }
 
-    foreach my $storage (_getDrives(class => 'Win32_CDROMDrive')) {
+    foreach my $storage (_getDrives(class => 'Win32_CDROMDrive', %$wmiParams)) {
         if ($hdparm && $storage->{NAME} =~ /(\d+)$/) {
             my $info = getHdparmInfo(
                 device => "/dev/scd" . chr(ord('a') + $1),
@@ -57,7 +59,7 @@ sub doInventory {
         );
     }
 
-    foreach my $storage (_getDrives(class => 'Win32_TapeDrive')) {
+    foreach my $storage (_getDrives(class => 'Win32_TapeDrive', %$wmiParams)) {
         $inventory->addEntry(
             section => 'STORAGES',
             entry   => $storage
