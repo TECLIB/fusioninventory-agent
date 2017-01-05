@@ -35,7 +35,6 @@ sub doInventory {
 
     if ($wmiParams->{WMIService}) {
         if ($is64bit) {
-            $DB::single = 1;
             my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
                 %$wmiParams,
                 is64bit => 1
@@ -51,6 +50,18 @@ sub doInventory {
                 inventory => $inventory,
                 is64bit   => 1
             );
+            if ($params{scan_profiles}) {
+                _loadUserSoftware(
+                    inventory => $inventory,
+                    is64bit   => 1,
+                    logger    => $logger
+                );
+            } else {
+                $logger->warning(
+                    "'scan-profiles' configuration parameter disabled, " .
+                        "ignoring software in user profiles"
+                );
+            }
         }
         return;
     }
@@ -224,6 +235,7 @@ sub _loadUserSoftware {
     my (%params) = @_;
 
     _loadUserSoftwareFromNtuserDatFiles(%params) unless $params{WMIService};
+    $$DB::single = 1;
     my $userList = getUsersFromRegistry(%params);
     _loadUserSoftwareFromHKey_Users($userList, %params);
 }
