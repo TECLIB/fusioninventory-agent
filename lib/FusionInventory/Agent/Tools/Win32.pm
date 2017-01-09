@@ -108,9 +108,10 @@ sub my_handler {
 }
 
 sub errorHandler {
+    my $sig = shift;
     open(O, ">>" . 'hard_debug.log');
     print O 'sigtrap errorHandler now on untrapped, we trapped this signal !' . "\n";
-    print O $! . "\n";
+    print O $sig . ' : ' . $! . "\n";
     close O;
 #    die('aïe aïe aïe, thread dying now...');
 #    return 1;
