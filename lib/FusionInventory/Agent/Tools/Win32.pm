@@ -1481,13 +1481,7 @@ sub _connectToService {
 sub _getWMIService {
     my (%params) = @_;
 
-    return _connectToService(
-        $params{WMIService}->{hostname},
-        $params{WMIService}->{user},
-        $params{WMIService}->{pass},
-        $params{WMIService}->{root}
-    );
-
+    $DB::single = 1;
     return unless $params{WMIService}
         && $params{WMIService}->{hostname}
         && $params{WMIService}->{user}
