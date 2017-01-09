@@ -48,7 +48,7 @@ sub run {
 #        'FusionInventory::Agent::Task::Inventory::Win32::Drives',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Environment',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Inputs',
-#        'FusionInventory::Agent::Task::Inventory::Win32::License',
+        'FusionInventory::Agent::Task::Inventory::Win32::License',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Memory',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Modems',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Networks',
