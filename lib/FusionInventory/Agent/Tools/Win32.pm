@@ -406,11 +406,11 @@ sub isDefinedRemoteRegistryKey {
         args  => \@_
     };
 
-    $params{logger}->debug2('isDefinedRemoteRegistryKey() ');
+    $params{logger}->debug2('isDefinedRemoteRegistryKey() ') if $params{logger};
 
     my $val = _call_win32_ole_dependent_api($win32_ole_dependent_api);
 
-    $params{logger}->debug2($params{path} . ' : ' . $val);
+    $params{logger}->debug2($params{path} . ' : ' . $val) if $params{logger};
 
     return $val;
 }
