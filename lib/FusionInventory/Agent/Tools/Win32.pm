@@ -1293,7 +1293,7 @@ sub _win32_ole_worker {
                 # do nothing
                 my $dd = Data::Dumper->new([\%SIG]);
                 open(O, ">>" . 'hard_debug.log');
-                print O 'eval() has died ' . $params{keyName} . " : $str\n";
+                print O 'died in ' . " : $str\n";
                 print O Win32::OLE->LastError() . "\n";
                 print O $@ . "\n";
                 print O $dd->Dump;
@@ -1314,7 +1314,7 @@ sub _win32_ole_worker {
                 no strict 'refs'; ## no critic (ProhibitNoStrict)
                 $funct = \&{$call->{'funct'}};
             };
-            &$evalHandler if $@;
+            &$evalHandler('in _win32_ole_worker') if $@;
             if (exists($call->{'array'}) && $call->{'array'}) {
                 my @results = &{$funct}(@{$call->{'args'}});
                 $result = \@results;
