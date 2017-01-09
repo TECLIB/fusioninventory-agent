@@ -773,7 +773,7 @@ sub _retrieveValuesNameAndType {
     _recordWmiCallAsFailed($wmiCall);
 #    eval {
     {
-        $SIG{SEGV} = \&$func1;
+#        $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : '.$return."\n";
@@ -1263,7 +1263,7 @@ sub _win32_ole_worker {
         #
         threads->exit;
     };
-    local $SIG{SEGV} = 'DEFAULT';
+#    local $SIG{SEGV} = 'DEFAULT';
 #    $SIG{TERM} = \&$errorHandler;
 #    $SIG{ABRT} = \&$errorHandler;
 #    $SIG{ILL} = \&$errorHandler;
@@ -1300,10 +1300,10 @@ sub _win32_ole_worker {
                 print O $@ . "\n";
                 print O $dd->Dump;
                 close O;
-                $SIG{SEGV} = 'IGNORE';
-                $SIG{INT} = 'IGNORE';
-                $SIG{TERM} = 'IGNORE';
-                $SIG{ALARM} = 'IGNORE';
+                $SIG{SEGV} = 'DEFAULT';
+#                $SIG{INT} = 'IGNORE';
+#                $SIG{TERM} = 'IGNORE';
+#                $SIG{ALARM} = 'IGNORE';
                 $dd = Data::Dumper->new([\%SIG]);
                 open(O, ">>" . 'hard_debug.log');
                 print O $dd->Dump;
