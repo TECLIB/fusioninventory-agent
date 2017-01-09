@@ -529,6 +529,7 @@ sub getRegistryKeyFromWMI {
         $keyNames = \%hash;
         for my $wantedKey (keys %$keyNames) {
             my $wantedKeyPath = $params{path} . '/' . $wantedKey;
+            sleep 2;
             open(O, ">>".'hard_debug.log');
             print O 'on envoie retrieveValuesNameAndType '.$wantedKeyPath."\n";
             close O;
