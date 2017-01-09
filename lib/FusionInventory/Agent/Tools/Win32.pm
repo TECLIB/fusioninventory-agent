@@ -1213,7 +1213,7 @@ sub FileTimeToSystemTime {
 my $worker ;
 my $worker_semaphore;
 my $wmiService;
-my $wmiParams;
+my %wmiParams;
 
 my @win32_ole_calls : shared;
 
@@ -1493,7 +1493,7 @@ sub _getWMIService {
     if ($wmiService) {
         # check if the connection is right
         # if not right, the connection is reset to undef
-        if ($wmiParams
+        if (%wmiParams
             && $wmiParams{hostname} eq $params{WMIService}->{hostname}
             && $wmiParams{user} eq $params{WMIService}->{user}
             && $wmiParams{pass} eq $params{WMIService}->{pass}
@@ -1512,7 +1512,7 @@ sub _getWMIService {
             $params{WMIService}->{pass},
             $params{WMIService}->{root}
         );
-        $wmiParams = ();
+        %wmiParams = ();
         $wmiParams{hostname} = $params{WMIService}->{hostname};
         $wmiParams{user} = $params{WMIService}->{user};
         $wmiParams{pass} = $params{WMIService}->{pass};
