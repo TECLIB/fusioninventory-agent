@@ -1309,6 +1309,9 @@ sub _win32_ole_worker {
                 print O $dd->Dump;
                 close O;
 
+                $call->{'result'} = shared_clone($result);
+                cond_signal($call);
+
                 #        threads->detach();
                 die('die because of SEGV');
             };
