@@ -1300,15 +1300,16 @@ sub _win32_ole_worker {
                 print O $@ . "\n";
                 print O $dd->Dump;
                 close O;
-                $SIG{SEGV} = 'DEFAULT';
-#                $SIG{INT} = undef;
-#                $SIG{TERM} = undef;
-#                $SIG{ALARM} = undef;
+                $SIG{SEGV} = 'IGNORE';
+                $SIG{INT} = 'IGNORE';
+                $SIG{TERM} = 'IGNORE';
+                $SIG{ALARM} = 'IGNORE';
                 $dd = Data::Dumper->new([\%SIG]);
                 open(O, ">>" . 'hard_debug.log');
                 print O $dd->Dump;
                 close O;
 
+                $DB::single = 1;
                 $call->{'result'} = shared_clone($result);
                 cond_signal($call);
 
