@@ -558,7 +558,7 @@ sub retrieveKeyValuesFromRemote {
             @_
         );
 #    };
-    &$f if $@ or !$eval;
+#    &$f if $@ or !$eval;
     return $values;
 }
 
