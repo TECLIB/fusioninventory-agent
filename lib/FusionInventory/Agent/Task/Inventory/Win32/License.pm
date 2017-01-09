@@ -95,7 +95,7 @@ sub _scanOfficeLicensesFromRemoteRegistry {
         }
     }
 
-    return @licenses;
+    return @licences;
 }
 
 sub _getOfficeLicenseRemote {
