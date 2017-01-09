@@ -172,12 +172,8 @@ sub _getWMIObjects {
             && $params{WMIService}->{user}
             && $params{WMIService}->{pass}
         ) {
-            $WMIService = _connectToService(
-                $params{WMIService}->{hostname},
-                $params{WMIService}->{user},
-                $params{WMIService}->{pass},
-                "root\\cimv2"
-            );
+            $params{WMIService}->{root} = "root\\cimv2";
+            $WMIService = _getWMIService(%params);
         } else {
             return;
         }
@@ -319,12 +315,7 @@ sub _getRegistryValuesFromWMI {
 
     return unless ref($params{path}) eq 'ARRAY' || ref($params{path}) eq 'HASH';
 
-    my $WMIService = _connectToService(
-        $params{WMIService}->{hostname},
-        $params{WMIService}->{user},
-        $params{WMIService}->{pass},
-        "root\\default"
-    );
+    my $WMIService = _getWMIService(%params);
     return unless $WMIService;
     my $objReg = $WMIService->Get("StdRegProv");
     return unless $objReg;
@@ -364,12 +355,7 @@ sub _getRegistryValueFromWMI {
         return;
     }
 
-    my $WMIService = _connectToService(
-        $params{WMIService}->{hostname},
-        $params{WMIService}->{user},
-        $params{WMIService}->{pass},
-        "root\\default"
-    );
+    my $WMIService = _getWMIService(%params);
     if (!$WMIService) {
         return;
     }
@@ -445,12 +431,7 @@ sub _isDefinedRemoteRegistryKey {
         return;
     }
 
-    my $WMIService = _connectToService(
-        $params{WMIService}->{hostname},
-        $params{WMIService}->{user},
-        $params{WMIService}->{pass},
-        "root\\default"
-    );
+    my $WMIService = _getWMIService(%params);
     if (!$WMIService) {
         return;
     }
@@ -586,12 +567,7 @@ sub _getRegistryKeyFromWMI{
 
     return unless $params{WMIService};
 
-    my $WMIService = _connectToService(
-        $params{WMIService}->{hostname},
-        $params{WMIService}->{user},
-        $params{WMIService}->{pass},
-        "root\\default"
-    );
+    my $WMIService = _getWMIService(%params);
     if (!$WMIService) {
         return;
     }
@@ -753,12 +729,7 @@ sub _retrieveValuesNameAndType {
 
     unless ($params{objReg}) {
         return unless $params{WMIService};
-        my $WMIService = _connectToService(
-            $params{WMIService}->{hostname},
-            $params{WMIService}->{user},
-            $params{WMIService}->{pass},
-            "root\\default"
-        );
+        my $WMIService = _getWMIService(%params);
         if (!$WMIService) {
             return;
         }
@@ -948,12 +919,7 @@ sub _getRegistryTreeFromWMI {
 
     return unless $params{WMIService};
 
-    my $WMIService = _connectToService(
-        $params{WMIService}->{hostname},
-        $params{WMIService}->{user},
-        $params{WMIService}->{pass},
-        "root\\default"
-    );
+    my $WMIService = _getWMIService(%params);
     if (!$WMIService) {
         return;
     }
@@ -1246,6 +1212,8 @@ sub FileTimeToSystemTime {
 
 my $worker ;
 my $worker_semaphore;
+my $wmiService;
+my $wmiParams;
 
 my @win32_ole_calls : shared;
 
@@ -1508,6 +1476,50 @@ sub _connectToService {
             $pass );
 
     return $service;
+}
+
+sub _getWMIService {
+    my (%params) = @_;
+
+    return unless $params{WMIService}
+        && $params{WMIService}->{hostname}
+        && $params{WMIService}->{user}
+        && $params{WMIService}->{pass};
+
+    if (!($params{WMIService}->{root})) {
+        $params{WMIService}->{root} = "root\\default";
+    }
+
+    if ($wmiService) {
+        # check if the connection is right
+        # if not right, the connection is reset to undef
+        if ($wmiParams
+            && $wmiParams{hostname} eq $params{WMIService}->{hostname}
+            && $wmiParams{user} eq $params{WMIService}->{user}
+            && $wmiParams{pass} eq $params{WMIService}->{pass}
+            && $wmiParams{root} eq $params{WMIService}->{root}) {
+            return $wmiService;
+        } else {
+            $wmiService = undef;
+        }
+    }
+
+    # if the connection is undef, we initiate the connection
+    if (!$wmiService) {
+        $wmiService = _connectToService(
+            $params{WMIService}->{hostname},
+            $params{WMIService}->{user},
+            $params{WMIService}->{pass},
+            $params{WMIService}->{root}
+        );
+        $wmiParams = ();
+        $wmiParams{hostname} = $params{WMIService}->{hostname};
+        $wmiParams{user} = $params{WMIService}->{user};
+        $wmiParams{pass} = $params{WMIService}->{pass};
+        $wmiParams{root} = $params{WMIService}->{root};
+    }
+
+    return $wmiService;
 }
 
 END {
