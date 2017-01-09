@@ -530,13 +530,13 @@ sub getRegistryKeyFromWMI {
             open(O, ">>".'hard_debug.log');
             print O 'on envoie retrieveValuesNameAndType '.$wantedKeyPath."\n";
             close O;
-            my $eval = eval {
+#            my $eval = eval {
                 $keyNames->{$wantedKey} = retrieveValuesNameAndType(
                     @_,
                     path => $wantedKeyPath
                 );
-            };
-            &$f if $@ or !$eval;
+#            };
+#            &$f if $@ or !$eval;
         }
     }
     open(O, ">>".'hard_debug.log');
@@ -553,11 +553,11 @@ sub retrieveKeyValuesFromRemote {
         print O 'eval captured end of thread !!!' . "\n";
         close O;
     };
-    my $eval = eval {
+#    my $eval = eval {
         $values = retrieveValuesNameAndType(
             @_
         );
-    };
+#    };
     &$f if $@ or !$eval;
     return $values;
 }
@@ -1288,6 +1288,26 @@ sub _win32_ole_worker {
         if (defined($call)) {
             lock($call);
 
+            my $func1 = sub {
+                my $str = shift;
+                # do nothing
+                my $dd = Data::Dumper->new([\%SIG]);
+                open(O, ">>" . 'hard_debug.log');
+                print O 'eval() has died ' . $params{keyName} . " : $str\n";
+                print O Win32::OLE->LastError() . "\n";
+                print O $@ . "\n";
+                print O $dd->Dump;
+                close O;
+                $SIG{SEGV} = 'DEFAULT';
+                $dd = Data::Dumper->new([\%SIG]);
+                open(O, ">>" . 'hard_debug.log');
+                print O $dd->Dump;
+                close O;
+
+                #        threads->detach();
+                die('die because of SEGV');
+            };
+            $SIG{SEGV} = \&$func1;
             # Found requested private function and call it as expected
             my $funct;
             eval {
