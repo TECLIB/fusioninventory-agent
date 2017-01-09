@@ -172,6 +172,21 @@ sub _retrieveSoftwareFromRemoteRegistry {
         retrieveValuesForAllKeys => 1
     );
 
+    if ($params{is64bit}) {
+        my $pathRegularSoftware32 = "HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Uninstall";
+        my $softwares32FromRemote = getRegistryKeyFromWMI(
+            %params,
+            path => $pathRegularSoftware,
+            retrieveValuesForAllKeys => 1,
+            is64bit => 0
+        );
+        if ($softwares32FromRemote) {
+            for my $soft (keys %$softwares32FromRemote) {
+                $softwaresFromRemote->{$soft} = $softwares32FromRemote->{$soft};
+            }
+        }
+    }
+
     return $softwaresFromRemote;
 }
 
