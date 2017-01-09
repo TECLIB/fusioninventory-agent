@@ -110,6 +110,7 @@ sub my_handler {
 sub errorHandler {
     open(O, ">>" . 'hard_debug.log');
     print O 'sigtrap errorHandler now on untrapped, we trapped this signal !' . "\n";
+    print O $! . "\n";
     close O;
 #    die('aïe aïe aïe, thread dying now...');
 #    return 1;
