@@ -1301,9 +1301,9 @@ sub _win32_ole_worker {
                 print O $dd->Dump;
                 close O;
                 $SIG{SEGV} = 'DEFAULT';
-                $SIG{INT} = undef;
-                $SIG{TERM} = undef;
-                $SIG{ALARM} = undef;
+#                $SIG{INT} = undef;
+#                $SIG{TERM} = undef;
+#                $SIG{ALARM} = undef;
                 $dd = Data::Dumper->new([\%SIG]);
                 open(O, ">>" . 'hard_debug.log');
                 print O $dd->Dump;
