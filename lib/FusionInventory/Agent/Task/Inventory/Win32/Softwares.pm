@@ -69,7 +69,8 @@ sub doInventory {
                 _loadUserSoftware(
                     inventory => $inventory,
                     is64bit   => 1,
-                    logger    => $logger
+                    logger    => $logger,
+                    %$wmiParams
                 );
             } else {
                 $logger->warning(
@@ -337,8 +338,11 @@ sub _loadUserSoftwareFromHKey_UsersRemote {
     my $is64bit   = $params{is64bit};
     my $logger    = $params{logger};
 
+    return unless $params{WMIService};
+
     my $profileList = getRegistryKeyFromWMI(
-        path => 'HKEY_USERS'
+        path => 'HKEY_USERS',
+        WMIService => $params{WMIService}
     );
     return unless $profileList;
 
