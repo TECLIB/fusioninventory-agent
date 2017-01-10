@@ -1371,9 +1371,9 @@ sub _call_win32_ole_dependent_api {
                 close O;
                 $noResultIsOk = 1;
             };
-            local $SIG{INT} = \&$f;
-            local $SIG{ALRM} = \&$f;
-            local $SIG{TERM} = \&$f;
+            $SIG{INT} = \&$f;
+            $SIG{ALRM} = \&$f;
+            $SIG{TERM} = \&$f;
 
             # Be sure the worker block
             $worker_semaphore->down_nb();
