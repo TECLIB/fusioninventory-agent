@@ -53,7 +53,7 @@ sub doInventory {
                 %$wmiParams,
                 is64bit => 0
             );
-            my $softwares = _extractSoftwareDataFromHash(
+            $softwares = _extractSoftwareDataFromHash(
                 softwares => $softwaresFromRemote,
                 is64bit   => 0,
             );
