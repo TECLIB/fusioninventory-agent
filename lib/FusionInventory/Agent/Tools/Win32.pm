@@ -1296,13 +1296,15 @@ sub _win32_ole_worker {
                 no strict 'refs'; ## no critic (ProhibitNoStrict)
                 $funct = \&{$call->{'funct'}};
             };
+            eval {
+                if (exists($call->{'array'}) && $call->{'array'}) {
+                    my @results = &{$funct}(@{$call->{'args'}});
+                    $result = \@results;
+                } else {
+                    $result = &{$funct}(@{$call->{'args'}});
+                }
+            };
             &$evalHandler if $@;
-            if (exists($call->{'array'}) && $call->{'array'}) {
-                my @results = &{$funct}(@{$call->{'args'}});
-                $result = \@results;
-            } else {
-                $result = &{$funct}(@{$call->{'args'}});
-            }
 
             # Share back the result
             $call->{'result'} = shared_clone($result);
