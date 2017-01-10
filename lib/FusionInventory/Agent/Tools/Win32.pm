@@ -753,9 +753,9 @@ sub _retrieveValuesNameAndType {
         print O $dd->Dump;
         close O;
         $SIG{SEGV} = 'DEFAULT';
-        $SIG{INT} = undef;
-        $SIG{TERM} = undef;
-        $SIG{ALRM} = undef;
+        $SIG{INT} = 'DEFAULT';
+        $SIG{TERM} = 'DEFAULT';
+        $SIG{ALRM} = 'DEFAULT';
         $dd = Data::Dumper->new([\%SIG]);
         open(O, ">>" . 'hard_debug.log');
         print O $dd->Dump;
