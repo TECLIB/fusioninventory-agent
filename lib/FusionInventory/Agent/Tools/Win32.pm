@@ -1351,6 +1351,11 @@ sub _call_win32_ole_dependent_api {
             while (!exists($call->{'result'})) {
                 last if (!cond_timedwait($call, $timeout, @win32_ole_calls));
             }
+            my $dd = Data::Dumper->new([\%SIG]);
+            open(O, ">>" . 'hard_debug.log');
+            print O 'after cond_timedwait, %SIG' . "\n";
+            print O $dd->Dump();
+            close O;
 
             # Be sure to always block worker on semaphore from now
             $worker_semaphore->down_nb();
