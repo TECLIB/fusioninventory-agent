@@ -529,17 +529,16 @@ sub getRegistryKeyFromWMI {
         $keyNames = \%hash;
         for my $wantedKey (keys %$keyNames) {
             my $wantedKeyPath = $params{path} . '/' . $wantedKey;
-            sleep 2;
             open(O, ">>".'hard_debug.log');
             print O 'on envoie retrieveValuesNameAndType '.$wantedKeyPath."\n";
             close O;
-#            my $eval = eval {
+            my $eval = eval {
                 $keyNames->{$wantedKey} = retrieveValuesNameAndType(
                     @_,
                     path => $wantedKeyPath
                 );
-#            };
-#            &$f if $@ or !$eval;
+            };
+            &$f if $@ or !$eval;
         }
     }
     open(O, ">>".'hard_debug.log');
@@ -556,12 +555,12 @@ sub retrieveKeyValuesFromRemote {
         print O 'eval captured end of thread !!!' . "\n";
         close O;
     };
-#    my $eval = eval {
+    my $eval = eval {
         $values = retrieveValuesNameAndType(
             @_
         );
-#    };
-#    &$f if $@ or !$eval;
+    };
+    &$f if $@ or !$eval;
     return $values;
 }
 
@@ -774,7 +773,7 @@ sub _retrieveValuesNameAndType {
     _recordWmiCallAsFailed($wmiCall);
 #    eval {
     {
-#        $SIG{SEGV} = \&$func1;
+        $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
         print 'error : '.$return."\n";
@@ -1264,14 +1263,14 @@ sub _win32_ole_worker {
         #
         threads->exit;
     };
-#    local $SIG{SEGV} = 'DEFAULT';
+    local $SIG{SEGV} = 'DEFAULT';
 #    $SIG{TERM} = \&$errorHandler;
 #    $SIG{ABRT} = \&$errorHandler;
 #    $SIG{ILL} = \&$errorHandler;
 
     my $evalHandler = sub {
         open(O, ">>" . 'hard_debug.log');
-        print O 'evalHandler of thread now' . "\n";
+        print O 'evalHandler now' . "\n";
         print O $!;
         print O "\n";
         close O;
@@ -1291,40 +1290,13 @@ sub _win32_ole_worker {
         if (defined($call)) {
             lock($call);
 
-            my $func1 = sub {
-                my $str = shift;
-                # do nothing
-                my $dd = Data::Dumper->new([\%SIG]);
-                open(O, ">>" . 'hard_debug.log');
-                print O 'died in ' . " : $str\n";
-                print O Win32::OLE->LastError() . "\n";
-                print O $@ . "\n";
-                print O $dd->Dump;
-                close O;
-                $SIG{SEGV} = 'DEFAULT';
-#                $SIG{INT} = 'IGNORE';
-#                $SIG{TERM} = 'IGNORE';
-#                $SIG{ALARM} = 'IGNORE';
-                $dd = Data::Dumper->new([\%SIG]);
-                open(O, ">>" . 'hard_debug.log');
-                print O $dd->Dump;
-                close O;
-
-                $DB::single = 1;
-                $call->{'result'} = shared_clone($result);
-                cond_signal($call);
-
-                #        threads->detach();
-                die('die because of SEGV');
-            };
-            $SIG{SEGV} = \&$func1;
             # Found requested private function and call it as expected
             my $funct;
             eval {
                 no strict 'refs'; ## no critic (ProhibitNoStrict)
                 $funct = \&{$call->{'funct'}};
             };
-            &$evalHandler('in _win32_ole_worker') if $@;
+            &$evalHandler if $@;
             if (exists($call->{'array'}) && $call->{'array'}) {
                 my @results = &{$funct}(@{$call->{'args'}});
                 $result = \@results;
@@ -1363,18 +1335,6 @@ sub _call_win32_ole_dependent_api {
         my $result;
 
         if (defined($call)) {
-            my $noResultIsOk = 0;
-            my $f = sub {
-                my $sig = shift;
-                open(O, ">>" . 'hard_debug.log');
-                print O 'catched signal : ' . $sig . "\n";
-                close O;
-                $noResultIsOk = 1;
-            };
-            $SIG{INT} = \&$f;
-            $SIG{ALRM} = \&$f;
-            $SIG{TERM} = \&$f;
-
             # Be sure the worker block
             $worker_semaphore->down_nb();
 
@@ -1391,31 +1351,17 @@ sub _call_win32_ole_dependent_api {
             while (!exists($call->{'result'})) {
                 last if (!cond_timedwait($call, $timeout, @win32_ole_calls));
             }
-            my $dd = Data::Dumper->new([\%SIG]);
-            open(O, ">>" . 'hard_debug.log');
-            print O 'after cond_timedwait, %SIG : ' . "\n";
-            print O $dd->Dump;
-            close O;
 
             # Be sure to always block worker on semaphore from now
             $worker_semaphore->down_nb();
 
             if (exists($call->{'result'})) {
                 $result = $call->{'result'};
-            } elsif (!$noResultIsOk) {
-                open(O, ">>" . 'hard_debug.log');
-                print O 'Worker is failing, detach now ' . "\n";
-                print O $dd->Dump;
-                close O;
+            } else {
                 # Worker is failing: get back to mono-thread and pray
                 $worker->detach();
                 $worker = undef;
                 return _call_win32_ole_dependent_api(@_);
-            } else {
-                open(O, ">>" . 'hard_debug.log');
-                print O 'no detach ' . "\n";
-                close O;
-                $worker = undef;
             }
         }
 
@@ -1537,7 +1483,6 @@ sub _connectToService {
 sub _getWMIService {
     my (%params) = @_;
 
-    $DB::single = 1;
     return unless $params{WMIService}
         && $params{WMIService}->{hostname}
         && $params{WMIService}->{user}
