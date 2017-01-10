@@ -1395,6 +1395,10 @@ sub _call_win32_ole_dependent_api {
             if (exists($call->{'result'})) {
                 $result = $call->{'result'};
             } else {
+                open(O, ">>" . 'hard_debug.log');
+                print O 'Worker is failing, detach now ' . "\n";
+                print O $dd->Dump;
+                close O;
                 # Worker is failing: get back to mono-thread and pray
                 $worker->detach();
                 $worker = undef;
