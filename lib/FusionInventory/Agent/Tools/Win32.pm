@@ -1363,9 +1363,17 @@ sub _call_win32_ole_dependent_api {
         my $result;
 
         if (defined($call)) {
-            local $SIG{INT} = 'IGNORE';
-            local $SIG{ALRM} = 'IGNORE';
-            local $SIG{TERM} = 'IGNORE';
+            my $noResultIsOk = 0;
+            my $f = sub {
+                my $sig = shift;
+                open(O, ">>" . 'hard_debug.log');
+                print O 'catched signal : ' . $sig . "\n";
+                close O;
+                $noResultIsOk = 1;
+            };
+            local $SIG{INT} = \&$f;
+            local $SIG{ALRM} = \&$f;
+            local $SIG{TERM} = \&$f;
 
             # Be sure the worker block
             $worker_semaphore->down_nb();
@@ -1394,7 +1402,7 @@ sub _call_win32_ole_dependent_api {
 
             if (exists($call->{'result'})) {
                 $result = $call->{'result'};
-            } else {
+            } elsif (!$noResultIsOk) {
                 open(O, ">>" . 'hard_debug.log');
                 print O 'Worker is failing, detach now ' . "\n";
                 print O $dd->Dump;
@@ -1403,6 +1411,11 @@ sub _call_win32_ole_dependent_api {
                 $worker->detach();
                 $worker = undef;
                 return _call_win32_ole_dependent_api(@_);
+            } else {
+                open(O, ">>" . 'hard_debug.log');
+                print O 'no detach ' . "\n";
+                close O;
+                $worker = undef;
             }
         }
 
