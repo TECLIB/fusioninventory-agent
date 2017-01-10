@@ -1363,9 +1363,9 @@ sub _call_win32_ole_dependent_api {
         my $result;
 
         if (defined($call)) {
-            local $SIG{INT} = 'DEFAULT';
-            local $SIG{ALRM} = 'DEFAULT';
-            local $SIG{TERM} = 'DEFAULT';
+            local $SIG{INT} = 'IGNORE';
+            local $SIG{ALRM} = 'IGNORE';
+            local $SIG{TERM} = 'IGNORE';
 
             # Be sure the worker block
             $worker_semaphore->down_nb();
