@@ -35,36 +35,38 @@ sub doInventory {
 
     if ($wmiParams->{WMIService}) {
         if ($is64bit) {
-            # 64-bit software
-            my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
-                %$wmiParams,
-                is64bit => 1
-            );
-            my $softwares = _extractSoftwareDataFromHash(
-                softwares => $softwaresFromRemote,
-                is64bit   => 1,
-            );
-            foreach my $software (@$softwares) {
-                _addSoftware(inventory => $inventory, entry => $software);
-            }
+            if (0) {
+                # 64-bit software
+                my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
+                    %$wmiParams,
+                    is64bit => 1
+                );
+                my $softwares = _extractSoftwareDataFromHash(
+                    softwares => $softwaresFromRemote,
+                    is64bit   => 1,
+                );
+                foreach my $software (@$softwares) {
+                    _addSoftware(inventory => $inventory, entry => $software);
+                }
 
-            # 32-bit software
-            $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
-                %$wmiParams,
-                is64bit => 0
-            );
-            $softwares = _extractSoftwareDataFromHash(
-                softwares => $softwaresFromRemote,
-                is64bit   => 0,
-            );
-            foreach my $software (@$softwares) {
-                _addSoftware(inventory => $inventory, entry => $software);
-            }
+                # 32-bit software
+                $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
+                    %$wmiParams,
+                    is64bit => 0
+                );
+                $softwares = _extractSoftwareDataFromHash(
+                    softwares => $softwaresFromRemote,
+                    is64bit   => 0,
+                );
+                foreach my $software (@$softwares) {
+                    _addSoftware(inventory => $inventory, entry => $software);
+                }
 
-            _processMSIE(
-                inventory => $inventory,
-                is64bit   => 1
-            );
+                _processMSIE(
+                    inventory => $inventory,
+                    is64bit   => 1
+                );
+            }
             if ($params{scan_profiles}) {
                 _loadUserSoftware(
                     inventory => $inventory,
@@ -340,6 +342,7 @@ sub _loadUserSoftwareFromHKey_UsersRemote {
 
     return unless $params{WMIService};
 
+    $DB::single = 1;
     my $profileList = getRegistryKeyFromWMI(
         path => 'HKEY_USERS',
         WMIService => $params{WMIService}
