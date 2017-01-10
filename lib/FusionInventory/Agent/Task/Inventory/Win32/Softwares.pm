@@ -35,7 +35,7 @@ sub doInventory {
 
     if ($wmiParams->{WMIService}) {
         if ($is64bit) {
-            if (0) {
+            if (2 == 1) {
                 # 64-bit software
                 my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
                     %$wmiParams,
