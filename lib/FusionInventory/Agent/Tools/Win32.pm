@@ -738,7 +738,7 @@ sub _retrieveValuesNameAndType {
         my $objReg = $WMIService->Get("StdRegProv");
         if (!$objReg) {
             return;
-        }_recordWmiCallAsFailed
+        }
         $params{objReg} = $objReg;
     }
 
