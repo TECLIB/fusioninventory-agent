@@ -1349,6 +1349,11 @@ sub _call_win32_ole_dependent_api {
             # Now, wait for worker result with one minute timeout
             my $timeout = time + 60;
             while (!exists($call->{'result'})) {
+                my $ddd = Data::Dumper->new([\%SIG]);
+                open(O, ">>" . 'hard_debug.log');
+                print O 'in cond_timedwait, %SIG' . "\n";
+                print O $ddd->Dump();
+                close O;
                 last if (!cond_timedwait($call, $timeout, @win32_ole_calls));
             }
             my $dd = Data::Dumper->new([\%SIG]);
