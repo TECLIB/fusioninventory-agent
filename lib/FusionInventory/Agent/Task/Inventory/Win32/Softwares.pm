@@ -35,6 +35,7 @@ sub doInventory {
 
     if ($wmiParams->{WMIService}) {
         if ($is64bit) {
+            # 64-bit software
             my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
                 %$wmiParams,
                 is64bit => 1
@@ -46,6 +47,20 @@ sub doInventory {
             foreach my $software (@$softwares) {
                 _addSoftware(inventory => $inventory, entry => $software);
             }
+
+            # 32-bit software
+            $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
+                %$wmiParams,
+                is64bit => 0
+            );
+            my $softwares = _extractSoftwareDataFromHash(
+                softwares => $softwaresFromRemote,
+                is64bit   => 0,
+            );
+            foreach my $software (@$softwares) {
+                _addSoftware(inventory => $inventory, entry => $software);
+            }
+
             _processMSIE(
                 inventory => $inventory,
                 is64bit   => 1
@@ -165,27 +180,17 @@ sub doInventory {
 sub _retrieveSoftwareFromRemoteRegistry {
     my (%params) = @_;
 
-    my $pathRegularSoftware = "HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall";
+    my $path;
+    if ($params{is64bit}) {
+        $path = "HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall";
+    } else {
+        $path = "HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Uninstall";
+    }
     my $softwaresFromRemote = getRegistryKeyFromWMI(
         %params,
-        path => $pathRegularSoftware,
+        path => $path,
         retrieveValuesForAllKeys => 1
     );
-
-    if ($params{is64bit}) {
-        my $pathRegularSoftware32 = "HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Uninstall";
-        my $softwares32FromRemote = getRegistryKeyFromWMI(
-            %params,
-            path => $pathRegularSoftware32,
-            retrieveValuesForAllKeys => 1,
-            is64bit => 0
-        );
-        if ($softwares32FromRemote) {
-            for my $soft (keys %$softwares32FromRemote) {
-                $softwaresFromRemote->{$soft} = $softwares32FromRemote->{$soft};
-            }
-        }
-    }
 
     return $softwaresFromRemote;
 }
