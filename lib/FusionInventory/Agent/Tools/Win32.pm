@@ -738,7 +738,7 @@ sub _retrieveValuesNameAndType {
         my $objReg = $WMIService->Get("StdRegProv");
         if (!$objReg) {
             return;
-        }
+        }_recordWmiCallAsFailed
         $params{objReg} = $objReg;
     }
 
@@ -753,6 +753,9 @@ sub _retrieveValuesNameAndType {
         print O $dd->Dump;
         close O;
         $SIG{SEGV} = 'DEFAULT';
+        $SIG{INT} = undef;
+        $SIG{TERM} = undef;
+        $SIG{ALRM} = undef;
         $dd = Data::Dumper->new([\%SIG]);
         open(O, ">>" . 'hard_debug.log');
         print O $dd->Dump;
