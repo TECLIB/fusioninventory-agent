@@ -176,7 +176,7 @@ sub _retrieveSoftwareFromRemoteRegistry {
         my $pathRegularSoftware32 = "HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Uninstall";
         my $softwares32FromRemote = getRegistryKeyFromWMI(
             %params,
-            path => $pathRegularSoftware,
+            path => $pathRegularSoftware32,
             retrieveValuesForAllKeys => 1,
             is64bit => 0
         );
