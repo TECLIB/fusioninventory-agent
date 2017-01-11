@@ -602,7 +602,7 @@ sub _retrieveSubKeyList {
     close O;
 
     Win32::OLE->use('in');
-
+    $DB::single = 1;
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
