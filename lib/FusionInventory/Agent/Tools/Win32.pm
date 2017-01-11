@@ -580,7 +580,7 @@ sub _getRegistryKeyFromWMI{
 
     if ($params{path} eq 'HKEY_USERS') {
         $params{root}      = $params{path};
-        $params{keyName}   = '';
+        $params{keyName}   = '/';
     } elsif ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -616,7 +616,6 @@ sub _retrieveSubKeyList {
         $params{keyName} = $keyName;
     } elsif ($params{root} eq 'HKEY_USERS') {
         $hkey = $Win32::Registry::HKEY_USERS;
-        $params{keyName} = '';
     } else {
         return;
     }
@@ -641,6 +640,7 @@ sub _retrieveSubKeyList {
         open(O, ">>" . 'hard_debug.log');
         print O 'après EnumKey' . "\n";
         close O;
+    $DB::single = 1;
         if (defined $return && $return == 0 && $arr->Value) {
             open(O, ">>" . 'hard_debug.log');
             print O '$return : ' . $return . "\n";
