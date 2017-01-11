@@ -579,8 +579,8 @@ sub _getRegistryKeyFromWMI{
     }
 
     if ($params{path} eq 'HKEY_USERS') {
-        $params{root}      = $1;
-        $params{keyName}   = $2;
+        $params{root}      = $params{path};
+        $params{keyName}   = '';
     } elsif ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
