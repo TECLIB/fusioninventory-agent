@@ -578,7 +578,10 @@ sub _getRegistryKeyFromWMI{
         return;
     }
 
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
+    if ($params{path} eq 'HKEY_USERS') {
+        $params{root}      = $1;
+        $params{keyName}   = $2;
+    } elsif ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
     } else {
@@ -611,6 +614,9 @@ sub _retrieveSubKeyList {
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
+    } elsif ($params{root} eq 'HKEY_USERS') {
+        $hkey = $Win32::Registry::HKEY_USERS;
+        $params{keyName} = '';
     } else {
         return;
     }
