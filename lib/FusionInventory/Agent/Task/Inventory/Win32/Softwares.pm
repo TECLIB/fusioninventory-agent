@@ -351,7 +351,6 @@ sub _loadUserSoftwareFromHKey_UsersRemote {
 
     foreach my $profileName (@$profileList) {
         # we're only interested in subkeys
-        next unless $profileName =~ m{/$};
         next unless length($profileName) > 10;
 
         my $userName = '';
