@@ -602,7 +602,7 @@ sub _retrieveSubKeyList {
     close O;
 
     Win32::OLE->use('in');
-    $DB::single = 1;
+
     my $hkey;
     if ($params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -640,7 +640,7 @@ sub _retrieveSubKeyList {
         open(O, ">>" . 'hard_debug.log');
         print O 'après EnumKey' . "\n";
         close O;
-    $DB::single = 1;
+
         if (defined $return && $return == 0 && $arr->Value) {
             open(O, ">>" . 'hard_debug.log');
             print O '$return : ' . $return . "\n";
