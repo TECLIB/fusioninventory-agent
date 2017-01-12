@@ -22,7 +22,8 @@ use Data::Dumper;
 
 use constant KEY_WOW64_64 => 0x100;
 use constant KEY_WOW64_32 => 0x200;
-
+use constant HKEY_LOCAL_MACHINE => 0x80000002;
+use constant HKEY_USERS => 0x80000003;
 
 use Cwd;
 use Encode;
@@ -610,12 +611,12 @@ sub _retrieveSubKeyList {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     } elsif ($params{root} =~ /^HKEY_USERS(?:\\|\/)(.*)$/) {
-        $hkey = $Win32::Registry::HKEY_USERS;
+        $hkey = HKEY_USERS;
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     } elsif ($params{root} eq 'HKEY_USERS') {
-        $hkey = $Win32::Registry::HKEY_USERS;
+        $hkey = HKEY_USERS;
     } else {
         return;
     }
@@ -717,14 +718,14 @@ sub _retrieveValuesNameAndType {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     } elsif ($params{root} && $params{root} =~ /^HKEY_USERS(?:\\|\/)(.*)$/) {
-        $hkey = $Win32::Registry::HKEY_USERS;
+        $hkey = HKEY_USERS;
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     } elsif ($params{hkey} && $params{hkey} eq 'HKEY_LOCAL_MACHINE') {
         $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
     } elsif ($params{hkey} && $params{hkey} eq 'HKEY_USERS') {
-        $hkey = $Win32::Registry::HKEY_USERS;
+        $hkey = HKEY_USERS;
     } else {
         $params{logger}->error(
             "Failed to parse '$params{path}'. Does it start with HKEY_?"
@@ -863,14 +864,14 @@ sub _retrieveRemoteRegistryValueByType {
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     } elsif ($params{root} && $params{root} =~ /^HKEY_USERS(?:\\|\/)(.*)$/) {
-        $params{hkey} = $Win32::Registry::HKEY_USERS;
+        $params{hkey} = HKEY_USERS;
         my $keyName = $1 . '/' . $params{keyName};
         $keyName =~ tr#/#\\#;
         $params{keyName} = $keyName;
     } elsif ($params{hkey} && $params{hkey} eq 'HKEY_LOCAL_MACHINE') {
         $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
     } elsif ($params{hkey} && $params{hkey} eq 'HKEY_USERS') {
-        $params{hkey} = $Win32::Registry::HKEY_USERS;
+        $params{hkey} = HKEY_USERS;
     }
 
     my $value;
