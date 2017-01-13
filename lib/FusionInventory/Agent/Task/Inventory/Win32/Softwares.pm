@@ -342,7 +342,6 @@ sub _loadUserSoftwareFromHKey_UsersRemote {
 
     return unless $params{WMIService};
 
-    $DB::single = 1;
     my $profileList = getRegistryKeyFromWMI(
         path => 'HKEY_USERS',
         WMIService => $params{WMIService}
@@ -359,6 +358,7 @@ sub _loadUserSoftwareFromHKey_UsersRemote {
         } else {
             next;
         }
+        $DB::single = 1;
         my $softwaresKey = getRegistryKeyFromWMI(
             %params,
             path => 'HKEY_USERS/' . $profileName . '/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall',
