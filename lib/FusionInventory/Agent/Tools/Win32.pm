@@ -1434,7 +1434,6 @@ sub _getUsersFromRemoteRegistry {
     my $userList;
     foreach my $profileName (keys %$dataFromRegistry) {
         $params{logger}->debug2('profileName : ' . $profileName);
-        next unless $profileName =~ m{/$};
         next unless length($profileName) > 10;
         my $profilePath = $dataFromRegistry->{$profileName}->{'ProfileImagePath'};
         my $sid = $dataFromRegistry->{$profileName}->{'Sid'};
