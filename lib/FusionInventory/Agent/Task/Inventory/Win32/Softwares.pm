@@ -397,7 +397,8 @@ sub _loadUserSoftwareFromHKey_UsersLocal {
     return unless $profileList;
 
     $Registry->AllowLoad(1);
-    
+
+    $DB::single = 1;
     foreach my $profileName (keys %$profileList) {
         # we're only interested in subkeys
         next unless $profileName =~ m{/$};
