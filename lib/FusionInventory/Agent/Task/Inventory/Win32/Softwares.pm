@@ -398,7 +398,6 @@ sub _loadUserSoftwareFromHKey_UsersLocal {
 
     $Registry->AllowLoad(1);
 
-    $DB::single = 1;
     foreach my $profileName (keys %$profileList) {
         # we're only interested in subkeys
         next unless $profileName =~ m{/$};
@@ -410,6 +409,7 @@ sub _loadUserSoftwareFromHKey_UsersLocal {
         } else {
             next;
         }
+        $DB::single = 1;
         my $softwaresKey = $profileList->{$profileName}{"SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"};
 
         my $softwares = _getSoftwaresList(
