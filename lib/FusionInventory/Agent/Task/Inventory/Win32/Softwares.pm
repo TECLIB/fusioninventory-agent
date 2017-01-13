@@ -35,51 +35,49 @@ sub doInventory {
 
     if ($wmiParams->{WMIService}) {
         if ($is64bit) {
-            if (2 == 1) {
-                # 64-bit software
-                my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
-                    %$wmiParams,
-                    is64bit => 1
-                );
-                my $softwares = _extractSoftwareDataFromHash(
-                    softwares => $softwaresFromRemote,
-                    is64bit   => 1,
-                );
-                foreach my $software (@$softwares) {
-                    _addSoftware(inventory => $inventory, entry => $software);
-                }
-
-                # 32-bit software
-                $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
-                    %$wmiParams,
-                    is64bit => 0
-                );
-                $softwares = _extractSoftwareDataFromHash(
-                    softwares => $softwaresFromRemote,
-                    is64bit   => 0,
-                );
-                foreach my $software (@$softwares) {
-                    _addSoftware(inventory => $inventory, entry => $software);
-                }
-
-                _processMSIE(
-                    inventory => $inventory,
-                    is64bit   => 1
-                );
+            # 64-bit software
+            my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
+                %$wmiParams,
+                is64bit => 1
+            );
+            my $softwares = _extractSoftwareDataFromHash(
+                softwares => $softwaresFromRemote,
+                is64bit   => 1,
+            );
+            foreach my $software (@$softwares) {
+                _addSoftware(inventory => $inventory, entry => $software);
             }
-            if ($params{scan_profiles}) {
-                _loadUserSoftware(
-                    inventory => $inventory,
-                    is64bit   => 1,
-                    logger    => $logger,
-                    %$wmiParams
-                );
-            } else {
-                $logger->warning(
-                    "'scan-profiles' configuration parameter disabled, " .
-                        "ignoring software in user profiles"
-                );
+
+            # 32-bit software
+            $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
+                %$wmiParams,
+                is64bit => 0
+            );
+            $softwares = _extractSoftwareDataFromHash(
+                softwares => $softwaresFromRemote,
+                is64bit   => 0,
+            );
+            foreach my $software (@$softwares) {
+                _addSoftware(inventory => $inventory, entry => $software);
             }
+
+            _processMSIE(
+                inventory => $inventory,
+                is64bit   => 1
+            );
+        }
+        if ($params{scan_profiles}) {
+            _loadUserSoftware(
+                inventory => $inventory,
+                is64bit   => 1,
+                logger    => $logger,
+                %$wmiParams
+            );
+        } else {
+            $logger->warning(
+                "'scan-profiles' configuration parameter disabled, " .
+                    "ignoring software in user profiles"
+            );
         }
         return;
     }
