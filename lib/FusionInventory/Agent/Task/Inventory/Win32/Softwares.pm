@@ -298,7 +298,7 @@ sub _loadUserSoftwareFromNtuserDatFiles {
         my $userKey = $is64bit                                                                   ?
             $Registry->Load( $profilePath.'\ntuser.dat', { Access => KEY_READ | KEY_WOW64_64 } ) :
             $Registry->Load( $profilePath.'\ntuser.dat', { Access => KEY_READ } );
-
+        $DB::single = 1;
         my $softwaresKey =
             $userKey->{"SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"};
 
