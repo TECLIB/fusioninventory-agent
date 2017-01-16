@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use English qw(-no_match_vars);
-use Storable;
+use Storable 'dclone';
 
 use FusionInventory::Agent::Tools::Win32;
 
