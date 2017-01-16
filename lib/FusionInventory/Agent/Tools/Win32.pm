@@ -538,8 +538,18 @@ sub getRegistryKeyFromWMI {
                     @_,
                     path => $wantedKeyPath
                 );
+                if ($params{retrieveSubKeysForAllKeys}) {
+                    $DB::single = 1;
+                    my $subKeys = getRegistryKeyFromWMI(
+                        %params,
+                        path => $wantedKeyPath,
+                        retrieveValuesForAllKeys => 1
+                    );
+                    @{$keyNames->{$wantedKey}}{ keys %$subKeys } = values %$subKeys;
+                }
             };
             &$f if $@ or !$eval;
+
         }
     }
     open(O, ">>".'hard_debug.log');

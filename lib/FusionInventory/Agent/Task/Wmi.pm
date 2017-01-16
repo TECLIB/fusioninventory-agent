@@ -48,16 +48,16 @@ sub run {
 #        'FusionInventory::Agent::Task::Inventory::Win32::Drives',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Environment',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Inputs',
-        'FusionInventory::Agent::Task::Inventory::Win32::License',
+#        'FusionInventory::Agent::Task::Inventory::Win32::License',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Memory',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Modems',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Networks',
 #        'FusionInventory::Agent::Task::Inventory::Win32::OS',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Ports',
-#        'FusionInventory::Agent::Task::Inventory::Win32::Printers',
-#        'FusionInventory::Agent::Task::Inventory::Win32::Registry',
+        'FusionInventory::Agent::Task::Inventory::Win32::Printers',
+#        'FusionInventory::Agent::Task::Inventory::Win32::Registry'1,
 #        'FusionInventory::Agent::Task::Inventory::Win32::Slots',
-        'FusionInventory::Agent::Task::Inventory::Win32::Softwares'
+#        'FusionInventory::Agent::Task::Inventory::Win32::Softwares'
     ];
     $self->SUPER::run(%params);
 

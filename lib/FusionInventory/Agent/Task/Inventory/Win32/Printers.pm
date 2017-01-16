@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use English qw(-no_match_vars);
+use Storable;
 
 use FusionInventory::Agent::Tools::Win32;
 
@@ -37,6 +38,13 @@ my @errStatus = (
     'Server Unknown',
 );
 
+my %registryKeyNames = (
+    deviceParameters => 'Device Parameters/',
+    portName => '/PortName',
+    containerId => '/ContainerID',
+    parentIdPrefix => '/ParentIdPrefix'
+);
+
 sub isEnabled {
     my (%params) = @_;
 
@@ -49,13 +57,17 @@ sub doInventory {
     my $inventory = $params{inventory};
     my $logger    = $params{logger};
 
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+
     foreach my $object (getWMIObjects(
         class      => 'Win32_Printer',
         properties => [ qw/
             ExtendedDetectedErrorState HorizontalResolution VerticalResolution Name
             Comment Description DriverName PortName Network Shared PrinterStatus
             ServerName ShareName PrintProcessor
-        / ]
+        / ],
+        %$wmiParams
     )) {
 
         my $errStatus;
@@ -72,7 +84,7 @@ sub doInventory {
                 $object->{VerticalResolution};
         }
 
-        $object->{Serial} = _getUSBPrinterSerial($object->{PortName}, $logger)
+        $object->{Serial} = _getUSBPrinterSerial($object->{PortName}, $logger, $wmiParams)
             if $object->{PortName} && $object->{PortName} =~ /USB/;
 
         $inventory->addEntry(
@@ -99,33 +111,57 @@ sub doInventory {
 }
 
 sub _getUSBPrinterSerial {
-    my ($portName, $logger) = @_;
+    my ($portName, $logger, $wmiParams) = @_;
 
     # the serial number can be extracted from the USB registry key, containing
     # all USB devices, but we only know the USB port identifier, meaning we
     # must first look in USBPRINT registry key, containing USB printers only,
     # and find some way to correlate entries
+    my $usbprintPath = "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Enum/USBPRINT";
     my $usbprint_key = getRegistryKey(
-        path   => "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Enum/USBPRINT",
-        logger => $logger
+        path   => $usbprintPath,
+        logger => $logger,
+        retrieveValuesForAllKeys => 1,
+        retrieveSubKeysForAllKeys => 1
+        %$wmiParams
     );
 
+    my $usbPath = "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Enum/USB";
     my $usb_key = getRegistryKey(
-        path   => "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Enum/USB",
-        logger => $logger
+        path   => $usbPath,
+        logger => $logger,
+        retrieveValuesForAllKeys => 1,
+        retrieveSubKeysForAllKeys => 1,
+        %$wmiParams
     );
 
     # the ContainerID variable seems more reliable, but is not always available
-    my $containerId = _getUSBContainerID($usbprint_key, $portName);
+    my $containerId = _getUSBContainerID(
+        usbprint_key => $usbprint_key,
+        portName => $portName,
+        %$wmiParams
+    );
     if ($containerId) {
-        my $serial = _getUSBSerialFromContainerID($usb_key, $containerId);
+        my $serial = _getUSBSerialFromContainerID(
+            usb => $usb_key,
+            containerId => $containerId,
+            %$wmiParams
+        );
         return $serial if $serial;
     }
 
     # fallback on ParentIdPrefix variable otherwise
-    my $prefix = _getUSBPrefix($usbprint_key, $portName);
+    my $prefix = _getUSBPrefix(
+        usb => $usbprint_key,
+        portName => $portName,
+        %$wmiParams
+    );
     if ($prefix) {
-        my $serial = _getUSBSerialFromPrefix($usb_key, $prefix);
+        my $serial = _getUSBSerialFromPrefix(
+            usb => $usb_key,
+            prefix => $prefix,
+            %$wmiParams
+        );
         return $serial if $serial;
     }
 
@@ -134,7 +170,12 @@ sub _getUSBPrinterSerial {
 }
 
 sub _getUSBContainerID {
-    my ($print, $portName) = @_;
+    my (%params) = @_;
+
+    my $print = $params{usbprint_key};
+    my $portName = $params{portName};
+
+    my %keyNames = _getKeyNames(%params);
 
     # registry data structure:
     # USBPRINT
@@ -148,19 +189,37 @@ sub _getUSBContainerID {
         foreach my $subdeviceName (keys %$device) {
             my $subdevice = $device->{$subdeviceName};
             next unless
-                $subdevice->{'Device Parameters/'}                &&
-                $subdevice->{'Device Parameters/'}->{'/PortName'} &&
-                $subdevice->{'Device Parameters/'}->{'/PortName'} eq $portName;
+                $subdevice->{$keyNames{deviceParameters}}                &&
+                $subdevice->{$keyNames{deviceParameters}}->{$keyNames{portName}} &&
+                $subdevice->{$keyNames{deviceParameters}}->{$keyNames{portName}} eq $portName;
             # got it
-            return $subdevice->{'/ContainerID'};
+            return $subdevice->{$keyNames{containerId}};
         };
     }
 
     return;
 }
 
+sub _getKeyNames {
+    my (%params) = @_;
+
+    my $keyNames = dclone \%registryKeyNames;
+    if ($params{WMIService}) {
+        for my $k (keys %keyNames) {
+            $keyNames{$k} =~ s{\/}{}g;
+        }
+    }
+
+    return %$keyNames;
+}
+
 sub _getUSBPrefix {
-    my ($print, $portName) = @_;
+    my (%params) = @_;
+
+    my $print = $params{usb};
+    my $portName = $params{portName};
+
+    my %keyNames = _getKeyNames(%params);
 
     # registry data structure:
     # USBPRINT
@@ -173,9 +232,9 @@ sub _getUSBPrefix {
         foreach my $subdeviceName (keys %$device) {
             my $subdevice = $device->{$subdeviceName};
             next unless
-                $subdevice->{'Device Parameters/'}                &&
-                $subdevice->{'Device Parameters/'}->{'/PortName'} &&
-                $subdevice->{'Device Parameters/'}->{'/PortName'} eq $portName;
+                $subdevice->{$keyNames{deviceParameters}}                &&
+                    $subdevice->{$keyNames{deviceParameters}}->{$keyNames{portName}} &&
+                    $subdevice->{$keyNames{deviceParameters}}->{$keyNames{portName}} eq $portName;
             # got it
             my $prefix = $subdeviceName;
             $prefix =~ s{&$portName/$}{};
@@ -187,7 +246,12 @@ sub _getUSBPrefix {
 }
 
 sub _getUSBSerialFromPrefix {
-    my ($usb, $prefix) = @_;
+    my (%params) = @_;
+
+    my $usb = $params{usb};
+    my $prefix = $params{prefix};
+
+    my %keyNames = _getKeyNames(%params);
 
     # registry data structure:
     # USB
@@ -199,8 +263,8 @@ sub _getUSBSerialFromPrefix {
         foreach my $subdeviceName (keys %$device) {
             my $subdevice = $device->{$subdeviceName};
             next unless
-                $subdevice->{'/ParentIdPrefix'} &&
-                $subdevice->{'/ParentIdPrefix'} eq $prefix;
+                $subdevice->{$keyNames{parentIdPrefix}} &&
+                $subdevice->{$keyNames{parentIdPrefix}} eq $prefix;
             # got it
             my $serial = $subdeviceName;
             # pseudo serial generated by windows
@@ -214,7 +278,12 @@ sub _getUSBSerialFromPrefix {
 }
 
 sub _getUSBSerialFromContainerID {
-    my ($usb, $containerId) = @_;
+    my (%params) = @_;
+
+    my $usb = $params{usb};
+    my $containerId = $params{containerId};
+
+    my %keyNames = _getKeyNames(%params);
 
     # registry data structure:
     # USB
@@ -226,8 +295,8 @@ sub _getUSBSerialFromContainerID {
         foreach my $subdeviceName (keys %$device) {
             my $subdevice = $device->{$subdeviceName};
             next unless
-                $subdevice->{'/ContainerID'} &&
-                $subdevice->{'/ContainerID'} eq $containerId;
+                $subdevice->{$keyNames{containerId}} &&
+                $subdevice->{$keyNames{containerId}} eq $containerId;
             # pseudo serial generated by windows
             next if $subdeviceName =~ /&/;
             # got it
