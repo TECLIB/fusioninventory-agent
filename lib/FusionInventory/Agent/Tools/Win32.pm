@@ -533,7 +533,7 @@ sub getRegistryKeyFromWMI {
             my $wantedKeyPath = $params{path} . '/' . $wantedKey;
             open(O, ">>".'hard_debug.log');
             print O 'on envoie retrieveValuesNameAndType '.$wantedKeyPath."\n";
-            close O;params
+            close O;
             my $eval = eval {
                 $keyNames->{$wantedKey} = retrieveValuesNameAndType(
                     @_,
