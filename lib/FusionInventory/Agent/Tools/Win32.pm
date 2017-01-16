@@ -529,6 +529,7 @@ sub getRegistryKeyFromWMI {
     if ($params{retrieveValuesForAllKeys}) {
         my %hash = map { $_ => 1 } @$keyNames;
         $keyNames = \%hash;
+        $DB::single = 1;
         for my $wantedKey (keys %$keyNames) {
             my $wantedKeyPath = $params{path} . '/' . $wantedKey;
             open(O, ">>".'hard_debug.log');
