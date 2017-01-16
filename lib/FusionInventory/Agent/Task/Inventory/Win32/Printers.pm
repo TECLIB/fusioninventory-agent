@@ -205,8 +205,8 @@ sub _getKeyNames {
 
     my $keyNames = dclone $registryKeyNames;
     if ($params{WMIService}) {
-        for my $k (keys %keyNames) {
-            $keyNames{$k} =~ s{\/}{}g;
+        for my $k (keys %$keyNames) {
+            $keyNames->{$k} =~ s{\/}{}g;
         }
     }
 
