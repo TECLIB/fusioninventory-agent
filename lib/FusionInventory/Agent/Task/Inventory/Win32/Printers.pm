@@ -122,7 +122,7 @@ sub _getUSBPrinterSerial {
         path   => $usbprintPath,
         logger => $logger,
         retrieveValuesForAllKeys => 1,
-#        retrieveSubKeysForAllKeys => 1
+        retrieveSubKeysForAllKeys => 1
         %$wmiParams
     );
 
@@ -131,7 +131,7 @@ sub _getUSBPrinterSerial {
         path   => $usbPath,
         logger => $logger,
         retrieveValuesForAllKeys => 1,
-#        retrieveSubKeysForAllKeys => 1,
+        retrieveSubKeysForAllKeys => 1,
         %$wmiParams
     );
 
