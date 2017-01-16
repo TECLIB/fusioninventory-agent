@@ -295,7 +295,7 @@ sub getRegistryValue {
 
 sub getRegistryValueFromWMI {
     my (%params) = @_;
-    $params{logger}->debug2('in getRegistryValueFromWMI()');
+    $params{logger}->debug2('in getRegistryValueFromWMI()') if $params{logger};
     my $win32_ole_dependent_api = {
         funct => '_getRegistryValueFromWMI',
         args  => \@_
