@@ -197,6 +197,7 @@ sub _getLastUser {
 sub _getLastUserFromRemoteRegistry {
     my (%params) = @_;
 
+    $DB::single = 1;
     my $user = encodeFromRegistry(
         getRegistryValueFromWMI(
             %params,
