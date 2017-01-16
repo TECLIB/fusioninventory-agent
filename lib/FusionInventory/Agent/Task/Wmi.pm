@@ -58,61 +58,13 @@ sub run {
 #        'FusionInventory::Agent::Task::Inventory::Win32::Registry'1,
 #        'FusionInventory::Agent::Task::Inventory::Win32::Slots',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Softwares'
+        'FusionInventory::Agent::Task::Inventory::Win32::Sounds',
+        'FusionInventory::Agent::Task::Inventory::Win32::Storages',
+        'FusionInventory::Agent::Task::Inventory::Win32::USB',
+        'FusionInventory::Agent::Task::Inventory::Win32::Users',
+        'FusionInventory::Agent::Task::Inventory::Win32::Videos'
     ];
     $self->SUPER::run(%params);
-
-    if (2==1) {
-        if ( $REAL_USER_ID != 0 ) {
-            $self->{logger}
-              ->warning( "You should execute this task as super-user" );
-        }
-
-        my $config = $self->{config};
-        if (!$config->{wmi_hostname}
-            || !$config->{wmi_user}
-            || !$config->{wmi_pass})
-        {
-            $self->{logger}->error(
-                'wmi connection parameters missing, be sure to give host, user and password.'
-            );
-            return;
-        }
-
-        my %wmiParams = (
-            WMIService => {
-                hostname => $config->{wmi_hostname},
-                user     => $config->{wmi_user},
-                pass     => $config->{wmi_pass}
-            }
-        );
-        my @memories = FusionInventory::Agent::Task::Inventory::Win32::Memory::getMemories(%wmiParams);
-        my $dd = Data::Dumper->new( [ \@memories ] );
-        $self->{logger}->debug2( $dd->Dump );
-
-        my @antiviruses = FusionInventory::Agent::Task::Inventory::Win32::AntiVirus::getAntivirusesFromWMI(%wmiParams);
-        $dd = Data::Dumper->new( [ \@antiviruses ] );
-        $self->{logger}->debug2( $dd->Dump );
-
-        my $bios = FusionInventory::Agent::Task::Inventory::Win32::Bios::appendBiosDataFromWMI(%wmiParams);
-        $dd = Data::Dumper->new( [ $bios ] );
-        $self->{logger}->debug2( $dd->Dump );
-
-        my $chassis = FusionInventory::Agent::Task::Inventory::Win32::Chassis::getChassis(%wmiParams);
-        $dd = Data::Dumper->new( [ $chassis ] );
-        $self->{logger}->debug2( $dd->Dump );
-
-        my @cpus = getCPU(%wmiParams);
-        $dd = Data::Dumper->new( [ @cpus ] );
-        $self->{logger}->debug2( $dd->Dump );
-
-        my (@drives, @volumes) = FusionInventory::Agent::Task::Inventory::Win32::Drives::getDrives(%wmiParams);
-        $dd = Data::Dumper->new( [ @drives, @volumes ] );
-        $self->{logger}->debug2( $dd->Dump );
-
-        my @envVars = FusionInventory::Agent::Task::Inventory::Win32::Environment::getEnvironmentValues(%wmiParams);
-        $dd = Data::Dumper->new( [ \@envVars ] );
-        $self->{logger}->debug2( $dd->Dump );
-    }
 }
 
 sub getCPU {
