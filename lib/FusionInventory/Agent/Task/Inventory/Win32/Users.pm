@@ -199,12 +199,12 @@ sub _getLastUserFromRemoteRegistry {
 
     my $user = encodeFromRegistry(
         getRegistryValueFromWMI(
-            WMIService => $params{WMIService},
+            %params,
             path => 'HKEY_LOCAL_MACHINE/' . $params{path}->[0]
         )
     ) || encodeFromRegistry(
         getRegistryValueFromWMI(
-            WMIService => $params{WMIService},
+            %params,
             path => 'HKEY_LOCAL_MACHINE/' . $params{path}->[1]
         )
     );
