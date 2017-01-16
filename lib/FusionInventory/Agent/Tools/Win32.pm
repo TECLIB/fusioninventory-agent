@@ -771,12 +771,12 @@ sub _retrieveValuesNameAndType {
         print O 'eval() has died ' . $params{keyName} . " : $str\n";
         print O Win32::OLE->LastError() . "\n";
         print O $@ . "\n";
-        print O $dd->Dump;
+#        print O $dd->Dump;
         close O;
 #        $SIG{SEGV} = 'DEFAULT';
         $dd = Data::Dumper->new([\%SIG]);
         open(O, ">>" . 'hard_debug.log');
-        print O $dd->Dump;
+#        print O $dd->Dump;
         close O;
 
 #        threads->detach();
@@ -1375,14 +1375,14 @@ sub _call_win32_ole_dependent_api {
                 my $ddd = Data::Dumper->new([\%SIG]);
                 open(O, ">>" . 'hard_debug.log');
                 print O 'in cond_timedwait, %SIG' . "\n";
-                print O $ddd->Dump();
+#                print O $ddd->Dump();
                 close O;
                 last if (!cond_timedwait($call, $timeout, @win32_ole_calls));
             }
             my $dd = Data::Dumper->new([\%SIG]);
             open(O, ">>" . 'hard_debug.log');
             print O 'after cond_timedwait, %SIG' . "\n";
-            print O $dd->Dump();
+#            print O $dd->Dump();
             close O;
 
             # Be sure to always block worker on semaphore from now
