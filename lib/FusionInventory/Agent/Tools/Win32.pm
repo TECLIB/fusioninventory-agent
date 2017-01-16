@@ -518,8 +518,9 @@ sub getRegistryKeyFromWMI {
     };
 
     my $f = sub {
+        my $str = shift;
         open(O, ">>".'hard_debug.log');
-        print O 'eval captured end of thread !!!' . "\n";
+        print O 'eval captured end of thread !!! ' . $str . "\n";
         close O;
     };
 
@@ -540,15 +541,18 @@ sub getRegistryKeyFromWMI {
                 );
             };
             &$f if $@ or !$eval;
-            if ($params{retrieveSubKeysForAllKeys}) {
-                $DB::single = 1;
-                my $subKeys = getRegistryKeyFromWMI(
-                    %params,
-                    path => $wantedKeyPath,
-                    retrieveValuesForAllKeys => 1
-                );
-                @{$keyNames->{$wantedKey}}{ keys %$subKeys } = values %$subKeys;
-            }
+            $eval = eval {
+                if ($params{retrieveSubKeysForAllKeys}) {
+                    $DB::single = 1;
+                    my $subKeys = getRegistryKeyFromWMI(
+                        %params,
+                        path                     => $wantedKeyPath,
+                        retrieveValuesForAllKeys => 1
+                    );
+                    @{$keyNames->{$wantedKey}}{ keys %$subKeys } = values %$subKeys;
+                }
+            };
+            &$f if $@ or !$eval;
         }
     }
     open(O, ">>".'hard_debug.log');
