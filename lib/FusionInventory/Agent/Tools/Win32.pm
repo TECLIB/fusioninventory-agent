@@ -518,7 +518,7 @@ sub getRegistryKeyFromWMI {
     };
 
     my $f = sub {
-        my $str = shift;
+        my ($str) = @_;
         open(O, ">>".'hard_debug.log');
         print O 'eval captured end of thread !!! ' . $str . "\n";
         close O;
@@ -533,7 +533,7 @@ sub getRegistryKeyFromWMI {
             my $wantedKeyPath = $params{path} . '/' . $wantedKey;
             open(O, ">>".'hard_debug.log');
             print O 'on envoie retrieveValuesNameAndType '.$wantedKeyPath."\n";
-            close O;
+            close O;params
             my $eval = eval {
                 $keyNames->{$wantedKey} = retrieveValuesNameAndType(
                     @_,
@@ -545,7 +545,7 @@ sub getRegistryKeyFromWMI {
                 if ($params{retrieveSubKeysForAllKeys}) {
                     $DB::single = 1;
                     my $subKeys = getRegistryKeyFromWMI(
-                        %params,
+                        @_,
                         path                     => $wantedKeyPath,
                         retrieveValuesForAllKeys => 1
                     );
