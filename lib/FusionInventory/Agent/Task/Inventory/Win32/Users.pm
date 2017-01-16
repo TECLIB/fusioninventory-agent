@@ -59,11 +59,11 @@ sub doInventory {
                 entry   => $user
             );
         }
-    }
 
     $inventory->setHardware({
         LASTLOGGEDUSER => _getLastUser(logger => $logger, %$wmiParams)
     });
+    }
 }
 
 sub _getLocalUsers {
