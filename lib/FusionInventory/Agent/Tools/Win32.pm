@@ -833,12 +833,14 @@ sub _retrieveValuesNameAndType {
         if (defined $return && $return == 0) {
             $types = [ ];
             foreach my $item (in( $arrValueTypes->Value )) {
+                next unless $item;
                 push @$types, sprintf $item;
             }
             if (scalar (@$types) > 0) {
                 my $i = 0;
                 $values = { };
                 foreach my $item (in( $arrValueNames->Value )) {
+                    next unless $item;
                     my $valueName = sprintf $item;
                     $values->{$valueName} = _retrieveRemoteRegistryValueByType(
                         valueType => $types->[$i],
