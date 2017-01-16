@@ -38,12 +38,12 @@ my @errStatus = (
     'Server Unknown',
 );
 
-my %registryKeyNames = (
+my $registryKeyNames = {
     deviceParameters => 'Device Parameters/',
-    portName => '/PortName',
-    containerId => '/ContainerID',
-    parentIdPrefix => '/ParentIdPrefix'
-);
+    portName         => '/PortName',
+    containerId      => '/ContainerID',
+    parentIdPrefix   => '/ParentIdPrefix'
+};
 
 sub isEnabled {
     my (%params) = @_;
@@ -203,7 +203,7 @@ sub _getUSBContainerID {
 sub _getKeyNames {
     my (%params) = @_;
 
-    my $keyNames = dclone \%registryKeyNames;
+    my $keyNames = dclone $registryKeyNames;
     if ($params{WMIService}) {
         for my $k (keys %keyNames) {
             $keyNames{$k} =~ s{\/}{}g;
