@@ -97,6 +97,7 @@ sub getAntivirusesFromWMI {
                 / ],
             @_
         )) {
+            $DB::single = 1;
             next unless $object;
 
             my $antivirus = {
