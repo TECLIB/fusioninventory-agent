@@ -387,18 +387,45 @@ sub _retrieveValueFromRemoteRegistry {
 sub isDefinedRemoteRegistryKey {
     my (%params)  =@_;
 
-    my $win32_ole_dependent_api = {
-        funct => '_isDefinedRemoteRegistryKey',
-        args  => \@_
-    };
-
     $params{logger}->debug2('isDefinedRemoteRegistryKey() ') if $params{logger};
 
-    my $val = _call_win32_ole_dependent_api($win32_ole_dependent_api);
+    my $defined = 0;
+    my $f = sub {
+        $defined = 0;
+    };
+    # has subKeys ?
+    my $eval = eval {
+        $defined = defined getRegistryKeyFromWMI(@_);
+    };
+    &$f if ($@ || !$eval);
+    return $defined if $defined;
 
-    $params{logger}->debug2($params{path} . ' : ' . $val) if $params{logger};
+    # has values ?
+    $eval = eval {
+        $defined = defined retrieveValuesNameAndType(@_);
+    };
+    &$f if ($@ || !$eval);
+    return $defined if $defined;
 
-    return $val;
+    # is a value ?
+    # we have to look at value type, so we use the value's parent path
+    return $defined unless ($params{path} =~ /(HKEY.*)\/([^\/]+)/);
+    my $parentPath = $1;
+    my $valueName = $2;
+    $eval = eval {
+        my $values = retrieveValuesNameAndType(
+            %params,
+            path => $parentPath
+        );
+        $defined = defined $values && defined $values->{$valueName};
+    };
+    &$f if $@ || !$eval;
+
+    return $defined;
+}
+
+sub isKeyWithSubKeys {
+
 }
 
 sub _isDefinedRemoteRegistryKey {

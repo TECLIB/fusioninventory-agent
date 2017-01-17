@@ -26,7 +26,7 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
 
-    if ($wmiParams->{WMIService}) {
+    if (2==1 && $wmiParams->{WMIService}) {
         my $dd;
         my $tree;
         my $p;
@@ -130,19 +130,19 @@ sub _getMcAfeeInfo {
     my (%params) = @_;
 
     my $path;
-    if (
-        is64bit(%params)
-            && ((
-            $params{WMIService} && isDefinedRemoteRegistryKey(
-                path => 'HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/McAfee/AVEngine',
-                %params
-            ))
-            || defined getRegistryKey(path => 'HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/McAfee/AVEngine')
-        )
-    ) {
+    if (is64bit(%params)) {
         $path = 'HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/McAfee/AVEngine';
     } else {
         $path = 'HKEY_LOCAL_MACHINE/SOFTWARE/McAfee/AVEngine';
+    }
+
+    if ($params{WMIService}) {
+        return unless (isDefinedRemoteRegistryKey(
+            %params,
+            path => $path
+        ));
+    } else {
+        return unless (defined getRegistryKey(path => $path));
     }
 
     my %properties = (
@@ -157,12 +157,12 @@ sub _getMcAfeeInfo {
     foreach my $property (keys %properties) {
         my $keys = $properties{$property};
         my $major = getRegistryValue(
-            path => $path . '/' . $keys->[0],
-            %params
+            %params,
+            path => $path . '/' . $keys->[0]
         );
         my $minor = getRegistryValue(
+            %params,
             path => $path . '/' . $keys->[1],
-            %params
         );
         $info->{$property} = sprintf("%04d.%04d", hex($major), hex($minor))
             if defined $major && defined $major;
@@ -170,7 +170,10 @@ sub _getMcAfeeInfo {
 
     # file creation date property
     my $avDatDate            =
-        getRegistryValue(path => $path . '/AVDatDate');
+        getRegistryValue(
+            %params,
+            path => $path . '/AVDatDate'
+        );
 
     if (defined $avDatDate) {
         my $datFileCreation = encodeFromRegistry( $avDatDate );
