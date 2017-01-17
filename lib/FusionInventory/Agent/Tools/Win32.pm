@@ -9,10 +9,6 @@ use threads;
 use threads 'exit' => 'threads_only';
 use threads::shared;
 
-#use sigtrap 'handler', \&errorHandler, 'error-signals';
-#use sigtrap qw(handler errorHandler error-signals);
-#use sigtrap qw(handler errorHandler old-interface-signals);
-#use sigtrap qw(handler my_handler untrapped);
 use sigtrap qw(handler errorHandler untrapped);
 
 use UNIVERSAL::require();
@@ -99,13 +95,6 @@ sub _isWmiCallFailed {
     my ($call) = @_;
 
     return defined $wmiFailedCalls{$call};
-}
-
-sub my_handler {
-    open(O, ">>" . 'hard_debug.log');
-    print O "on s'en fout\n";
-    print O "Caught signal $!\n";
-    close O;
 }
 
 sub errorHandler {
@@ -506,10 +495,6 @@ sub _getRegistryKey {
 }
 
 sub getRegistryKeyFromWMI {
-    open(O, ">>".'hard_debug.log');
-    print O 'starting getRegistryKeyFromWMI' . "\n";
-    close O;
-
     my (%params) = @_;
 
     my $win32_ole_dependent_api = {
@@ -518,10 +503,7 @@ sub getRegistryKeyFromWMI {
     };
 
     my $f = sub {
-        my ($str) = @_;
-        open(O, ">>".'hard_debug.log');
-        print O 'eval captured end of thread !!! ' . $str . "\n";
-        close O;
+
     };
 
     my $keyNames = _call_win32_ole_dependent_api($win32_ole_dependent_api);
