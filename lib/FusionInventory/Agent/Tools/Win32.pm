@@ -74,9 +74,6 @@ sub _recordWmiCallAsFailed {
         lock(%wmiFailedCalls);
         $wmiFailedCalls{$call} = 1;
     }
-    open(O, ">>" . 'hard_debug.log');
-    print O '_recordWmiCallAsFailed ' . $call . "\n";
-    close O;
 }
 
 sub _forgetWmiCall {
@@ -86,9 +83,6 @@ sub _forgetWmiCall {
         lock(%wmiFailedCalls);
         delete $wmiFailedCalls{$call};
     }
-    open(O, ">>" . 'hard_debug.log');
-    print O '_forgetWmiCall ' . $call . "\n";
-    close O;
 }
 
 sub _isWmiCallFailed {
@@ -672,7 +666,13 @@ sub _retrieveValuesNameAndType {
     }
 
     my $wmiCall = $params{WMIService}->{hostname} . '#' . $params{WMIService}->{user} . '#' . $params{keyName};
-    return if _isWmiCallFailed($wmiCall);
+    if (_isWmiCallFailed($wmiCall)) {
+        open(O, ">>" . 'hard_debug.log');
+        print O '_isWmiCallFailed returned true';
+        print O "\n";
+        close O;
+        return;
+    }
 
     unless ($params{objReg}) {
         return unless $params{WMIService};
@@ -742,11 +742,7 @@ sub _retrieveValuesNameAndType {
 
 sub _retrieveRemoteRegistryValueByType {
     my (%params) = @_;
-#    open (O, ">>" . 'eval_return.log');
-#    print O 'in _retrieveRemoteRegistryValueByType' . "\n";
-#    my $dd = Data::Dumper->new([\%params]);
-#    print O $dd->Dump;
-#    close O;
+
     return unless $params{valueType} && $params{objReg} && $params{keyName};
 
     if ($params{root} && $params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
