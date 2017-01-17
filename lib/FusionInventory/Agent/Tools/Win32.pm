@@ -514,9 +514,6 @@ sub getRegistryKeyFromWMI {
         $DB::single = 1;
         for my $wantedKey (keys %$keyNames) {
             my $wantedKeyPath = $params{path} . '/' . $wantedKey;
-            open(O, ">>".'hard_debug.log');
-            print O 'on envoie retrieveValuesNameAndType '.$wantedKeyPath."\n";
-            close O;
             my $eval = eval {
                 $keyNames->{$wantedKey} = retrieveValuesNameAndType(
                     @_,
@@ -538,9 +535,6 @@ sub getRegistryKeyFromWMI {
             &$f if $@ or !$eval;
         }
     }
-    open(O, ">>".'hard_debug.log');
-    print O 'end of getRegistryKeyFromWMI' . "\n";
-    close O;
     return $keyNames;
 }
 
@@ -548,9 +542,7 @@ sub retrieveKeyValuesFromRemote {
     my $values;
 
     my $f = sub {
-        open(O, ">>".'hard_debug.log');
-        print O 'eval captured end of thread !!!' . "\n";
-        close O;
+
     };
     my $eval = eval {
         $values = retrieveValuesNameAndType(
@@ -594,10 +586,6 @@ sub _getRegistryKeyFromWMI{
 sub _retrieveSubKeyList {
     my (%params) = @_;
 
-    open(O, ">>" . 'hard_debug.log');
-    print O '_retrieveSubKeyList() ' . $params{path} . "\n";
-    close O;
-
     Win32::OLE->use('in');
 
     my $hkey;
@@ -621,61 +609,20 @@ sub _retrieveSubKeyList {
     # Do not use Die for this method
 
     my $func = sub {
-        open (O, ">" . 'eval_return.log');
-        print O '_retrieveSubKeyList() : eval is fatal error !!!' . "\n";
-        close O;
+
     };
     my $return;
     my $subKeys;
-#    open(O, ">" . 'debug_' . time());
-#    print O 'avant eval' . "\n";
 
-        open(O, ">>" . 'hard_debug.log');
-        print O 'keyName : ' . $params{keyName} . "\n";
-        close O;
-        $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
-        open(O, ">>" . 'hard_debug.log');
-        print O 'après EnumKey' . "\n";
-        close O;
-
-        if (defined $return && $return == 0 && $arr->Value) {
-            open(O, ">>" . 'hard_debug.log');
-            print O '$return : ' . $return . "\n";
-            close O;
-            $subKeys = [ ];
-            foreach my $item (in( $arr->Value )) {
-                push @$subKeys, $item;
-            }
+    $return = $params{objReg}->EnumKey($hkey, $params{keyName}, $arr);
+    if (defined $return && $return == 0 && $arr->Value) {
+        $subKeys = [ ];
+        foreach my $item (in( $arr->Value )) {
+            push @$subKeys, $item;
         }
-#        if ($params{retrieveValuesForAllKeys}) {
-#            $params{retrieveValuesForKeyName} = $subKeys;
-#        }
-#        if ($params{retrieveValuesForKeyName}
-#            && ref($params{retrieveValuesForKeyName}) eq 'ARRAY') {
-#            my %subKeysWithValues = map { $_ => 1 } @$subKeys;
-#            for my $wantedKey (@{$params{retrieveValuesForKeyName}}) {
-#                if ($subKeysWithValues{$wantedKey}) {
-#                    my $wantedKeyPath = $params{keyName} . "\\" . $wantedKey;
-#                    open(O, ">>" . 'hard_debug.log');
-#                    print O 'on envoie _retrieveValuesNameAndType ' . $wantedKeyPath . "\n";
-#                    close O;
-#                    $subKeysWithValues{$wantedKey} = _retrieveValuesNameAndType(
-#                        WMIService => $params{WMIService},
-#                        objReg => $params{objReg},
-#                        keyName   => $wantedKeyPath,
-#                        hkey => 'HKEY_LOCAL_MACHINE'
-#                    );
-#                }
-#            }
-#            $subKeys = \%subKeysWithValues;
-#        }
-
+    }
     &$func if $@;
-#    print O 'après eval' . "\n";
-#    print O 'mais heu' . "\n" if $@;
-#    print O 'mais alors ! ' . "\n";
-#    print O $@ if $@;
-#    close O;
+
     return $subKeys;
 }
 
@@ -692,11 +639,6 @@ sub _retrieveValuesNameAndType {
     my (%params) = @_;
 
     Win32::OLE->use('valof');
-
-    my $truc = $params{path} ? $params{path} : $params{keyName} ? $params{keyName} : 'UNDEF';
-    open(O, ">>" . 'hard_debug.log');
-    print O '_retrieveValuesNameAndType() ' . $truc . "\n";
-    close O;
 
     unless ($params{root}) {
         if ($params{path} && $params{path} =~ m{^(HKEY_\S+)/(.+)}) {
@@ -747,31 +689,13 @@ sub _retrieveValuesNameAndType {
 
     my $func1 = sub {
         my $str = shift;
-        # do nothing
-        my $dd = Data::Dumper->new([\%SIG]);
-        open(O, ">>" . 'hard_debug.log');
-        print O 'eval() has died ' . $params{keyName} . " : $str\n";
-        print O Win32::OLE->LastError() . "\n";
-        print O $@ . "\n";
-#        print O $dd->Dump;
-        close O;
-#        $SIG{SEGV} = 'DEFAULT';
-        $dd = Data::Dumper->new([\%SIG]);
-        open(O, ">>" . 'hard_debug.log');
-#        print O $dd->Dump;
-        close O;
-
-#        threads->detach();
-        die('die because of SEGV');
+        die('die because of SEGV : ' . $str);
     };
     my $values;
+    my $types;
+    my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
+    my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
 
-        my $types;
-        my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
-        my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
-        open(O, ">>" . 'hard_debug.log');
-        print O 'avant EnumValues' . "\n";
-        close O;
     # record call
     _recordWmiCallAsFailed($wmiCall);
 #    eval {
@@ -779,39 +703,12 @@ sub _retrieveValuesNameAndType {
         $SIG{SEGV} = \&$func1;
 
         my $return = $params{objReg}->EnumValues($hkey, $params{keyName}, $arrValueNames, $arrValueTypes);
-        print 'error : '.$return."\n";
-        print Win32::OLE->LastError()."\n";
         my $sprintfError = '';
         if (Win32::OLE->LastError()) {
-            open(O, ">>".'hard_debug.log');
-            $sprintfError = sprintf("%s", Win32::OLE->LastError());
-            print O $sprintfError."\n";
-            close O;
         }
-        open(O, ">>".'hard_debug.log');
-        print O 'sprintfError : '.$sprintfError."\n";
-        print O 'ref arrValueTypes '.(ref $arrValueTypes)."\n";
-        print O 'arrValueTypes->IsNothing '.$arrValueTypes->IsNothing()."\n";
-        print O 'arrValueTypes->IsNullString '.$arrValueTypes->IsNullString()."\n";
-        print O 'arrValueTypes->Type '.$arrValueTypes->Type()."\n";
-        close O;
 
         sleep 1;
-        my $f2 = sub {
-            my $str = shift;
-            open(O, ">>".'hard_debug.log');
-            print O '_retrieveValuesNameAndType() : eval() has died '.$params{keyName}." : $str\n";
-            print O Win32::OLE->LastError()."\n";
-            print O $@."\n";
-            close O;
-        };
-        open(O, ">>".'hard_debug.log');
-        print O 'arrValueTypes->Value '.$arrValueTypes->Value()."\n";
-        my $ddd = Data::Dumper->new([ $arrValueTypes ]);
-        print O $ddd->Dump;
-        close O;
-        #    my $retEval = eval {
-        #        local $SIG{SEGV} = 'IGNORE';
+
         if (defined $return && $return == 0) {
             $types = [ ];
             foreach my $item (in( $arrValueTypes->Value )) {
@@ -851,10 +748,6 @@ sub _retrieveRemoteRegistryValueByType {
 #    print O $dd->Dump;
 #    close O;
     return unless $params{valueType} && $params{objReg} && $params{keyName};
-
-    open (O, ">>" . 'eval_return.log');
-    print O 'return ' . $params{keyName} . ' ' . $params{valueName} . ' ' . $params{valueType} . "\n";
-    close O;
 
     if ($params{root} && $params{root} =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
         $params{hkey} = $Win32::Registry::HKEY_LOCAL_MACHINE;
@@ -905,9 +798,6 @@ sub _retrieveRemoteRegistryValueByType {
     }
 
     $value = '' if !$value;
-    open (O, ">>" . 'eval_return.log');
-    print O 'return ' . $params{keyName} . ' ' . $params{valueName} . ' : <' . sprintf($value) . '>' . "\n";
-    close O;
 
     return $value;
 }
@@ -944,10 +834,6 @@ sub _getRegistryTreeFromWMI {
 sub _retrieveSubTreeRec {
     my (%params) = @_;
 
-    open(O, ">>" . 'hard_debug.log');
-    print O '_retrieveSubTreeRec() ' . $params{path} . "\n";
-    close O;
-
     my @debug = ('in _retrieveSubTreeRec()');
     my $dd = Data::Dumper->new([\%params]);
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
@@ -961,22 +847,11 @@ sub _retrieveSubTreeRec {
     my $subKeys = _retrieveSubKeyList(%params);
     my $keyValues;
     $keyValues = _retrieveValuesNameAndType(%params);
-    open(O, ">>" . 'hard_debug.log');
-    print O 'done _retrieveValuesNameAndType' . "\n";
-    $dd = Data::Dumper->new([$subKeys, $keyValues]);
-    print O $dd->Dump;
-    close O;
     if ($subKeys) {
         push @debug, 'subKeys found';
 #        $params{logger}->debug2('found subKeys');
         $tree = {};
         for my $subKey (@$subKeys) {
-#            $params{logger}->debug2('subKey : ' . $subKey);
-#            $params{logger}->debug2('lauching _retrieveSubTreeRec in _retrieveSubTreeRec');
-#            $tree->{$subKey} = 'value';
-            open(O, ">>" . 'hard_debug.log');
-            print O 'subKey : ' . $subKey . "\n";
-            close O;
             $tree->{$subKey} = _retrieveSubTreeRec(
                 %params,
                 path => $params{path} . '/' . $subKey
@@ -995,8 +870,6 @@ sub _retrieveSubTreeRec {
             $params{valueName} = $3;
             $tree->{VALUE} = 'value';#_retrieveValueFromRemoteRegistry(%params);
         }
-#        $params{logger}->debug2("didn't find subKeys");
-#        $params{logger}->debug2('lauching _retrieveValueFromRemoteRegistry');
     }
     $tree->{DEBUG} = \@debug;
     return $tree;
@@ -1227,10 +1100,6 @@ my @win32_ole_calls : shared;
 sub start_Win32_OLE_Worker {
 
     unless (defined($worker)) {
-        open(O, ">>" . 'hard_debug.log');
-        print O 'starting thread now ' . "\n";
-        close O;
-
         # Request a semaphore on which worker blocks immediatly
         Thread::Semaphore->require();
         $worker_semaphore = Thread::Semaphore->new(0);
@@ -1248,30 +1117,7 @@ sub _win32_ole_worker {
     Win32::OLE->Option(CP => Win32::OLE::CP_UTF8());
     Win32::OLE->use('in');
 
-#    use sigtrap qw(die untrapped normal-signals stack-trace any error-signals);
-
-    my $errorHandler = sub {
-        open(O, ">>" . 'hard_debug.log');
-        print O 'errorHandler now, we trapped this signal !' . "\n";
-        print O $!;
-        print O "\n";
-        close O;
-
-#        return 1;
-
-        # TODO : record problematic call
-        # file named with IP o hostname containing :
-        # - function (enumNamesAndValues)
-        # - keyName
-        # - eventually also keyValue
-        # Then, at each call, look if this call has been problematic, don't do it again !
-        #
-        threads->exit;
-    };
     local $SIG{SEGV} = 'DEFAULT';
-#    $SIG{TERM} = \&$errorHandler;
-#    $SIG{ABRT} = \&$errorHandler;
-#    $SIG{ILL} = \&$errorHandler;
 
     my $evalHandler = sub {
         open(O, ">>" . 'hard_debug.log');
@@ -1356,18 +1202,8 @@ sub _call_win32_ole_dependent_api {
             # Now, wait for worker result with one minute timeout
             my $timeout = time + 60;
             while (!exists($call->{'result'})) {
-                my $ddd = Data::Dumper->new([\%SIG]);
-                open(O, ">>" . 'hard_debug.log');
-                print O 'in cond_timedwait, %SIG' . "\n";
-#                print O $ddd->Dump();
-                close O;
                 last if (!cond_timedwait($call, $timeout, @win32_ole_calls));
             }
-            my $dd = Data::Dumper->new([\%SIG]);
-            open(O, ">>" . 'hard_debug.log');
-            print O 'after cond_timedwait, %SIG' . "\n";
-#            print O $dd->Dump();
-            close O;
 
             # Be sure to always block worker on semaphore from now
             $worker_semaphore->down_nb();
@@ -1385,10 +1221,6 @@ sub _call_win32_ole_dependent_api {
         return (exists($call->{'array'}) && $call->{'array'}) ?
             @{$result || []} : $result ;
     } else {
-        open(O, ">>" . 'hard_debug.log');
-        print O '$worker not defined !!!' . "\n";
-        close O;
-
         # Load Win32::OLE as late as possible
         Win32::OLE->require() or return;
         Win32::OLE::Variant->require() or return;
@@ -1421,7 +1253,6 @@ sub getUsersFromRegistry {
 sub _getUsersFromRemoteRegistry {
     my (%params) = @_;
 
-    my $logger = $params{logger};
     my $dataFromRegistry = getRegistryKeyFromWMI(
         %params,
         path => 'HKEY_LOCAL_MACHINE/' . $params{pathToUserList},
