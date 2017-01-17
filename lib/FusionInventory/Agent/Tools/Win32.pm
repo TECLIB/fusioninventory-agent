@@ -387,7 +387,6 @@ sub _retrieveValueFromRemoteRegistry {
 sub isDefinedRemoteRegistryKey {
     my (%params)  =@_;
 
-    $DB::single = 1;
     $params{logger}->debug2('isDefinedRemoteRegistryKey() ') if $params{logger};
 
     my $defined = 0;
@@ -533,7 +532,6 @@ sub getRegistryKeyFromWMI {
     if ($params{retrieveValuesForAllKeys}) {
         my %hash = map { $_ => 1 } @$keyNames;
         $keyNames = \%hash;
-        $DB::single = 1;
         for my $wantedKey (keys %$keyNames) {
             my $wantedKeyPath = $params{path} . '/' . $wantedKey;
             my $eval = eval {
@@ -545,7 +543,6 @@ sub getRegistryKeyFromWMI {
             &$f if $@ or !$eval;
             $eval = eval {
                 if ($params{retrieveSubKeysForAllKeys}) {
-                    $DB::single = 1;
                     my $subKeys = getRegistryKeyFromWMI(
                         @_,
                         path                     => $wantedKeyPath,

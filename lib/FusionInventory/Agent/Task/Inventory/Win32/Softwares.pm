@@ -35,6 +35,7 @@ sub doInventory {
 
     if ($wmiParams->{WMIService}) {
         if ($is64bit) {
+            $DB::single = 1;
             # 64-bit software
             my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
                 %$wmiParams,
@@ -355,7 +356,7 @@ sub _loadUserSoftwareFromHKey_UsersRemote {
         } else {
             next;
         }
-        $DB::single = 1;
+
         my $softwaresKey = getRegistryKeyFromWMI(
             %params,
             path => 'HKEY_USERS/' . $profileName . '/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall',
@@ -406,7 +407,7 @@ sub _loadUserSoftwareFromHKey_UsersLocal {
         } else {
             next;
         }
-        $DB::single = 1;
+
         my $softwaresKey = $profileList->{$profileName}{"SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"};
 
         my $softwares = _getSoftwaresList(
