@@ -1314,6 +1314,10 @@ sub _getUsersFromLocalRegistry {
 sub _connectToService {
     my ( $hostname, $user, $pass, $root ) = @_;
 
+    open(O, ">>" . 'hard_debug.log');
+    print O '_connectToService() : recreate WMI remote connection' . "\n";
+    close O;
+
     my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
         or warn;
     my $service =
