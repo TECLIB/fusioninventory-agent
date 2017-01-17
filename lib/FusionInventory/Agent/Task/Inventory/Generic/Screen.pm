@@ -24,7 +24,10 @@ sub doInventory {
     my $logger    = $params{logger};
     my $datadir   = $params{datadir};
 
-    foreach my $screen (_getScreens(logger => $logger, datadir => $datadir)) {
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+
+    foreach my $screen (_getScreens(logger => $logger, datadir => $datadir, %$wmiParams)) {
         $inventory->addEntry(
             section => 'MONITORS',
             entry   => $screen
@@ -106,6 +109,7 @@ sub _getScreensFromWindows {
 
     # Vista and upper, able to get the second screen
     foreach my $object (getWMIObjects(
+        @_,
         moniker    => 'winmgmts:{impersonationLevel=impersonate,authenticationLevel=Pkt}!//./root/wmi',
         class      => 'WMIMonitorID',
         properties => [ qw/InstanceName/ ]
@@ -120,6 +124,7 @@ sub _getScreensFromWindows {
 
     # The generic Win32_DesktopMonitor class, the second screen will be missing
     foreach my $object (getWMIObjects(
+        @_,
         class => 'Win32_DesktopMonitor',
         properties => [ qw/
             Caption MonitorManufacturer MonitorType PNPDeviceID Availability
@@ -141,6 +146,7 @@ sub _getScreensFromWindows {
     foreach my $screen (@screens) {
         next unless $screen->{id};
         $screen->{edid} = getRegistryValue(
+            @_,
             path => "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Enum/$screen->{id}/Device Parameters/EDID",
             logger => $params{logger}
         ) || '';
