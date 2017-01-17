@@ -387,6 +387,7 @@ sub _retrieveValueFromRemoteRegistry {
 sub isDefinedRemoteRegistryKey {
     my (%params)  =@_;
 
+    $DB::single = 1;
     $params{logger}->debug2('isDefinedRemoteRegistryKey() ') if $params{logger};
 
     my $defined = 0;
