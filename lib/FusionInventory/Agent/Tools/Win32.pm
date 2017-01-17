@@ -707,7 +707,7 @@ sub _retrieveValuesNameAndType {
         if (Win32::OLE->LastError()) {
         }
 
-        sleep 1;
+#        sleep 1;
 
         if (defined $return && $return == 0) {
             $types = [ ];
