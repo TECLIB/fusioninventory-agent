@@ -792,43 +792,7 @@ sub _retrieveRemoteRegistryValueByType {
         $value = $params{objReg}->GetBinaryValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
     } elsif ($params{valueType} == REG_DWORD) {
-        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
-#        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
-        my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
-        if (defined $return && $return == 0) {
-            $value = ' VT_IA ' . $result->Value();
-            $value .= ' - ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
-#            $value .= ' - ' . $result->As(Win32::OLE::Variant::VT_I4())->Value;
-            $value .= ' - ' . $result->Number();
-            $value .= ' - ' . sprintf($result);
-        }
-
-        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 0);
-        #        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
-        $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
-        if (defined $return && $return == 0) {
-            $value .= 'VT_DATE : ' . $result->Value();
-            $value .= ' - ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
-            #            $value .= ' - ' . $result->As(Win32::OLE::Variant::VT_I4())->Value;
-            $value .= ' - ' . $result->Number();
-            $value .= ' - ' . sprintf($result);
-        }
-
-        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I2(), 0);
-        #        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
-        $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
-        if (defined $return && $return == 0) {
-            $value .= 'VT_I2 : ' . $result->Value();
-            $value .= ' - ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
-            #            $value .= ' - ' . $result->As(Win32::OLE::Variant::VT_I4())->Value;
-            $value .= ' - ' . $result->Number();
-            $value .= ' - ' . sprintf($result);
-        }
-
-        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
-#        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
-        $return = $params{objReg}->GetStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
-        $value .= ' - ' . sprintf($result);
+        $value = getValueFromRemoteRegistryViaVbScript(%params);
     } elsif ($params{valueType} == REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
@@ -845,6 +809,33 @@ sub _retrieveRemoteRegistryValueByType {
     $value = '' if !$value;
 
     return $value;
+}
+
+sub getValueFromRemoteRegistryViaVbScript {
+    my (%params) = @_;
+
+    my $command .= join(' ', (
+            'csript',
+            $params{scriptdir} . '/' . 'getValueRemote.vbs',
+            $params{WMIService}->{hostname},
+            $params{WMIService}->{user},
+            $params{WMIService}->{pass},
+            $params{WMIService}->{keyName},
+            $params{WMIService}->{valueName}
+        )
+    );
+    my @lines = getAllLines(
+        command => $command
+    );
+
+    my $line;
+    my $nextLineIsValue = 0;
+    while ($line = shift @lines) {
+        last if $nextLineIsValue;
+        next unless $line =~ /^\s*$/;
+        $nextLineIsValue = 1;
+    }
+    return $line;
 }
 
 sub getRegistryTreeFromWMI {

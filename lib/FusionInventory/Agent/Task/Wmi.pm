@@ -33,7 +33,8 @@ sub run {
         WMIService => {
             hostname => $self->{config}->{wmi_hostname},
             user     => $self->{config}->{wmi_user},
-            pass     => $self->{config}->{wmi_pass}
+            pass     => $self->{config}->{wmi_pass},
+            scriptdir => $self->{config}->{scriptdir}
         }
     );
     $params{inventory} = $inventory;
