@@ -796,10 +796,10 @@ sub _retrieveRemoteRegistryValueByType {
 #        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
         my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         if (defined $return && $return == 0) {
-            $value = $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
+            $value = ' VT_IA ' . $result->Value();
+            $value .= ' - ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
 #            $value .= ' - ' . $result->As(Win32::OLE::Variant::VT_I4())->Value;
             $value .= ' - ' . $result->Number();
-            $value .= ' - ' . $result->Value();
             $value .= ' - ' . sprintf($result);
         }
 
@@ -807,10 +807,10 @@ sub _retrieveRemoteRegistryValueByType {
         #        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
         $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         if (defined $return && $return == 0) {
-            $value .= 'VT_DATE : ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
+            $value .= 'VT_DATE : ' . $result->Value();
+            $value .= ' - ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
             #            $value .= ' - ' . $result->As(Win32::OLE::Variant::VT_I4())->Value;
             $value .= ' - ' . $result->Number();
-            $value .= ' - ' . $result->Value();
             $value .= ' - ' . sprintf($result);
         }
 
@@ -818,10 +818,10 @@ sub _retrieveRemoteRegistryValueByType {
         #        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
         $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         if (defined $return && $return == 0) {
-            $value .= 'VT_I2 : ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
+            $value .= 'VT_I2 : ' . $result->Value();
+            $value .= ' - ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
             #            $value .= ' - ' . $result->As(Win32::OLE::Variant::VT_I4())->Value;
             $value .= ' - ' . $result->Number();
-            $value .= ' - ' . $result->Value();
             $value .= ' - ' . sprintf($result);
         }
 
