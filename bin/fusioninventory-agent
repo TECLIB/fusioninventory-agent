@@ -83,7 +83,7 @@ my %setup = (
     confdir => './etc',
     datadir => './share',
     libdir  => './lib',
-    scriptdir => './script',
+    toolsdir => './script',
     vardir  => './var',
 );
 

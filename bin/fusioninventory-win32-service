@@ -99,7 +99,7 @@ my $agent_as_context = FusionInventory::Agent->new(
     datadir => $directory . '/../share',
     vardir  => $directory . '/../var',
     libdir  => $directory . '/../lib',
-    scriptdir => $directory . '/../script',
+    toolsdir => $directory . '/../script',
     sigterm  => sub { threads->exit(); }
 );
 
