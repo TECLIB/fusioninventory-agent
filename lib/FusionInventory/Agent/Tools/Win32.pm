@@ -792,8 +792,8 @@ sub _retrieveRemoteRegistryValueByType {
         $value = $params{objReg}->GetBinaryValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
     } elsif ($params{valueType} == REG_DWORD) {
-#        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
-        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
+        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
+#        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
         my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         if (defined $return && $return == 0) {
             $value = $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
@@ -802,10 +802,33 @@ sub _retrieveRemoteRegistryValueByType {
             $value .= ' - ' . $result->Value();
             $value .= ' - ' . sprintf($result);
         }
+
+        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_DATE(), 0);
+        #        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
+        $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+        if (defined $return && $return == 0) {
+            $value .= 'VT_DATE : ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
+            #            $value .= ' - ' . $result->As(Win32::OLE::Variant::VT_I4())->Value;
+            $value .= ' - ' . $result->Number();
+            $value .= ' - ' . $result->Value();
+            $value .= ' - ' . sprintf($result);
+        }
+
+        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I2(), 0);
+        #        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BSTR() | Win32::OLE::Variant::VT_BYREF(), 0);
+        $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
+        if (defined $return && $return == 0) {
+            $value .= 'VT_I2 : ' . $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
+            #            $value .= ' - ' . $result->As(Win32::OLE::Variant::VT_I4())->Value;
+            $value .= ' - ' . $result->Number();
+            $value .= ' - ' . $result->Value();
+            $value .= ' - ' . sprintf($result);
+        }
+
         $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
 #        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_BSTR(), 0);
         $return = $params{objReg}->GetStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
-        $value .= sprintf($result);
+        $value .= ' - ' . sprintf($result);
     } elsif ($params{valueType} == REG_EXPAND_SZ) {
         $value = $params{objReg}->GetExpandedStringValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
