@@ -830,6 +830,7 @@ sub getValueFromRemoteRegistryViaVbScript {
 
     my $line;
     my $nextLineIsValue = 0;
+    $DB::single = 1;
     while ($line = shift @lines) {
         last if $nextLineIsValue;
         next unless $line =~ /^\s*$/;
