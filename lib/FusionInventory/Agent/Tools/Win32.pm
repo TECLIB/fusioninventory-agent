@@ -792,7 +792,7 @@ sub _retrieveRemoteRegistryValueByType {
         $value = $params{objReg}->GetBinaryValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         $value = sprintf($result);
     } elsif ($params{valueType} == REG_DWORD) {
-        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
+#        $result = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_I4(), 0);
         my $return = $params{objReg}->GetDWORDValue($params{hkey}, $params{keyName}, $params{valueName}, $result);
         if (defined $return && $return == 0) {
             $value = $result->Date('yyyy-MM-dd') . ' ' . $result->Time('HH:mm:ss');
