@@ -747,6 +747,7 @@ sub _retrieveValuesNameAndType {
                     next unless $item;
                     my $valueName = sprintf $item;
                     $values->{$valueName} = _retrieveRemoteRegistryValueByType(
+                        %params,
                         valueType => $types->[$i],
                         keyName   => $params{keyName},
                         valueName => $valueName,
