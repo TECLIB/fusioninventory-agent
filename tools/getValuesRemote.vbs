@@ -24,7 +24,7 @@ objService.Security_.ImpersonationLevel = wbemImpersonationLevelImpersonate
 objService.Security_.AuthenticationLevel = wbemAuthenticationLevelPktPrivacy
 Set objStdRegProv = objService.Get("StdRegProv")
 
-names = Split(valueNames, "#:#");
+names = Split(valueNames, "#:#")
 for each valueName in names
   objStdRegProv.GetDWORDValue HKLM, keyPath, valueName, dwValue
   Wscript.Echo valueName & "#:#" & dwValue
