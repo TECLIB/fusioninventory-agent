@@ -816,12 +816,12 @@ sub getValueFromRemoteRegistryViaVbScript {
 
     my $command .= join(' ', (
             'cscript',
-            $params{toolsdir} . '/' . 'getValueRemote.vbs',
+            $params{WMIService}->{toolsdir} . '/' . 'getValueRemote.vbs',
             $params{WMIService}->{hostname},
             $params{WMIService}->{user},
             $params{WMIService}->{pass},
-            $params{WMIService}->{keyName},
-            $params{WMIService}->{valueName}
+            $params{keyName},
+            $params{valueName}
         )
     );
     my @lines = getAllLines(
