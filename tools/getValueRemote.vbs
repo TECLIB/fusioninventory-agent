@@ -1,3 +1,9 @@
+wbemImpersonationLevelImpersonate = 3
+wbemAuthenticationLevelPktPrivacy = 6
+
+Const HKLM = &h80000002
+Const HKEY_CURRENT_USER = &H80000001
+
 if WScript.Arguments.Count < 5 then
     WScript.Echo "getValueRemote : Missing parameters"
 	WScript.Quit
@@ -17,12 +23,6 @@ WScript.Echo user
 WScript.Echo pass
 WScript.Echo keyPath
 WScript.Echo valueName
-
-wbemImpersonationLevelImpersonate = 3
-wbemAuthenticationLevelPktPrivacy = 6
-
-Const HKLM = &h80000002
-Const HKEY_CURRENT_USER = &H80000001
 
 Set objLocator = CreateObject("WbemScripting.SWbemLocator")
 Set objService = objLocator.ConnectServer _
