@@ -359,6 +359,7 @@ sub getAllLines {
     return unless $handle;
 
     if (wantarray) {
+        $DB::single = 1;
         my @lines = map { chomp; $_ } <$handle>;
         close $handle;
         return @lines;
