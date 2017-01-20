@@ -754,9 +754,9 @@ sub _retrieveValuesNameAndType {
                         hkey      => $hkey,
                         WMIService => {
                             hostname => $params{WMIService}->{hostname},
-                            hostname => $params{WMIService}->{user},
-                            hostname => $params{WMIService}->{pass},
-                            hostname => $params{WMIService}->{toolsdir}
+                            user => $params{WMIService}->{user},
+                            pass => $params{WMIService}->{pass},
+                            toolsdir => $params{WMIService}->{toolsdir}
                         }
                     );
                     $i++;
