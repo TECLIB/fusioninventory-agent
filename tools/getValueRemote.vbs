@@ -27,6 +27,7 @@ WScript.Echo valueName
 Set objLocator = CreateObject("WbemScripting.SWbemLocator")
 Set objService = objLocator.ConnectServer _
 (hostname, domain, user, pass)
+
 objService.Security_.ImpersonationLevel = wbemImpersonationLevelImpersonate
 objService.Security_.AuthenticationLevel = wbemAuthenticationLevelPktPrivacy
 Set objStdRegProv = objService.Get("StdRegProv")
