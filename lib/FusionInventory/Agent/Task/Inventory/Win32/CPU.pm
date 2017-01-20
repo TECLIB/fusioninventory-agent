@@ -78,6 +78,7 @@ sub _getCPUs {
         my $cpu;
         if ($params{WMIService}) {
             $params{logger}->debug2('with WMIService, launching _retrieveCpuIdFromRemoteRegistry');
+            $DB::single = 1;
             $cpu = _retrieveCpuIdFromRemoteRegistry(
                 %params,
                 cpuId => $cpuId,

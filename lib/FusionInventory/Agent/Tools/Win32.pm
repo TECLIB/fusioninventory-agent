@@ -815,7 +815,7 @@ sub getValueFromRemoteRegistryViaVbScript {
     my (%params) = @_;
 
     my $command .= join(' ', (
-            'csript',
+            'cscript',
             $params{toolsdir} . '/' . 'getValueRemote.vbs',
             $params{WMIService}->{hostname},
             $params{WMIService}->{user},
