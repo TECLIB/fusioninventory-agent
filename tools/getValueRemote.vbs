@@ -9,6 +9,8 @@ pass = Wscript.Arguments(2)
 keyPath = Wscript.Arguments(3)
 valueName = Wscript.Arguments(4)
 
+domain = "root\default"
+
 WScript.Echo hostname
 WScript.Echo user
 WScript.Echo pass
@@ -23,7 +25,7 @@ Const HKEY_CURRENT_USER = &H80000001
 
 Set objLocator = CreateObject("WbemScripting.SWbemLocator")
 Set objService = objLocator.ConnectServer _
-    (hostname, "root\default", user, pass)
+    (hostname, domain, user, pass)
 objService.Security_.ImpersonationLevel = wbemImpersonationLevelImpersonate
 objservice.Security_.AuthenticationLevel = wbemAuthenticationLevelPktPrivacy
 Set objStdRegProv = objService.Get("StdRegProv")
