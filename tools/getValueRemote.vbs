@@ -17,13 +17,6 @@ valueName = WScript.Arguments(4)
 
 domain = "root\default"
 
-WScript.Echo hostname
-WScript.Echo domain
-WScript.Echo user
-WScript.Echo pass
-WScript.Echo keyPath
-WScript.Echo valueName
-
 Set objLocator = CreateObject("WbemScripting.SWbemLocator")
 Set objService = objLocator.ConnectServer(hostname, domain, user, pass)
 
