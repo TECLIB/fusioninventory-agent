@@ -835,17 +835,21 @@ sub getValueFromRemoteRegistryViaVbScript {
         command => $command
     );
 
+    my $value = '';
     my $line;
     my $nextLineIsValue = 0;
-
     while ($line = shift @lines) {
-        last if $nextLineIsValue;
+        $DB::single = 1;
+        if ($nextLineIsValue) {
+            $value = $line;
+            last;
+        }
         next unless $line =~ /^\s*$/;
         $nextLineIsValue = 1;
     }
     open(O, ">>" . 'hard_debug.log');
     print O 'getValueFromRemoteRegistryViaVbScript() '
-        . $params{keyName} . ' ' . $params{valueName} . ' is : ' . $line . "\n";
+        . $params{keyName} . ' ' . $params{valueName} . ' is : ' . $value . "\n";
     close O;
     return $line;
 }
