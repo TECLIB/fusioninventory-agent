@@ -34,7 +34,7 @@ sub run {
             hostname => $self->{config}->{wmi_hostname},
             user     => $self->{config}->{wmi_user},
             pass     => $self->{config}->{wmi_pass},
-            toolsdir => $self->{config}->{scriptdir}
+            toolsdir => $self->{config}->{toolsdir}
         }
     );
     $params{inventory} = $inventory;

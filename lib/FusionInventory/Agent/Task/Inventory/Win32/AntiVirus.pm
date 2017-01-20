@@ -65,7 +65,7 @@ sub doInventory {
         $logger->debug2($p);
         $logger->debug2($dd->Dump);
     }
-    $DB::single = 1;
+
     my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
     foreach my $antivirus (@antiviruses) {
         # McAfee data
@@ -97,7 +97,7 @@ sub getAntivirusesFromWMI {
                 / ],
             @_
         )) {
-            $DB::single = 1;
+
             next unless $object;
 
             my $antivirus = {
@@ -139,7 +139,7 @@ sub _getMcAfeeInfo {
     }
 
     if ($params{WMIService}) {
-        $DB::single = 1;
+
         return unless (isDefinedRemoteRegistryKey(
             %params,
             path => $path
