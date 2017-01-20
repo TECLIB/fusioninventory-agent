@@ -9,6 +9,8 @@ pass = Wscript.Arguments(2)
 keyPath = Wscript.Arguments(3)
 valueName = Wscript.Arguments(4)
 
+WScript.Echo hostname
+
 wbemImpersonationLevelImpersonate = 3
 wbemAuthenticationLevelPktPrivacy = 6
 
