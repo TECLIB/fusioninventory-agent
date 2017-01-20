@@ -10,6 +10,10 @@ keyPath = Wscript.Arguments(3)
 valueName = Wscript.Arguments(4)
 
 WScript.Echo hostname
+WScript.Echo user
+WScript.Echo pass
+WScript.Echo keyPath
+WScript.Echo valueName
 
 wbemImpersonationLevelImpersonate = 3
 wbemAuthenticationLevelPktPrivacy = 6
