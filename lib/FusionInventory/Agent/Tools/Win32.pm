@@ -838,7 +838,7 @@ sub getValueFromRemoteRegistryViaVbScript {
     }
     open(O, ">>" . 'hard_debug.log');
     print O 'getValueFromRemoteRegistryViaVbScript() '
-        . $params{WMIService}->{keyName} . ' ' . $params{WMIService}->{valueName} . ' is : ' . $line . "\n";
+        . $params{keyName} . ' ' . $params{valueName} . ' is : ' . $line . "\n";
     close O;
     return $line;
 }
