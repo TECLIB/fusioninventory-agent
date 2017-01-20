@@ -747,12 +747,17 @@ sub _retrieveValuesNameAndType {
                     next unless $item;
                     my $valueName = sprintf $item;
                     $values->{$valueName} = _retrieveRemoteRegistryValueByType(
-                        %params,
                         valueType => $types->[$i],
                         keyName   => $params{keyName},
                         valueName => $valueName,
                         objReg    => $params{objReg},
                         hkey      => $hkey
+                        WMIService => {
+                            hostname => $params{WMIService}->{hostname},
+                            hostname => $params{WMIService}->{user},
+                            hostname => $params{WMIService}->{pass},
+                            hostname => $params{WMIService}->{toolsdir}
+                        }
                     );
                     $i++;
                 }
