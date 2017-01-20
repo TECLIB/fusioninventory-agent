@@ -836,22 +836,12 @@ sub getValueFromRemoteRegistryViaVbScript {
     );
 
     my $value = '';
-    my $line;
-    my $nextLineIsValue = 0;
-    while ($line = shift @lines) {
-        $DB::single = 1;
-        if ($nextLineIsValue) {
-            $value = $line;
-            last;
-        }
-        next unless $line =~ /^\s*$/;
-        $nextLineIsValue = 1;
-    }
+    $value = $lines[3] if scalar @lines >= 3;
     open(O, ">>" . 'hard_debug.log');
     print O 'getValueFromRemoteRegistryViaVbScript() '
         . $params{keyName} . ' ' . $params{valueName} . ' is : ' . $value . "\n";
     close O;
-    return $line;
+    return $value;
 }
 
 sub getRegistryTreeFromWMI {
