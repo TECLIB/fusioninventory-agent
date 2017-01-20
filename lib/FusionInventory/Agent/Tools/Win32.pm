@@ -824,11 +824,11 @@ sub getValueFromRemoteRegistryViaVbScript {
     my @values = (
         'cscript',
         $params{WMIService}->{toolsdir} . '/' . 'getValueRemote.vbs',
-        $params{WMIService}->{hostname},
-        $params{WMIService}->{user},
-        $params{WMIService}->{pass},
-        $params{keyName},
-        $params{valueName}
+        '"' . $params{WMIService}->{hostname} . '"',
+        '"' . $params{WMIService}->{user} . '"',
+        '"' . $params{WMIService}->{pass} . '"',
+        '"' . $params{keyName} . '"',
+        '"' . $params{valueName} . '"'
     );
     my $command .= join(' ', @values);
     my @lines = getAllLines(
