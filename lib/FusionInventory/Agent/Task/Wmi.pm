@@ -40,7 +40,7 @@ sub run {
     $params{inventory} = $inventory;
     $params{enabledModules} = [
         'FusionInventory::Agent::Task::Inventory::Generic',
-        'FusionInventory::Agent::Task::Inventory::Generic::Screen',
+#        'FusionInventory::Agent::Task::Inventory::Generic::Screen',
         'FusionInventory::Agent::Task::Inventory::Win32',
         'FusionInventory::Agent::Task::Inventory::Win32::AntiVirus',
         'FusionInventory::Agent::Task::Inventory::Win32::Bios',
