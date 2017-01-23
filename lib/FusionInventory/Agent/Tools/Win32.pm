@@ -744,8 +744,8 @@ sub _retrieveValuesNameAndType {
                 foreach my $item (in( $arrValueNames->Value )) {
                     next unless $item;
                     my $valueName = sprintf $item;
-                    $DB::single = 1;
                     next if $params{fields} && !exists($params{fields}->{$valueName});
+                    $DB::single = 1;
                     $values->{$valueName} = _retrieveRemoteRegistryValueByType(
                         valueType => $types->[$i],
                         keyName   => $params{keyName},
