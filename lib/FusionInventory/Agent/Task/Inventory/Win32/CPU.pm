@@ -70,9 +70,9 @@ sub _getCPUs {
     my @cpus;
 
     foreach my $object (getWMIObjects(
+        %params,
         class      => 'Win32_Processor',
-        properties => [ qw/NumberOfCores NumberOfLogicalProcessors ProcessorId MaxClockSpeed/ ],
-        %params
+        properties => [ qw/NumberOfCores NumberOfLogicalProcessors ProcessorId MaxClockSpeed/ ]
     )) {
         $params{logger}->debug2('cpus foreach ' . $cpuId);
         my $cpu;
