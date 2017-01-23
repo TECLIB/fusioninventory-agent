@@ -239,8 +239,6 @@ sub getRegistryValue {
     my (%params) = @_;
 
     if ($params{WMIService}) {
-        my $dd = Data::Dumper->new([\%params]);
-        $params{logger}->debug2($dd->Dump) if $params{logger};
         return getRegistryValueFromWMI(%params);
     }
 
