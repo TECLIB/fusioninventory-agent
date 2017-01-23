@@ -750,28 +750,27 @@ sub _retrieveValuesNameAndType {
                         print O 'filter '
                             . $params{keyName} . ' ' . $valueName . ' OUT' . "\n";
                         close O;
-                        next;
                     } else {
                         open(O, ">>" . 'hard_debug.log');
                         print O 'filter '
                             . $params{keyName} . ' ' . $valueName . ' IN' . "\n";
                         close O;
 
+                        $DB::single = 1;
+                        $values->{$valueName} = _retrieveRemoteRegistryValueByType(
+                            valueType => $types->[$i],
+                            keyName   => $params{keyName},
+                            valueName => $valueName,
+                            objReg    => $params{objReg},
+                            hkey      => $hkey,
+                            WMIService => {
+                                hostname => $params{WMIService}->{hostname},
+                                user => $params{WMIService}->{user},
+                                pass => $params{WMIService}->{pass},
+                                toolsdir => $params{WMIService}->{toolsdir}
+                            }
+                        );
                     }
-                    $DB::single = 1;
-                    $values->{$valueName} = _retrieveRemoteRegistryValueByType(
-                        valueType => $types->[$i],
-                        keyName   => $params{keyName},
-                        valueName => $valueName,
-                        objReg    => $params{objReg},
-                        hkey      => $hkey,
-                        WMIService => {
-                            hostname => $params{WMIService}->{hostname},
-                            user => $params{WMIService}->{user},
-                            pass => $params{WMIService}->{pass},
-                            toolsdir => $params{WMIService}->{toolsdir}
-                        }
-                    );
                     $i++;
                 }
             }
