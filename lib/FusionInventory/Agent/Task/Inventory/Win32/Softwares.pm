@@ -49,7 +49,7 @@ sub doInventory {
                 MajorVersion
                 NoRemove
             /;
-            %fields = map { $_ => 1 } @fields;
+            my %fields = map { $_ => 1 } @fields;
             $DB::single = 1;
             # 64-bit software
             my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
