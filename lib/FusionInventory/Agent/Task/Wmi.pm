@@ -56,7 +56,7 @@ sub run {
         'FusionInventory::Agent::Task::Inventory::Win32::Networks',
         'FusionInventory::Agent::Task::Inventory::Win32::OS',
         'FusionInventory::Agent::Task::Inventory::Win32::Ports',
-        'FusionInventory::Agent::Task::Inventory::Win32::Printers',
+#        'FusionInventory::Agent::Task::Inventory::Win32::Printers',
         'FusionInventory::Agent::Task::Inventory::Win32::Registry',
         'FusionInventory::Agent::Task::Inventory::Win32::Slots',
 #        'FusionInventory::Agent::Task::Inventory::Win32::Softwares',
