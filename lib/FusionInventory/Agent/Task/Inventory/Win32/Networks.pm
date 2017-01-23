@@ -46,8 +46,6 @@ sub doInventory {
         } else {
             $interface->{TYPE} = _getMediaType($interface->{PNPDEVICEID}, $params{logger});
         }
-        my $interfaceType = $interface->{TYPE} ? $interface->{TYPE} : 'UNDEF';
-        $params{logger}->debug2('networks > ' . $interface->{PNPDEVICEID} . ' : ' . $interfaceType);
 
         $inventory->addEntry(
             section => 'NETWORKS',
@@ -114,8 +112,6 @@ sub _getDataFromRemote {
         next if $subkey_name =~ m{^/}
             || $subkey_name =~ /Descriptions/;
 
-        $logger->debug2('Networks > found key : ' . $subkey_name);
-
         my $subkeyPath = $path . '/' . $subkey_name;
         my $subKeyKeys = getRegistryKey(
             path   => $subkeyPath,
@@ -124,25 +120,16 @@ sub _getDataFromRemote {
             %$wmiParams
         );
         next unless $subKeyKeys;
-        $logger->debug2('found subKeys');
-        my $dd = Data::Dumper->new([$subKeyKeys]);
-        $logger->debug2($dd->Dump);
-
         next unless ref $subKeyKeys eq 'HASH';
         my %keys = map { $_ => 1 } keys %$subKeyKeys;
         my $keyName = 'Connection';
         next unless $keys{$keyName};
-        $logger->debug2('Connection is found');
 
         my $values = $subKeyKeys->{$keyName};
         next unless $values;
-        $logger->debug2('values found');
-        $dd = Data::Dumper->new([$values]);
-        $logger->debug2($dd->Dump);
 
         $keyName = 'PnpInstanceID';
         next unless $values->{$keyName};
-        $logger->debug2('PnpInstanceID is a value found');
 
         my $subtype = $values->{MediaSubType};
 

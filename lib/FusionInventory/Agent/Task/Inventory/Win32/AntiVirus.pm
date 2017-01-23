@@ -26,46 +26,6 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
 
-    if (2==1 && $wmiParams->{WMIService}) {
-        my $dd;
-        my $tree;
-        my $p;
-        $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor/0";
-        #    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
-        #        path => $p,
-        #        %$wmiParams
-        #    );
-        $tree = FusionInventory::Agent::Tools::Win32::retrieveValuesNameAndType(
-            path => $p,
-            %$wmiParams
-        );
-        $dd = Data::Dumper->new([ $tree ]);
-        $logger->debug2($p);
-        $logger->debug2($dd->Dump);
-
-        $p = "HKEY_LOCAL_MACHINE/HARDWARE/DESCRIPTION/System/CentralProcessor/1";
-        #    $tree = FusionInventory::Agent::Tools::Win32::getRegistryTreeFromWMI(
-        #        path => $p,
-        #        %$wmiParams
-        #    );
-        $tree = FusionInventory::Agent::Tools::Win32::retrieveValuesNameAndType(
-            path => $p,
-            %$wmiParams
-        );
-        $dd = Data::Dumper->new([ $tree ]);
-        $logger->debug2($p);
-        $logger->debug2($dd->Dump);
-
-        my $data = FusionInventory::Agent::Task::Inventory::Win32::Networks::_getDataFromRemote(
-            %$wmiParams,
-            path => "HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Network/{4D36E972-E325-11CE-BFC1-08002BE10318}",
-            logger => $logger
-        );
-        $dd = Data::Dumper->new([ $tree ]);
-        $logger->debug2($p);
-        $logger->debug2($dd->Dump);
-    }
-
     my @antiviruses = getAntivirusesFromWMI(%$wmiParams);
     foreach my $antivirus (@antiviruses) {
         # McAfee data

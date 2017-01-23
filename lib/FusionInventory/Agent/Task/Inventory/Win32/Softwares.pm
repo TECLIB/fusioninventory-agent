@@ -327,7 +327,6 @@ sub _loadUserSoftwareFromNtuserDatFiles {
         if ($softwares) {
             $nbUsers = scalar(@$softwares);
         }
-        $logger->debug2('_loadUserSoftwareFromNtuserDatFiles() : add of ' . $nbUsers . ' softwares in inventory');
         foreach my $software (@$softwares) {
             _addSoftware(inventory => $inventory, entry => $software);
         }
@@ -390,7 +389,6 @@ sub _loadUserSoftwareFromHKey_UsersRemote {
         if ($softwares) {
             $nbUsers = scalar(@$softwares);
         }
-        $logger->debug2('_loadUserSoftwareFromHKey_Users() : add of ' . $nbUsers . ' softwares in inventory');
         foreach my $software (@$softwares) {
             _addSoftware(inventory => $inventory, entry => $software);
         }
@@ -437,7 +435,6 @@ sub _loadUserSoftwareFromHKey_UsersLocal {
         if ($softwares) {
             $nbUsers = scalar(@$softwares);
         }
-        $logger->debug2('_loadUserSoftwareFromHKey_Users() : add of ' . $nbUsers . ' softwares in inventory');
         foreach my $software (@$softwares) {
             _addSoftware(inventory => $inventory, entry => $software);
         }
