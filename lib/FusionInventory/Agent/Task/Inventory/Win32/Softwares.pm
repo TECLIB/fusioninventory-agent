@@ -35,11 +35,27 @@ sub doInventory {
 
     if ($wmiParams->{WMIService}) {
         if ($is64bit) {
+            my @fields = qw/
+                DisplayName
+                Comments
+                HelpLink
+                ReleaseType
+                DisplayVersion
+                Publisher
+                URLInfoAbout
+                UninstallString
+                InstallDate
+                MinorVersion
+                MajorVersion
+                NoRemove
+            /;
+            %fields = map { $_ => 1 } @fields;
             $DB::single = 1;
             # 64-bit software
             my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
                 %$wmiParams,
-                is64bit => 1
+                is64bit => 1,
+                fields => \%fields
             );
             my $softwares = _extractSoftwareDataFromHash(
                 softwares => $softwaresFromRemote,
@@ -52,7 +68,8 @@ sub doInventory {
             # 32-bit software
             $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
                 %$wmiParams,
-                is64bit => 0
+                is64bit => 0,
+                fields => \%fields
             );
             $softwares = _extractSoftwareDataFromHash(
                 softwares => $softwaresFromRemote,
