@@ -59,7 +59,7 @@ sub run {
         'FusionInventory::Agent::Task::Inventory::Win32::Printers',
         'FusionInventory::Agent::Task::Inventory::Win32::Registry',
         'FusionInventory::Agent::Task::Inventory::Win32::Slots',
-        'FusionInventory::Agent::Task::Inventory::Win32::Softwares',
+#        'FusionInventory::Agent::Task::Inventory::Win32::Softwares',
         'FusionInventory::Agent::Task::Inventory::Win32::Sounds',
         'FusionInventory::Agent::Task::Inventory::Win32::Storages',
         'FusionInventory::Agent::Task::Inventory::Win32::USB',
