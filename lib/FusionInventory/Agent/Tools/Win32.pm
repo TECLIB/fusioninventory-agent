@@ -331,7 +331,6 @@ sub _getRegistryValuesFromWMI {
 sub _getRegistryValueFromWMI {
     my (%params) = @_;
 
-    $DB::single = 1;
     if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
         $params{root}      = $1;
         $params{keyName}   = $2;
@@ -745,8 +744,6 @@ sub _retrieveValuesNameAndType {
                 foreach my $item (in( $arrValueNames->Value )) {
                     next unless $item;
                     my $valueName = sprintf $item;
-                    $DB::single = 1;
-                    next if $params{fields} && exists $params{fields}->{$valueName};
                     $values->{$valueName} = _retrieveRemoteRegistryValueByType(
                         valueType => $types->[$i],
                         keyName   => $params{keyName},
