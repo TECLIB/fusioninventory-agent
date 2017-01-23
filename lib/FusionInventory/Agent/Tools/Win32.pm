@@ -838,6 +838,7 @@ sub getValueFromRemoteRegistryViaVbScript {
 
     my $value = '';
     $value = $lines[3] if scalar @lines >= 3;
+    $value = '' if !(defined $value);
     open(O, ">>" . 'hard_debug.log');
     print O 'getValueFromRemoteRegistryViaVbScript() '
         . $params{keyName} . ' ' . $params{valueName} . ' is : ' . $value . "\n";
