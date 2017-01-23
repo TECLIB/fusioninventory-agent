@@ -148,13 +148,14 @@ sub _retrieveCpuIdFromRemoteRegistry {
 
     my $cpuIdPath = $path . '/' . "$cpuId";
     my $wantedKeys = {
-        Identifier => undef,
-        ProcessorNameString => undef,
-        VendorIdentifier => undef
+        Identifier => '',
+        ProcessorNameString => '',
+        VendorIdentifier => ''
     };
     my $values = retrieveValuesNameAndType(
         %params,
         path => $cpuIdPath,
+        fields => $wantedKeys
     );
     my $dd = Data::Dumper->new([$values]);
     $params{logger}->debug2('_retrieveCpuIdFromRemoteRegistry retrieveValuesNameAndType ' . $cpuIdPath);
