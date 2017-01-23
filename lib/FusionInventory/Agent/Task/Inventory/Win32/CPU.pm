@@ -151,10 +151,11 @@ sub _retrieveCpuIdFromRemoteRegistry {
         ProcessorNameString => undef,
         VendorIdentifier => undef
     };
+    my %filteredFields = map { $_ => 1 } keys %$wantedKeys;
     my $values = retrieveValuesNameAndType(
         %params,
         path => $cpuIdPath,
-        fields => $wantedKeys
+        fields => \%filteredFields
     );
     my $dd = Data::Dumper->new([$values]);
     $params{logger}->debug2('_retrieveCpuIdFromRemoteRegistry retrieveValuesNameAndType ' . $cpuIdPath);
