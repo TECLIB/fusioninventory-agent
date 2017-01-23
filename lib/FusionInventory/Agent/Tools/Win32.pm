@@ -746,7 +746,7 @@ sub _retrieveValuesNameAndType {
                     next unless $item;
                     my $valueName = sprintf $item;
                     $DB::single = 1;
-                    next if $params{fields} && !$params{fields}->{$valueName};
+                    next if $params{fields} && exists $params{fields}->{$valueName};
                     $values->{$valueName} = _retrieveRemoteRegistryValueByType(
                         valueType => $types->[$i],
                         keyName   => $params{keyName},
