@@ -1041,6 +1041,7 @@ sub getInterfaces {
     my @configurations;
 
     foreach my $object (getWMIObjects(
+        @_,
         class      => 'Win32_NetworkAdapterConfiguration',
         properties => [ qw/Index Description IPEnabled DHCPServer MACAddress
                            MTU DefaultIPGateway DNSServerSearchOrder IPAddress
