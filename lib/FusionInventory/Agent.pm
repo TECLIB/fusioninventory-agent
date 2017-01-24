@@ -30,10 +30,7 @@ our $VERSION_STRING = _versionString($VERSION);
 our $AGENT_STRING = "$PROVIDER-Agent_v$VERSION";
 our $CONTINUE_WORD = "...";
 
-sub my_handler {
-    print "on s'en fout\n";
-    print "Caught signal $_[0]!\n";
-}
+sub my_handler {}
 
 sub _versionString {
     my ($VERSION) = @_;
@@ -380,6 +377,7 @@ sub _runTarget {
             ca_cert_file => $self->{config}->{'ca-cert-file'},
             ca_cert_dir  => $self->{config}->{'ca-cert-dir'},
             no_ssl_check => $self->{config}->{'no-ssl-check'},
+            no_compress  => $self->{config}->{'no-compression'},
         );
 
         my $prolog = FusionInventory::Agent::XML::Query::Prolog->new(
@@ -479,6 +477,7 @@ sub _runTaskReal {
         ca_cert_file => $self->{config}->{'ca-cert-file'},
         ca_cert_dir  => $self->{config}->{'ca-cert-dir'},
         no_ssl_check => $self->{config}->{'no-ssl-check'},
+        no_compress  => $self->{config}->{'no-compression'},
     );
     delete $self->{current_task};
 }

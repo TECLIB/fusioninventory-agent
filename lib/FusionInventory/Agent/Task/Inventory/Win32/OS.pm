@@ -83,13 +83,13 @@ sub doInventory {
     # get the name through native Win32::API, as WMI DB is sometimes broken
     my $hostname = $wmiParams->{WMIService} ? $computerSystem->{Name} : getHostname(short => 1);
     my $installDate;
-    if ($wmiParams->{WMIService} && $operatingSystem->{InstallDate}) {
+    if ($operatingSystem->{InstallDate}) {
         $installDate = $operatingSystem->{InstallDate};
         if ($installDate =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/) {
             $installDate = getFormatedDate($1, $2, $3, $4, $5, $6);
         }
     } else {
-        $installDate = _getInstallDate(logger => $params{logger});
+        $installDate = _getInstallDate(%$wmiParams, logger => $params{logger});
     }
     $inventory->setOperatingSystem({
         NAME           => "Windows",

@@ -6,8 +6,6 @@ use warnings;
 use English qw(-no_match_vars);
 use Win32;
 
-use Data::Dumper;
-
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Win32;
 use FusionInventory::Agent::Tools::Generic;
@@ -63,8 +61,7 @@ sub _getCPUs {
         path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0/Identifier",
         valueType => FusionInventory::Agent::Tools::Win32::REG_SZ
     );
-    $val = 'UNDEF' unless $val;
-    $params{logger}->debug2('retour de getRegistryKey "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0/Identifier" : ' . $val);
+    $val = '' unless $val;
 
     my $cpuId = 0;
     my @cpus;
@@ -74,7 +71,7 @@ sub _getCPUs {
         class      => 'Win32_Processor',
         properties => [ qw/NumberOfCores NumberOfLogicalProcessors ProcessorId MaxClockSpeed/ ]
     )) {
-        $params{logger}->debug2('cpus foreach ' . $cpuId);
+
         my $cpu;
         if ($params{WMIService}) {
             $params{logger}->debug2('with WMIService, launching _retrieveCpuIdFromRemoteRegistry');

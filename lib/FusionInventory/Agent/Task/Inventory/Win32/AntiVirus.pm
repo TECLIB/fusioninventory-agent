@@ -3,11 +3,7 @@ package FusionInventory::Agent::Task::Inventory::Win32::AntiVirus;
 use strict;
 use warnings;
 
-use Data::Dumper;
-
 use FusionInventory::Agent::Tools::Win32;
-
-use FusionInventory::Agent::Task::Inventory::Win32::Networks;
 
 my $seen;
 
@@ -41,10 +37,10 @@ sub doInventory {
     }
 }
 
-# Doesn't works on Win2003 Server
-# On Win7, we need to use SecurityCenter2
 sub getAntivirusesFromWMI {
     my @antiviruses;
+# Doesn't works on Win2003 Server
+# On Win7, we need to use SecurityCenter2
     foreach my $instance (qw/SecurityCenter SecurityCenter2/) {
         my $moniker = "winmgmts:{impersonationLevel=impersonate,(security)}!//./root/$instance";
 

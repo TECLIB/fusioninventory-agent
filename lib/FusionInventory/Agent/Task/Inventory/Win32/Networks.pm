@@ -3,8 +3,6 @@ package FusionInventory::Agent::Task::Inventory::Win32::Networks;
 use strict;
 use warnings;
 
-use Data::Dumper;
-
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Network;
 use FusionInventory::Agent::Tools::Win32;

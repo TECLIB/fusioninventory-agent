@@ -14,8 +14,6 @@ use sigtrap qw(handler errorHandler untrapped);
 use UNIVERSAL::require();
 use UNIVERSAL;
 
-use Data::Dumper;
-
 use constant KEY_WOW64_64 => 0x100;
 use constant KEY_WOW64_32 => 0x200;
 use constant HKEY_LOCAL_MACHINE => 0x80000002;
@@ -1339,13 +1337,7 @@ sub _win32_ole_worker {
 
     local $SIG{SEGV} = 'DEFAULT';
 
-    my $evalHandler = sub {
-        open(O, ">>" . 'hard_debug.log');
-        print O 'evalHandler now' . "\n";
-        print O $!;
-        print O "\n";
-        close O;
-    };
+    my $evalHandler = sub {};
 
     while (1) {
         # Always block until semaphore is made available by main thread
@@ -1390,13 +1382,7 @@ sub _call_win32_ole_dependent_api {
     my ($call) = @_
         or return;
 
-    my $evalHandler = sub {
-        open(O, ">>" . 'hard_debug.log');
-        print O 'evalHandler now !' . "\n";
-        print O $!;
-        print O "\n";
-        close O;
-    };
+    my $evalHandler = sub {};
 
     unless (defined($worker)) {
         start_Win32_OLE_Worker();

@@ -72,17 +72,14 @@ sub _getDrives {
 
     my @drives;
 
-    my $wmiParams = {};
-    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
-
     foreach my $object (getWMIObjects(
+        %params,
         class      => $params{class},
         properties => [ qw/
             Manufacturer Model Caption Description Name MediaType InterfaceType
             FirmwareRevision SerialNumber Size
             SCSIPort SCSILogicalUnit SCSITargetId
-        / ],
-        %$wmiParams
+        / ]
     )) {
 
         my $drive = {
