@@ -76,17 +76,17 @@ sub _getLocalUsers {
         };
     }
 
-    my @users = ();
-    foreach my $object (getWMIObjects (
-        moniker => "winmgmts:\\\\.\\root\\CIMV2",
-        query => "SELECT * FROM Win32_UserAccount ".
-            "WHERE LocalAccount='True' AND Disabled='False' and Lockout='False'",
-        properties => [
-            'Name',
-            'SID'
-        ],
-        %$wmiParams
-    )) {
+    my $query =
+        "SELECT * FROM Win32_UserAccount " .
+        "WHERE LocalAccount='True' AND Disabled='False' and Lockout='False'";
+
+    my @users;
+    foreach my $object (getWMIObjects(
+        moniker    => 'winmgmts:\\\\.\\root\\CIMV2',
+        query      => [ $query ],
+        properties => [ qw/Name SID/ ],
+        %$wmiParams)
+    ) {
         my $user = {
             NAME => $object->{Name},
             ID   => $object->{SID},
@@ -99,7 +99,6 @@ sub _getLocalUsers {
 }
 
 sub _getLocalGroups {
-    my (%params) = @_;
 
     my $wmiParams = {};
     if ($params{WMIService}) {
@@ -108,17 +107,18 @@ sub _getLocalGroups {
         };
     }
 
-    my @groups = ();
-    foreach my $object (getWMIObjects (
-        moniker => "winmgmts:\\\\.\\root\\CIMV2",
-        query => "SELECT * FROM Win32_Group " .
-            "WHERE LocalAccount='True'",
-        properties => [
-            'Name',
-            'SID'
-        ],
-        %$wmiParams
-    )) {
+    my $query =
+        "SELECT * FROM Win32_Group " .
+        "WHERE LocalAccount='True'";
+
+    my @groups;
+
+    foreach my $object (getWMIObjects(
+        moniker    => 'winmgmts:\\\\.\\root\\CIMV2',
+        query      => [ $query ],
+        properties => [ qw/Name SID/ ],
+        %$wmiParams)
+    ) {
         my $group = {
             NAME => $object->{Name},
             ID   => $object->{SID},
@@ -132,36 +132,28 @@ sub _getLocalGroups {
 
 sub _getLoggedUsers {
 
-    my $WMIService = Win32::OLE->GetObject("winmgmts:\\\\.\\root\\CIMV2")
-        or die "WMI connection failed: " . Win32::OLE->LastError();
-
-    my $processes = $WMIService->ExecQuery(
-        "SELECT * FROM Win32_Process", "WQL",
+    my @query = (
+        "SELECT * FROM Win32_Process".
+        " WHERE ExecutablePath IS NOT NULL" .
+        " AND ExecutablePath LIKE '%\\\\Explorer\.exe'", "WQL",
         wbemFlagReturnImmediately | wbemFlagForwardOnly ## no critic (ProhibitBitwise)
     );
 
     my @users;
     my $seen;
 
-    foreach my $process (in $processes) {
-        next unless
-            $process->{ExecutablePath} &&
-            $process->{ExecutablePath} =~ /\\Explorer\.exe$/i;
-
-        ## no critic (ProhibitBitwise)
-        my $name = Variant(VT_BYREF | VT_BSTR, '');
-        my $domain = Variant(VT_BYREF | VT_BSTR, '');
-
-        $process->GetOwner($name, $domain);
-
-        my $user = {
-            LOGIN  => $name->Get(),
-            DOMAIN => $domain->Get()
-        };
-
-        utf8::upgrade($user->{LOGIN});
-        utf8::upgrade($user->{DOMAIN});
-
+    foreach my $user (getWMIObjects(
+        moniker    => 'winmgmts:\\\\.\\root\\CIMV2',
+        query      => \@query,
+        method     => 'GetOwner',
+        params     => [ 'name', 'domain' ],
+        name       => [ 'string', '' ],
+        domain     => [ 'string', '' ],
+        binds      => {
+            name    => 'LOGIN',
+            domain  => 'DOMAIN'
+        })
+    ) {
         next if $seen->{$user->{LOGIN}}++;
 
         push @users, $user;

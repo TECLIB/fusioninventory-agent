@@ -192,6 +192,47 @@ sub _getWMIObjects {
             $instances
         )) {
         my $object;
+        # Handle Win32::OLE object method, see _getLoggedUsers() method in
+        # FusionInventory::Agent::Task::Inventory::Win32::Users as example to
+        # use or enhance this feature
+        if ($params{method}) {
+            my @invokes = ( $params{method} );
+            my %results = ();
+
+            # Prepare Invoke params for known requested types
+            foreach my $name (@{$params{params}}) {
+                my ($type, $default) = @{$params{$name}}
+                    or next;
+                my $variant;
+                if ($type eq 'string') {
+                    Win32::OLE::Variant->use(qw/VT_BYREF VT_BSTR/);
+                    eval {
+                        $variant = VT_BYREF()|VT_BSTR();
+                    };
+                }
+                eval {
+                    $results{$name} = Win32::OLE::Variant::Variant($variant, $default);
+                };
+                push @invokes, $results{$name};
+            }
+
+            # Invoke the method saving the result so we can also bind it
+            eval {
+                $results{$params{method}} = $instance->Invoke(@invokes);
+            };
+
+            # Bind results to object to return
+            foreach my $name (keys(%{$params{binds}})) {
+                next unless (defined($results{$name}));
+                my $bind = $params{binds}->{$name};
+                eval {
+                    $object->{$bind} = $results{$name}->Get();
+                };
+                if (defined $object->{$bind} && !ref($object->{$bind})) {
+                    utf8::upgrade($object->{$bind});
+                }
+            }
+        }
         foreach my $property (@{$params{properties}}) {
             if (defined $instance->{$property} && !ref($instance->{$property})) {
                 # string value
@@ -255,7 +296,7 @@ sub getRegistryValue {
     }
 
     my ($root, $keyName, $valueName);
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
+    if ($params{path} =~ m{^(HKEY_\w+.*)/([^/]+)/([^/]+)} ) {
         $root      = $1;
         $keyName   = $2;
         $valueName = $3;
@@ -496,7 +537,7 @@ sub getRegistryKey {
     }
 
     my ($root, $keyName);
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
+    if ($params{path} =~ m{^(HKEY_\w+.*)/([^/]+)} ) {
         $root      = $1;
         $keyName   = $2;
     } else {
@@ -1000,13 +1041,11 @@ sub getInterfaces {
     my @configurations;
 
     foreach my $object (getWMIObjects(
-        @_,
         class      => 'Win32_NetworkAdapterConfiguration',
         properties => [ qw/Index Description IPEnabled DHCPServer MACAddress
                            MTU DefaultIPGateway DNSServerSearchOrder IPAddress
                            IPSubnet/  ]
     )) {
-        $_{logger}->debug2('found Win32_NetworkAdapterConfiguration') if $_{logger};
         my $configuration = {
             DESCRIPTION => $object->{Description},
             STATUS      => $object->{IPEnabled} ? "Up" : "Down",
@@ -1043,8 +1082,6 @@ sub getInterfaces {
     )) {
         # http://comments.gmane.org/gmane.comp.monitoring.fusion-inventory.devel/34
         next unless $object->{PNPDeviceID};
-
-        $_{logger}->debug2('found Win32_NetworkAdapter') if $_{logger};
 
         my $pciid;
         if ($object->{PNPDeviceID} =~ /PCI\\VEN_(\w{4})&DEV_(\w{4})&SUBSYS_(\w{4})(\w{4})/) {
@@ -1419,7 +1456,6 @@ sub _call_win32_ole_dependent_api {
     }
 }
 
-
 sub getUsersFromRegistry {
     my (%params) = @_;
 
@@ -1475,7 +1511,7 @@ sub _getUsersFromLocalRegistry {
     }
     $logger->debug2('getUsersFromRegistry() : opened LMachine registry key');
     my $profileList =
-        $machKey->{$params{pathToUserList}};
+        $machKey->{"SOFTWARE/Microsoft/Windows NT/CurrentVersion/ProfileList"};
     next unless $profileList;
 
     my $userList;

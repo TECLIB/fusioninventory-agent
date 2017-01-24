@@ -19,13 +19,6 @@ my $options = {
     threads => 1
 };
 
-my %setup = (
-    confdir => './etc',
-    datadir => './share',
-    libdir  => './lib',
-    vardir  => './var',
-);
-
 GetOptions(
     $options,
     'first=s',

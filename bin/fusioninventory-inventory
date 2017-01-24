@@ -15,13 +15,7 @@ use FusionInventory::Agent::Task::Inventory;
 use FusionInventory::Agent::Target::Local;
 use FusionInventory::Agent::Logger;
 use FusionInventory::Agent::Config;
-
-my %setup = (
-    confdir => './etc',
-    datadir => './share',
-    libdir  => './lib',
-    vardir  => './var',
-);
+use FusionInventory::Agent::Version;
 
 my $options = {
     debug  => 0,

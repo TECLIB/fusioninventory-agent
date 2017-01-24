@@ -102,14 +102,13 @@ if ($options->{register}) {
     exit($ret);
 }
 
-my $agent_as_context = FusionInventory::Agent->new(
-    confdir => $directory . '/../etc',
-    datadir => $directory . '/../share',
-    vardir  => $directory . '/../var',
-    libdir  => $directory . '/../lib',
-    toolsdir => $directory . '/../tools',
-    sigterm  => sub { threads->exit(); }
-);
+FusionInventory::Agent->require()
+    or die "Can't load FusionInventory::Agent";
+
+# Setup sigterm callback to exit thread
+$setup{sigterm} = sub { threads->exit(); };
+
+my $agent_as_context = FusionInventory::Agent->new( %setup );
 
 $agent_as_context->{last_state} = SERVICE_START_PENDING;
 
