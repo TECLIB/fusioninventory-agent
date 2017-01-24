@@ -99,6 +99,7 @@ sub _getLocalUsers {
 }
 
 sub _getLocalGroups {
+    my (%params) = @_;
 
     my $wmiParams = {};
     if ($params{WMIService}) {
