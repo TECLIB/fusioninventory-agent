@@ -43,9 +43,9 @@ sub getDrives {
 
     my $systemDrive;
     foreach my $object (getWMIObjects(
+        %params,
         class      => 'Win32_OperatingSystem',
-        properties => [ qw/SystemDrive/ ],
-        %params
+        properties => [ qw/SystemDrive/ ]
     )) {
         $systemDrive = lc($object->{SystemDrive});
     }
@@ -55,12 +55,12 @@ sub getDrives {
     my %seen;
 
     foreach my $object (getWMIObjects(
+        %params,
         class      => 'Win32_LogicalDisk',
         properties => [ qw/
             InstallDate Description FreeSpace FileSystem VolumeName Caption
             VolumeSerialNumber DeviceID Size DriveType VolumeName ProviderName
-        / ],
-        %params
+        / ]
     )) {
 
         $object->{FreeSpace} = int($object->{FreeSpace} / (1024 * 1024))
@@ -99,12 +99,12 @@ sub getDrives {
 
     # Scan Win32_Volume to check for mounted point drives
     foreach my $object (getWMIObjects(
+        %params,
         class      => 'Win32_Volume',
         properties => [ qw/
             InstallDate Description FreeSpace FileSystem Name Caption DriveLetter
             SerialNumber Capacity DriveType Label
-        / ],
-        %params
+        / ]
     )) {
         # Skip volume already seen as instance of Win32_LogicalDisk class
         if (@drives && exists($object->{DriveLetter}) && $object->{DriveLetter}) {

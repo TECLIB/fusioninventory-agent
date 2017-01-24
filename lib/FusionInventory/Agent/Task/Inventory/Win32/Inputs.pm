@@ -6,8 +6,6 @@ use warnings;
 # Had never been tested.
 use FusionInventory::Agent::Tools::Win32;
 
-my $seen;
-
 my %mouseInterface = (
     1 =>  'Other',
     2 => 'Unknown',
@@ -31,6 +29,7 @@ sub isEnabled {
 sub doInventory {
     my (%params) = @_;
 
+    my %seen;
     my $inventory = $params{inventory};
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
@@ -48,7 +47,7 @@ sub doInventory {
         };
 
         # avoid duplicates
-        next if $seen->{$input->{NAME}}++;
+        next if $seen{$input->{NAME}}++;
 
         $inventory->addEntry(
             section => 'INPUTS',
@@ -71,7 +70,7 @@ sub doInventory {
         };
 
         # avoid duplicates
-        next if $seen->{$input->{NAME}}++;
+        next if $seen{$input->{NAME}}++;
 
         $inventory->addEntry(
             section => 'INPUTS',

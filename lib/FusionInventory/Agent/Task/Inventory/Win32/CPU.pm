@@ -59,9 +59,9 @@ sub _getCPUs {
     }
 
     my $val = getRegistryValue(
+        %params,
         path => "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0/Identifier",
-        valueType => FusionInventory::Agent::Tools::Win32::REG_SZ,
-        %params
+        valueType => FusionInventory::Agent::Tools::Win32::REG_SZ
     );
     $val = 'UNDEF' unless $val;
     $params{logger}->debug2('retour de getRegistryKey "HKEY_LOCAL_MACHINE/Hardware/Description/System/CentralProcessor/0/Identifier" : ' . $val);

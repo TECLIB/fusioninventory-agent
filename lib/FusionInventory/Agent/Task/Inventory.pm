@@ -12,7 +12,9 @@ use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Inventory;
 use FusionInventory::Agent::XML::Query::Inventory;
 
-our $VERSION = '1.0';
+use FusionInventory::Agent::Task::Inventory::Version;
+
+our $VERSION = FusionInventory::Agent::Task::Inventory::Version::VERSION;
 
 sub isEnabled {
     my ($self, $response) = @_;
@@ -160,6 +162,12 @@ sub _initModulesList {
         my $parent = @components > 5 ?
             join('::', @components[0 .. $#components -1]) : '';
 
+        # Just skip Version package as not an inventory package module
+        if ($module =~ /FusionInventory::Agent::Task::Inventory::Version$/) {
+            $self->{modules}->{$module}->{enabled} = 0;
+            next;
+        }
+
         # skip if parent is not allowed
         if ($parent && !$self->{modules}->{$parent}->{enabled}) {
             $logger->debug2("  $module disabled: implicit dependency $parent not enabled");
@@ -278,7 +286,7 @@ sub _runModule {
 sub _feedInventory {
     my ($self, $inventory, $disabled) = @_;
 
-    my $hasWmi = $inventory->{WMIService} ? 'YEAH' : 'NO';
+    my $hasWmi = $inventory->{WMIService} ? 'remote inventory' : 'local inventory';
     $self->{logger}->debug2('Has inventory wmiParams ? ' . $hasWmi);
 
     my $begin = time();
@@ -366,7 +374,7 @@ sub _printInventory {
             );
 
              my $hash = {
-                version  => $FusionInventory::Agent::VERSION,
+                version  => $FusionInventory::Agent::Version::VERSION,
                 deviceid => $params{inventory}->{deviceid},
                 data     => $params{inventory}->{content},
                 fields   => $params{inventory}->{fields},

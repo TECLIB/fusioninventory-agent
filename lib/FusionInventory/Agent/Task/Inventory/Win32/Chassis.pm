@@ -45,11 +45,11 @@ sub doInventory {
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     $inventory->setHardware({
-        CHASSIS_TYPE => getChassis(logger => $params{logger}, %$wmiParams)
+        CHASSIS_TYPE => _getChassis(logger => $params{logger}, %$wmiParams)
     });
 }
 
-sub getChassis {
+sub _getChassis {
     my (%params) = @_;
 
     my $chassis;

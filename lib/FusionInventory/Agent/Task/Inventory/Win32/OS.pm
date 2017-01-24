@@ -125,9 +125,9 @@ sub _getInstallDate {
     my (%params) = @_;
 
     my $installDate = getRegistryValue(
+        %params,
         path   => 'HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows NT/CurrentVersion/InstallDate',
-        valueType => FusionInventory::Agent::Tools::Win32::REG_DWORD,
-        %params
+        valueType => FusionInventory::Agent::Tools::Win32::REG_DWORD
     );
 
     return unless $installDate;

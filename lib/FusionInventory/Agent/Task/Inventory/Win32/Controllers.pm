@@ -91,11 +91,11 @@ sub _getControllersFromWMI {
     /) {
 
         foreach my $object (getWMIObjects(
+            %params,
             class      => $class,
             properties => [ qw/
                 Name Manufacturer Caption DeviceID
-            /],
-            WMIService => $params{WMIService}
+            /]
         )) {
 
             push @controllers, {

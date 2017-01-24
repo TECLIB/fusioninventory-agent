@@ -7,7 +7,7 @@ include 'Module::AutoInstall';
 abstract 'FusionInventory unified Agent for UNIX, Linux, Windows and MacOSX';
 license 'gpl';
 repository 'https://github.com/fusioninventory/fusioninventory-agent';
-version_from 'lib/FusionInventory/Agent.pm';
+version_from 'lib/FusionInventory/Agent/Version.pm';
 perl_version '5.008';
 authors 'FusionInventory Team';
 
@@ -20,6 +20,12 @@ requires 'UNIVERSAL::require' => '0';
 requires 'XML::TreePP'        => '0.26';
 if ($OSNAME =~ /darwin/i) {
     requires 'Tie::IxHash'        => '0';
+}
+
+if ($OSNAME eq 'MSWin32') {
+    requires 'Win32::OLE'         => '0';
+    requires 'Win32::TieRegistry' => '0';
+    requires 'Win32::Job'         => '0';
 }
 
 recommends 'Compress::Zlib'       => '0';
@@ -50,7 +56,7 @@ test_requires 'Test::More'                   => '0.93'; # subtest
 test_requires 'Test::NoWarnings'             => '0';
 test_requires 'LWP::Protocol::https'         => '0';
 test_requires 'Test::MockObject'             => '0';
-test_requires 'JSON'                         => '0';
+test_requires 'JSON::PP'                     => '0';
 test_requires 'Net::SNMP'                    => '0';
 test_requires 'Parallel::ForkManager'        => '0';
 
@@ -63,7 +69,7 @@ recommends 'DateTime'                        => '0';
 recommends 'Archive::Extract'             => '0';
 recommends 'Digest::SHA'                  => '0';
 recommends 'File::Copy::Recursive'        => '0';
-recommends 'JSON'                         => '0';
+recommends 'JSON::PP'                     => '0';
 recommends 'URI::Escape'                  => '0';
 recommends 'Net::Ping'                    => '0';
 recommends 'Parallel::ForkManager'        => '0';
@@ -87,7 +93,7 @@ install_script 'bin/fusioninventory-esx';
 
 resources
     homepage    => "http://www.fusioninventory.org",
-    bugtracker  => "http://forge.fusioninventory.org/projects/fusioninventory-agent/issues",
+    bugtracker  => "https://github.com/fusioninventory/fusioninventory-agent/issues",
     repository  => "https://github.com/fusioninventory/fusioninventory-agent/",
     IRC         => "irc://irc.freenode.net/#fusioninventory";
 
@@ -192,8 +198,8 @@ sub install {
     # add dependency on data and configuration installation targets, and remove
     # dependency on perlocal installation target
     # depending on MakeMaker version, the line to match changes
-    $install =~ s/install :: pure_install doc_install/install :: pure_install config_install data_install/;
-    $install =~ s/install :: all pure_install doc_install/install :: all pure_install config_install data_install/;
+    $install =~ s/install :: pure_install doc_install/install :: pure_install config_install data_install setup_install/;
+    $install =~ s/install :: all pure_install doc_install/install :: all pure_install config_install data_install setup_install/;
 
     # suppress all lines related to packlist file installation
     $install =~ s/.*\.packlist \\\n//g;
@@ -216,6 +222,10 @@ data_install :
 	install -m 644 share/sysobject.ids $(DESTDIR)$(DATADIR)/
 	install -d -m 755 $(DESTDIR)$(DATADIR)/html
 	install -m 644 share/html/* $(DESTDIR)$(DATADIR)/html
+
+setup_install :
+	install -d -m 755 $(DESTDIR)$(DATADIR)/lib
+	install -m 644 bin/setup.pm $(DESTDIR)$(DATADIR)/lib/
 EOF
     return $install;
 }

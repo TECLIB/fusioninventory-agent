@@ -1,15 +1,11 @@
 package FusionInventory::Agent::Task::Deploy;
 
 # Full protocol documentation available here:
-#  http://forge.fusioninventory.org/projects/fusioninventory-agent/wiki/API-REST-deploy
+#  http://fusioninventory.org/documentation/dev/spec/protocol/deploy.html
 
 use strict;
 use warnings;
 use base 'FusionInventory::Agent::Task';
-
-use JSON;
-use LWP;
-use URI::Escape;
 
 use FusionInventory::Agent::HTTP::Client::Fusion;
 use FusionInventory::Agent::Storage;
@@ -19,7 +15,9 @@ use FusionInventory::Agent::Task::Deploy::Datastore;
 use FusionInventory::Agent::Task::Deploy::File;
 use FusionInventory::Agent::Task::Deploy::Job;
 
-our $VERSION = '2.1.0';
+use FusionInventory::Agent::Task::Deploy::Version;
+
+our $VERSION = FusionInventory::Agent::Task::Deploy::Version::VERSION;
 
 sub isEnabled {
     my ($self) = @_;
@@ -514,12 +512,29 @@ sub run {
         }
     );
 
-    return unless $globalRemoteConfig->{schedule};
-    return unless ref( $globalRemoteConfig->{schedule} ) eq 'ARRAY';
+    if (!$globalRemoteConfig->{schedule}) {
+        $self->{logger}->info("No job schedule returned from server at ".$self->{target}->{url});
+        return;
+    }
+    if (ref( $globalRemoteConfig->{schedule} ) ne 'ARRAY') {
+        $self->{logger}->info("Malformed schedule from server at ".$self->{target}->{url});
+        return;
+    }
+    if ( !@{$globalRemoteConfig->{schedule}} ) {
+        $self->{logger}->info("No Deploy job enabled or Deploy support disabled server side.");
+        return;
+    }
 
+    my $run_jobs = 0;
     foreach my $job ( @{ $globalRemoteConfig->{schedule} } ) {
         next unless $job->{task} eq "Deploy";
         $self->processRemote($job->{remote});
+        $run_jobs ++;
+    }
+
+    if ( !$run_jobs ) {
+        $self->{logger}->info("No Deploy job found in server jobs list.");
+        return;
     }
 
     return 1;

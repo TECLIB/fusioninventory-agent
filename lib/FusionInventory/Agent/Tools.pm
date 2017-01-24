@@ -14,6 +14,12 @@ use Memoize;
 use UNIVERSAL::require;
 use List::Util qw(first);
 
+# Keep a copy of @ARGV, only for Provider inventory
+BEGIN {
+    our $ARGV = [ @ARGV ];
+}
+our $ARGV;
+
 our @EXPORT = qw(
     getDirectoryHandle
     getFileHandle
@@ -50,7 +56,7 @@ our @EXPORT = qw(
 
 my $nowhere = $OSNAME eq 'MSWin32' ? 'nul' : '/dev/null';
 
-# this trigger some errors on Perl 5.12/Win32:
+# this trigger some errors under win32:
 # Anonymous function called in forbidden scalar context
 if ($OSNAME ne 'MSWin32') {
     memoize('canRun');

@@ -60,9 +60,9 @@ sub _getDevicesFromWMI {
     my @devices;
 
     foreach my $object (getWMIObjects(
+        @_,
         class      => 'CIM_LogicalDevice',
-        properties => [ qw/Caption DeviceID Name/ ],
-        @_
+        properties => [ qw/Caption DeviceID Name/ ]
     )) {
         next unless $object->{DeviceID} =~ /^USB\\VID_(\w+)&PID_(\w+)\\(.*)/;
 

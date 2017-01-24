@@ -2,7 +2,9 @@
 
 use strict;
 use warnings;
-use lib './lib';
+
+use lib './bin';
+use setup;
 
 use English qw(-no_match_vars);
 use Getopt::Long;
@@ -12,11 +14,6 @@ use FusionInventory::Agent;
 
 Getopt::Long::Configure( "no_ignorecase" );
 
-BEGIN {
-##    use sigtrap qw(handler shutdown normal-signals);
-#    use sigtrap qw(die untrapped normal-signals stack-trace any error-signals);
-#    $SIG{SEGV} = 'IGNORE';
-}
 my $options = {};
 
 GetOptions(
@@ -75,7 +72,8 @@ GetOptions(
 pod2usage(-verbose => 0, -exitstatus => 0) if $options->{help};
 
 if ($options->{version}) {
-    print $FusionInventory::Agent::VERSION_STRING . "\n";
+    map { print $_."\n" } $FusionInventory::Agent::VERSION_STRING,
+        @{$FusionInventory::Agent::COMMENTS};
     exit 0;
 }
 

@@ -31,9 +31,9 @@ sub getEnvironmentValues {
 
     my @envVars = ();
     foreach my $object (getWMIObjects(
+        %params,
         class      => 'Win32_Environment',
-        properties => [ qw/SystemVariable Name VariableValue/ ],
-        %params
+        properties => [ qw/SystemVariable Name VariableValue/ ]
     )) {
 
         next unless $object->{SystemVariable};
