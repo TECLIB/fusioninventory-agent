@@ -30,8 +30,6 @@ our $VERSION_STRING = _versionString($VERSION);
 our $AGENT_STRING = "$PROVIDER-Agent_v$VERSION";
 our $CONTINUE_WORD = "...";
 
-sub my_handler {}
-
 sub _versionString {
     my ($VERSION) = @_;
 
