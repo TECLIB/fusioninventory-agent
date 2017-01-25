@@ -48,12 +48,14 @@ sub run {
 
     $self->{modules} = {};
 
-    my $inventory = $params{inventory} ? $params{inventory} :
-        FusionInventory::Agent::Inventory->new(
-            statedir => $self->{target}->getStorage()->getDirectory(),
-            logger   => $self->{logger},
-            tag      => $self->{config}->{'tag'}
-        );
+    my $inventory = FusionInventory::Agent::Inventory->new(
+        statedir => $self->{target}->getStorage()->getDirectory(),
+        logger   => $self->{logger},
+        tag      => $self->{config}->{'tag'}
+    );
+    if ($params{WMIService}) {
+        $inventory->{WMIService} = $params{WMIService};
+    }
 
     if (not $ENV{PATH}) {
         # set a minimal PATH if none is set (#1129, #1747)

@@ -247,7 +247,7 @@ sub getSanitizedString {
 
 sub trimWhitespace {
     my ($value) = @_;
-    return unless $value;
+    return unless defined $value;
     $value =~ s/^\s+//;
     $value =~ s/\s+$//;
     $value =~ s/\s+/ /g;

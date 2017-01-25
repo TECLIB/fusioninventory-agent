@@ -14,6 +14,13 @@ our $VERSION = '0.1';
 sub isEnabled {
     my ($self) = @_;
 
+    return unless (
+        $self->{config}->{wmi_hostname}
+        && $self->{config}->{wmi_user}
+        && $self->{config}->{wmi_pass}
+    );
+
+
     return 1;
 }
 
@@ -26,18 +33,6 @@ sub run {
 
     $self->{logger}->debug2('running Wmi');
 
-    my $inventory = FusionInventory::Agent::Inventory->new(
-        statedir => $self->{target}->getStorage()->getDirectory(),
-        logger   => $self->{logger},
-        tag      => $self->{config}->{'tag'},
-        WMIService => {
-            hostname => $self->{config}->{wmi_hostname},
-            user     => $self->{config}->{wmi_user},
-            pass     => $self->{config}->{wmi_pass},
-            toolsdir => $self->{toolsdir}
-        }
-    );
-    $params{inventory} = $inventory;
     $params{enabledModules} = [
         'FusionInventory::Agent::Task::Inventory::Generic',
 #        'FusionInventory::Agent::Task::Inventory::Generic::Screen',
@@ -66,6 +61,12 @@ sub run {
         'FusionInventory::Agent::Task::Inventory::Win32::Users',
         'FusionInventory::Agent::Task::Inventory::Win32::Videos'
     ];
+    $params{WMIService} = {
+        hostname => $self->{config}->{wmi_hostname},
+        user     => $self->{config}->{wmi_user},
+        pass     => $self->{config}->{wmi_pass},
+        toolsdir => $self->{toolsdir}
+    };
     $self->SUPER::run(%params);
 }
 
