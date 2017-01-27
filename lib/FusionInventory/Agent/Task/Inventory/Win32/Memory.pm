@@ -81,8 +81,9 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
-    foreach my $memory (_getMemories()) {
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    foreach my $memory (_getMemories(%$wmiParams)) {
         $inventory->addEntry(
             section => 'MEMORIES',
             entry   => $memory
@@ -96,6 +97,7 @@ sub _getMemories {
     my @memories;
 
     foreach my $object (getWMIObjects(
+        @_,
         class      => 'Win32_PhysicalMemory',
         properties => [ qw/
             Capacity Caption Description FormFactor Removable Speed MemoryType
@@ -125,6 +127,7 @@ sub _getMemories {
     }
 
     foreach my $object (getWMIObjects(
+        @_,
         class      => 'Win32_PhysicalMemoryArray',
         properties => [ qw/
             MemoryDevices SerialNumber PhysicalMemoryCorrection

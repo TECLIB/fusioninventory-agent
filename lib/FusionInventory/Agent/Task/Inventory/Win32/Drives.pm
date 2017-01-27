@@ -25,9 +25,11 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
-    foreach my $drive (_getDrives(
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    foreach my $drive (getDrives(
         logger  => $params{logger},
+        %$wmiParams
     )) {
         $inventory->addEntry(
             section => 'DRIVES',
@@ -36,11 +38,12 @@ sub doInventory {
     }
 }
 
-sub _getDrives {
+sub getDrives {
     my (%params) = @_;
 
     my $systemDrive;
     foreach my $object (getWMIObjects(
+        %params,
         class      => 'Win32_OperatingSystem',
         properties => [ qw/SystemDrive/ ]
     )) {
@@ -52,6 +55,7 @@ sub _getDrives {
     my %seen;
 
     foreach my $object (getWMIObjects(
+        %params,
         class      => 'Win32_LogicalDisk',
         properties => [ qw/
             InstallDate Description FreeSpace FileSystem VolumeName Caption
@@ -95,6 +99,7 @@ sub _getDrives {
 
     # Scan Win32_Volume to check for mounted point drives
     foreach my $object (getWMIObjects(
+        %params,
         class      => 'Win32_Volume',
         properties => [ qw/
             InstallDate Description FreeSpace FileSystem Name Caption DriveLetter

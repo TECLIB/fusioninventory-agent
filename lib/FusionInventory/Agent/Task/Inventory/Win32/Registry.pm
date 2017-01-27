@@ -46,7 +46,8 @@ sub _getRegistryData {
         $regkey =~ s{\\}{/}g;
         my $value = getRegistryValue(
             path   => $hives[$regtree]."/".$regkey."/".$content,
-            logger => $params{logger}
+            logger => $params{logger},
+            WMIService => $params{WMIService}
         );
 
         if (ref($value) eq "HASH") {
@@ -76,11 +77,13 @@ sub doInventory {
     my (%params) = @_;
 
     return unless $params{registry}->{NAME} eq 'REGISTRY';
-
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     foreach my $data (_getRegistryData(
-                registry => $params{registry},
-                logger => $params{logger}))
-    {
+        registry => $params{registry},
+        logger => $params{logger},
+        %$wmiParams
+    )) {
         $params{inventory}->addEntry(%$data);
     }
 

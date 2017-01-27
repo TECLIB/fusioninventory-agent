@@ -20,10 +20,12 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     foreach my $object (getWMIObjects(
         class      => 'Win32_SystemSlot',
-        properties => [ qw/Name Description SlotDesignation CurrentUsage/ ]
+        properties => [ qw/Name Description SlotDesignation CurrentUsage/ ],
+        %$wmiParams
     )) {
 
         $inventory->addEntry(

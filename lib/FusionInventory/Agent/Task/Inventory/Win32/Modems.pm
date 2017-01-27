@@ -15,8 +15,10 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     foreach my $object (getWMIObjects(
+        %$wmiParams,
         class      => 'Win32_POTSModem',
         properties => [ qw/Name DeviceType Model Description/ ]
     )) {

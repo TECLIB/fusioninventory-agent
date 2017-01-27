@@ -16,11 +16,14 @@ sub doInventory {
 
     my $inventory = $params{inventory};
 
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     foreach my $object (getWMIObjects(
         class      => 'Win32_SoundDevice',
         properties => [ qw/
             Name Manufacturer Caption Description
-        / ]
+        / ],
+        %$wmiParams
     )) {
 
         $inventory->addEntry(
