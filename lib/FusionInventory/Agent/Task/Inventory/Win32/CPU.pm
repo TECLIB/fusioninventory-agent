@@ -147,9 +147,6 @@ sub _retrieveCpuIdFromRemoteRegistry {
         path => $cpuIdPath,
         fields => \%filteredFields
     );
-    my $dd = Data::Dumper->new([$values]);
-    $params{logger}->debug2('_retrieveCpuIdFromRemoteRegistry retrieveValuesNameAndType ' . $cpuIdPath);
-    $params{logger}->debug2($dd->Dump);
     return unless $values;
     my %values = %$values;
     my %wantedKeys = %$wantedKeys;
