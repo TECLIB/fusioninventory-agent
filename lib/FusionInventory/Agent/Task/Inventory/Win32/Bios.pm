@@ -7,6 +7,10 @@ use English qw(-no_match_vars);
 
 use FusionInventory::Agent::Tools::Win32;
 
+#use Win32::TieRegistry (
+#    qw/REG_SZ/
+#);
+
 # Only run this module if dmidecode has not been found
 our $runMeIfTheseChecksFailed =
     ["FusionInventory::Agent::Task::Inventory::Generic::Dmidecode::Bios"];
@@ -39,7 +43,7 @@ sub doInventory {
     my $value = getRegistryValue(
         path   => $path,
         logger => $logger,
-        valueType => FusionInventory::Agent::Tools::Win32::REG_SZ,
+        valueType => REG_SZ,
         %$wmiParams
     );
     my $bios = {
