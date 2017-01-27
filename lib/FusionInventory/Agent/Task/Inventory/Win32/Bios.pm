@@ -7,9 +7,9 @@ use English qw(-no_match_vars);
 
 use FusionInventory::Agent::Tools::Win32;
 
-#use Win32::TieRegistry (
-#    qw/REG_SZ/
-#);
+use Win32::TieRegistry (
+    qw/REG_SZ/
+);
 
 # Only run this module if dmidecode has not been found
 our $runMeIfTheseChecksFailed =
