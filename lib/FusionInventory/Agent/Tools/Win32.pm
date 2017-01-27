@@ -59,42 +59,7 @@ our @EXPORT = qw(
 
 my $_is64bits = undef;
 
-my %wmiFailedCalls :shared;
-
-sub _recordWmiCallAsFailed {
-    my ($call) = @_;
-
-    {
-        lock(%wmiFailedCalls);
-        $wmiFailedCalls{$call} = 1;
-    }
-}
-
-sub _forgetWmiCall {
-    my ($call) = @_;
-
-    {
-        lock(%wmiFailedCalls);
-        delete $wmiFailedCalls{$call};
-    }
-}
-
-sub _isWmiCallFailed {
-    my ($call) = @_;
-
-    return defined $wmiFailedCalls{$call};
-}
-
-sub errorHandler {
-    my $sig = shift;
-    open(O, ">>" . 'hard_debug.log');
-    print O 'sigtrap errorHandler now on untrapped, we trapped this signal !' . "\n";
-    print O $sig . ' : ' . $! . "\n";
-    close O;
-#    die('aïe aïe aïe, thread dying now...');
-#    return 1;
-#    die;
-}
+sub errorHandler {}
 
 sub is64bit {
     # Cache is64bit() result in a private module variable to avoid a lot of wmi
@@ -748,13 +713,6 @@ sub _retrieveValuesNameAndType {
     }
 
     my $wmiCall = $params{WMIService}->{hostname} . '#' . $params{WMIService}->{user} . '#' . $params{keyName};
-    if (_isWmiCallFailed($wmiCall)) {
-        open(O, ">>" . 'hard_debug.log');
-        print O '_isWmiCallFailed returned true';
-        print O "\n";
-        close O;
-        return;
-    }
 
     unless ($params{objReg}) {
         return unless $params{WMIService};
@@ -778,9 +736,6 @@ sub _retrieveValuesNameAndType {
     my $arrValueTypes = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
     my $arrValueNames = Win32::OLE::Variant->new( Win32::OLE::Variant::VT_ARRAY() | Win32::OLE::Variant::VT_VARIANT() | Win32::OLE::Variant::VT_BYREF() , [1,1] );
 
-    # record call
-    _recordWmiCallAsFailed($wmiCall);
-#    eval {
     {
         $SIG{SEGV} = \&$func1;
 
@@ -825,10 +780,7 @@ sub _retrieveValuesNameAndType {
             }
         }
     }
-#    };
-#    &$func1 if $@;
 
-    _forgetWmiCall($wmiCall);
     return $values;
 }
 
@@ -898,10 +850,7 @@ sub getValueFromRemoteRegistryViaVbScript {
     my $value = '';
     $value = $lines[3] if scalar @lines >= 3;
     $value = '' if !(defined $value);
-    open(O, ">>" . 'hard_debug.log');
-    print O 'getValueFromRemoteRegistryViaVbScript() '
-        . $params{keyName} . ' ' . $params{valueName} . ' is : ' . $value . "\n";
-    close O;
+
     return $value;
 }
 
@@ -1515,10 +1464,6 @@ sub _getUsersFromLocalRegistry {
 
 sub _connectToService {
     my ( $hostname, $user, $pass, $root ) = @_;
-
-    open(O, ">>" . 'hard_debug.log');
-    print O '_connectToService() : recreate WMI remote connection' . "\n";
-    close O;
 
     my $locator = Win32::OLE->CreateObject('WbemScripting.SWbemLocator')
         or warn;
