@@ -6,7 +6,7 @@ use utf8;
 use lib 't/lib';
 
 use constant REG_DWORD => 0x4;
-use constant REG_SZ    => 0x7;
+use constant REG_SZ    => 0x1;
 
 use English qw(-no_match_vars);
 use Test::Deep qw(cmp_deeply);

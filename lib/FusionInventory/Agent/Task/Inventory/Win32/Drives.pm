@@ -27,7 +27,7 @@ sub doInventory {
     my $inventory = $params{inventory};
     my $wmiParams = {};
     $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
-    foreach my $drive (getDrives(
+    foreach my $drive (_getDrives(
         logger  => $params{logger},
         %$wmiParams
     )) {
@@ -38,7 +38,7 @@ sub doInventory {
     }
 }
 
-sub getDrives {
+sub _getDrives {
     my (%params) = @_;
 
     my $systemDrive;
