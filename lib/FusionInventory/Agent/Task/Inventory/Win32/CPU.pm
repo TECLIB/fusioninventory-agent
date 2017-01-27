@@ -168,7 +168,7 @@ sub _retrieveCpuIdFromRemoteRegistry {
     my $cpu = {
         CORE         => $object->{NumberOfCores},
         THREAD       => $wmi_threads,
-        DESCRIPTION  => $wantedKeys->{Identifier},
+        DESCRIPTION  => encodeFromRegistry($wantedKeys->{Identifier}),
         NAME         => trimWhitespace($wantedKeys->{ProcessorNameString}),
         MANUFACTURER => getCanonicalManufacturer($wantedKeys->{VendorIdentifier}),
         SERIAL       => '',
