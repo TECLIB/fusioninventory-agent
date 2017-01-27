@@ -43,7 +43,7 @@ sub doInventory {
     my $value = getRegistryValue(
         path   => $path,
         logger => $logger,
-        valueType => REG_SZ,
+        valueType => REG_SZ(),
         %$wmiParams
     );
     my $bios = {
