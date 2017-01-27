@@ -141,9 +141,6 @@ sub _getWMIObjects {
         $WMIService->ExecQuery(@{$params{query}}) :
         $WMIService->InstancesOf($params{class});
 
-    # eventually return all properties
-    return extractAllPropertiesFromWMIObjects($instances) if $params{returnAllPropertiesValues};
-
     foreach my $instance (
         in(
             $instances
@@ -206,33 +203,6 @@ sub _getWMIObjects {
             }
         }
         push @objects, $object;
-    }
-
-    return @objects;
-}
-
-sub extractAllPropertiesFromWMIObjects {
-    my ($instances) = @_;
-
-    my @objects = ();
-    foreach my $instance (in($instances)) {
-        my $obj = {};
-        foreach my $prop (in($instance->Properties_)) {
-            my $value;
-            if (!($prop->Value)) {
-                $value = 'NULL';
-            } elsif ($prop->IsArray == 1) {
-                my @values = ();
-                foreach my $i ($prop) {
-                    push @values, $prop->Value( $i );
-                }
-                $value = join (' -|- ', @values);
-            } else {
-                $value = $prop->Value;
-            }
-            $obj->{$prop->Name} = $value;
-        }
-        push @objects, $obj;
     }
 
     return @objects;
@@ -437,49 +407,6 @@ sub isDefinedRemoteRegistryKey {
     &$f if $@ || !$eval;
 
     return $defined;
-}
-
-sub isKeyWithSubKeys {
-
-}
-
-sub _isDefinedRemoteRegistryKey {
-    my (%params) = @_;
-
-    return unless $params{WMIService};
-
-    my ($root, $keyName);
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
-        $root      = $1;
-        $keyName   = $2;
-    } else {
-        $params{logger}->error(
-            "Failed to parse '$params{path}'. Does it start with HKEY_?"
-        ) if $params{logger};
-        return;
-    }
-
-    my $WMIService = _getWMIService(%params);
-    if (!$WMIService) {
-        return;
-    }
-    my $objReg = $WMIService->Get("StdRegProv");
-    if (!$objReg) {
-        return;
-    }
-
-    my $hkey;
-    if ($root =~ /^HKEY_LOCAL_MACHINE(?:\\|\/)(.*)$/) {
-        $hkey = $Win32::Registry::HKEY_LOCAL_MACHINE;
-        $keyName = $1 . '/' . $keyName;
-        $keyName =~ tr#/#\\#;
-    }
-
-    my $keys = Win32::OLE::Variant->new(Win32::OLE::Variant::VT_BYREF() | Win32::OLE::Variant::VT_VARIANT());
-    my $return = $objReg->EnumKey($hkey, $keyName, $keys);
-    my $ret = defined $return && $return == 0 ? 1 : 0;
-
-    return $ret;
 }
 
 sub getRegistryKey {
@@ -853,81 +780,6 @@ sub getValueFromRemoteRegistryViaVbScript {
 
     return $value;
 }
-
-sub getRegistryTreeFromWMI {
-    my $win32_ole_dependent_api = {
-        funct => '_getRegistryTreeFromWMI',
-        args  => \@_
-    };
-
-    return _call_win32_ole_dependent_api($win32_ole_dependent_api);
-}
-
-sub _getRegistryTreeFromWMI {
-    my (%params) = @_;
-
-    return unless $params{WMIService};
-
-    my $WMIService = _getWMIService(%params);
-    if (!$WMIService) {
-        return;
-    }
-    my $objReg = $WMIService->Get("StdRegProv");
-    if (!$objReg) {
-        return;
-    }
-
-    return _retrieveSubTreeRec(
-        objReg => $objReg,
-        %params
-    );
-}
-
-sub _retrieveSubTreeRec {
-    my (%params) = @_;
-
-    my @debug = ('in _retrieveSubTreeRec()');
-    my $dd = Data::Dumper->new([\%params]);
-    if ($params{path} =~ m{^(HKEY_\S+)/(.+)} ) {
-        $params{root}      = $1;
-        $params{keyName}   = $2;
-    } else {
-        return;
-    }
-    my $tree;
-    $dd = Data::Dumper->new([\%params]);
-    my $subKeys = _retrieveSubKeyList(%params);
-    my $keyValues;
-    $keyValues = _retrieveValuesNameAndType(%params);
-    if ($subKeys) {
-        push @debug, 'subKeys found';
-#        $params{logger}->debug2('found subKeys');
-        $tree = {};
-        for my $subKey (@$subKeys) {
-            $tree->{$subKey} = _retrieveSubTreeRec(
-                %params,
-                path => $params{path} . '/' . $subKey
-            );
-        }
-    }
-    if ($keyValues) {
-        push @debug, 'found keyValues' . "\n";
-        $tree = $keyValues;
-    }
-    if (!$subKeys && !$keyValues) {
-        $tree = {};
-        if ($params{path} =~ m{^(HKEY_\S+)/(.+)/([^/]+)} ) {
-            $params{root}      = $1;
-            $params{keyName}   = $2;
-            $params{valueName} = $3;
-            $tree->{VALUE} = 'value';#_retrieveValueFromRemoteRegistry(%params);
-        }
-    }
-    $tree->{DEBUG} = \@debug;
-    return $tree;
-}
-
-
 
 sub runCommand {
     my (%params) = (
