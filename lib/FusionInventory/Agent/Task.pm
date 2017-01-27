@@ -20,6 +20,7 @@ sub new {
         config       => $params{config},
         confdir      => $params{confdir},
         datadir      => $params{datadir},
+        toolsdir     => $params{toolsdir},
         target       => $params{target},
         deviceid     => $params{deviceid},
     };

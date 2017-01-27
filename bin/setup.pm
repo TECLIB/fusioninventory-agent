@@ -20,6 +20,7 @@ if (-d 'lib') {
         confdir => './etc',
         datadir => './share',
         libdir  => './lib',
+        toolsdir => './tools',
         vardir  => './var',
     );
 
@@ -30,6 +31,7 @@ if (-d 'lib') {
         confdir => '../etc',
         datadir => '../share',
         libdir  => '../lib',
+        toolsdir => './tools',
         vardir  => '../var',
     );
 }

@@ -31,10 +31,12 @@ sub doInventory {
 
     my %seen;
     my $inventory = $params{inventory};
-
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     foreach my $object (getWMIObjects(
         class      => 'Win32_Keyboard',
-        properties => [ qw/Name Caption Manufacturer Description Layout/ ]
+        properties => [ qw/Name Caption Manufacturer Description Layout/ ],
+        %$wmiParams
     )) {
         my $input = {
             NAME         => $object->{Name},
@@ -55,7 +57,8 @@ sub doInventory {
 
     foreach my $object (getWMIObjects(
         class      => 'Win32_PointingDevice',
-        properties => [ qw/Name Caption Manufacturer Description PointingType DeviceInterface/ ]
+        properties => [ qw/Name Caption Manufacturer Description PointingType DeviceInterface/ ],
+        %$wmiParams
     )) {
         my $input = {
             NAME         => $object->{Name},

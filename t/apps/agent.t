@@ -59,7 +59,7 @@ like(
 );
 is($out, '', 'incompatible options stdout');
 
-my $base_options = "--debug --no-task ocsdeploy,wakeonlan,snmpquery,netdiscovery";
+my $base_options = "--debug --no-task ocsdeploy,wakeonlan,snmpquery,netdiscovery,wmi";
 
 # first inventory
 ($out, $err, $rc) = run_executable(

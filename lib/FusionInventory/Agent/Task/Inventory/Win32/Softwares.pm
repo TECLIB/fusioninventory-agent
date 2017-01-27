@@ -28,8 +28,77 @@ sub doInventory {
     my $inventory = $params{inventory};
     my $logger    = $params{logger};
 
-    my $is64bit = is64bit();
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
 
+    my $is64bit = is64bit(%$wmiParams);
+
+    if ($wmiParams->{WMIService}) {
+        if ($is64bit) {
+            my @fields = qw/
+                DisplayName
+                Comments
+                HelpLink
+                ReleaseType
+                DisplayVersion
+                Publisher
+                URLInfoAbout
+                UninstallString
+                InstallDate
+                MinorVersion
+                MajorVersion
+                NoRemove
+            /;
+            my %fields = map { $_ => 1 } @fields;
+
+            # 64-bit software
+            my $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
+                %$wmiParams,
+                is64bit => 1,
+                fields => \%fields
+            );
+            my $softwares = _extractSoftwareDataFromHash(
+                softwares => $softwaresFromRemote,
+                is64bit   => 1,
+            );
+            foreach my $software (@$softwares) {
+                _addSoftware(inventory => $inventory, entry => $software);
+            }
+
+            # 32-bit software
+            $softwaresFromRemote = _retrieveSoftwareFromRemoteRegistry(
+                %$wmiParams,
+                is64bit => 0,
+                fields => \%fields
+            );
+            $softwares = _extractSoftwareDataFromHash(
+                softwares => $softwaresFromRemote,
+                is64bit   => 0,
+            );
+            foreach my $software (@$softwares) {
+                _addSoftware(inventory => $inventory, entry => $software);
+            }
+
+            _processMSIE(
+                inventory => $inventory,
+                is64bit   => 1
+            );
+        }
+        if ($params{scan_profiles}) {
+            _loadUserSoftware(
+                inventory => $inventory,
+                is64bit   => 1,
+                logger    => $logger,
+                %$wmiParams
+            );
+        } else {
+            $logger->warning(
+                "'scan-profiles' configuration parameter disabled, " .
+                    "ignoring software in user profiles"
+            );
+        }
+        return;
+    }
 
     if ($is64bit) {
 
@@ -127,10 +196,84 @@ sub doInventory {
 
 }
 
+sub _retrieveSoftwareFromRemoteRegistry {
+    my (%params) = @_;
+
+    my $path;
+    if ($params{is64bit}) {
+        $path = "HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall";
+    } else {
+        $path = "HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Uninstall";
+    }
+    my $softwaresFromRemote = getRegistryKeyFromWMI(
+        %params,
+        path => $path,
+        retrieveValuesForAllKeys => 1
+    );
+
+    return $softwaresFromRemote;
+}
+
+sub _extractSoftwareDataFromHash {
+    my (%params) = @_;
+
+    my $softwares = $params{softwares};
+
+    my @list;
+
+    return unless $softwares;
+
+    foreach my $rawGuid (keys %$softwares) {
+        # skip variables
+        next if $rawGuid =~ m{^/};
+
+        # only keep subkeys with more than 1 value
+        my $data = $softwares->{$rawGuid};
+        next unless keys %$data > 1;
+
+        my $guid = $rawGuid;
+        $guid =~ s/\/$//; # drop the tailing /
+
+        my $software = {
+            FROM             => "registry",
+            NAME             => encodeFromRegistry($data->{'DisplayName'}) ||
+                encodeFromRegistry($guid), # folder name
+            COMMENTS         => encodeFromRegistry($data->{'Comments'}),
+            HELPLINK         => encodeFromRegistry($data->{'HelpLink'}),
+            RELEASE_TYPE     => encodeFromRegistry($data->{'ReleaseType'}),
+            VERSION          => encodeFromRegistry($data->{'DisplayVersion'}),
+            PUBLISHER        => encodeFromRegistry($data->{'Publisher'}),
+            URL_INFO_ABOUT   => encodeFromRegistry($data->{'URLInfoAbout'}),
+            UNINSTALL_STRING => encodeFromRegistry($data->{'UninstallString'}),
+            INSTALLDATE      => _dateFormat($data->{'InstallDate'}),
+            VERSION_MINOR    => hex2dec($data->{'MinorVersion'}),
+            VERSION_MAJOR    => hex2dec($data->{'MajorVersion'}),
+            NO_REMOVE        => hex2dec($data->{'NoRemove'}),
+            ARCH             => $params{is64bit} ? 'x86_64' : 'i586',
+            GUID             => $guid,
+            USERNAME         => $params{username},
+            USERID           => $params{userid},
+        };
+
+        # Workaround for #415
+        $software->{VERSION} =~ s/[\000-\037].*// if $software->{VERSION};
+
+        # TODO : see what we can do here, remotely thinking...
+        # Set install date to last registry key update time
+#        if (!defined($software->{INSTALLDATE})) {
+#            $software->{INSTALLDATE} = _dateFormat(_keyLastWriteDateString($data));
+#        }
+
+        push @list, $software;
+    }
+
+    return \@list;
+}
+
 sub _loadUserSoftware {
     my (%params) = @_;
 
-    _loadUserSoftwareFromNtuserDatFiles(%params);
+    _loadUserSoftwareFromNtuserDatFiles(%params) unless $params{WMIService};
     my $userList = getUsersFromRegistry(%params);
     _loadUserSoftwareFromHKey_Users($userList, %params);
 }
@@ -171,7 +314,6 @@ sub _loadUserSoftwareFromNtuserDatFiles {
         my $userKey = $is64bit                                                                   ?
             $Registry->Load( $profilePath.'\ntuser.dat', { Access => KEY_READ | KEY_WOW64_64 } ) :
             $Registry->Load( $profilePath.'\ntuser.dat', { Access => KEY_READ } );
-
         my $softwaresKey =
             $userKey->{"SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"};
 
@@ -197,6 +339,66 @@ sub _loadUserSoftwareFromNtuserDatFiles {
 sub _loadUserSoftwareFromHKey_Users {
     my ($userList, %params) = @_;
 
+    if ($params{WMIService}) {
+        _loadUserSoftwareFromHKey_UsersRemote($userList, %params);
+    } else {
+        _loadUserSoftwareFromHKey_UsersLocal($userList, %params);
+    }
+}
+
+sub _loadUserSoftwareFromHKey_UsersRemote {
+    my ($userList, %params) = @_;
+
+    return unless $userList;
+
+    my $inventory = $params{inventory};
+    my $is64bit   = $params{is64bit};
+    my $logger    = $params{logger};
+
+    return unless $params{WMIService};
+
+    my $profileList = getRegistryKeyFromWMI(
+        path => 'HKEY_USERS',
+        WMIService => $params{WMIService}
+    );
+    return unless $profileList;
+
+    foreach my $profileName (@$profileList) {
+        # we're only interested in subkeys
+        next unless length($profileName) > 10;
+
+        my $userName = '';
+        if ($userList->{$profileName}) {
+            $userName = $userList->{$profileName};
+        } else {
+            next;
+        }
+
+        my $softwaresKey = getRegistryKeyFromWMI(
+            %params,
+            path => 'HKEY_USERS/' . $profileName . '/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall',
+            retrieveValuesForAllKeys => 1
+        );
+
+        my $softwares = _getSoftwaresList(
+            softwares => $softwaresKey,
+            is64bit   => $is64bit,
+            userid    => $profileName,
+            username  => $userName
+        );
+        my $nbUsers = 0;
+        if ($softwares) {
+            $nbUsers = scalar(@$softwares);
+        }
+        foreach my $software (@$softwares) {
+            _addSoftware(inventory => $inventory, entry => $software);
+        }
+    }
+}
+
+sub _loadUserSoftwareFromHKey_UsersLocal {
+    my ($userList, %params) = @_;
+
     return unless $userList;
 
     my $inventory = $params{inventory};
@@ -209,7 +411,7 @@ sub _loadUserSoftwareFromHKey_Users {
     return unless $profileList;
 
     $Registry->AllowLoad(1);
-    
+
     foreach my $profileName (keys %$profileList) {
         # we're only interested in subkeys
         next unless $profileName =~ m{/$};
@@ -221,6 +423,7 @@ sub _loadUserSoftwareFromHKey_Users {
         } else {
             next;
         }
+
         my $softwaresKey = $profileList->{$profileName}{"SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"};
 
         my $softwares = _getSoftwaresList(
@@ -378,12 +581,20 @@ sub _processMSIE {
     my $name = $params{is64bit} ?
         "Internet Explorer (64bit)" : "Internet Explorer";
 
-    # Will use key last write date as INSTALLDATE
-    my $installedkey = $params{machKey}->{"SOFTWARE/Microsoft/Internet Explorer"};
+    my $pathToMSIE = "SOFTWARE/Microsoft/Internet Explorer";
+    my $data;
+    if ($params{WMIService}) {
+        $data = _retrieveMSIEDataFromRemoteRegistry(
+            %params,
+            pathToMSIE => $pathToMSIE
+        );
+    } else {
+        $data = _retrieveMSIEDataFromLocalRegistry(
+            %params,
+            pathToMSIE => $pathToMSIE
+        );
 
-    my $version = $installedkey->{"/svcVersion"} || $installedkey->{"/Version"};
-
-    return unless $version; # Not installed
+    }
 
     _addSoftware(
         inventory => $params{inventory},
@@ -391,12 +602,36 @@ sub _processMSIE {
             FROM        => "registry",
             ARCH        => $params{is64bit} ? 'x86_64' : 'i586',
             NAME        => $name,
-            VERSION     => $version,
+            VERSION     => $data->{version},
             PUBLISHER   => "Microsoft Corporation",
-            INSTALLDATE => _dateFormat(_keyLastWriteDateString($installedkey))
+            INSTALLDATE => $data->{installDate}
         }
     );
+}
 
+sub _retrieveMSIEDataFromLocalRegistry {
+    my (%params) = @_;
+
+    my $data = {};
+    my $installedkey = $params{machKey}->{$params{pathToMSIE}};
+    $data->{version} = $installedkey->{"/svcVersion"} || $installedkey->{"/Version"};
+    $data->{installDate} = _dateFormat(_keyLastWriteDateString($installedkey));
+
+    return $data;
+}
+
+sub _retrieveMSIEDataFromRemoteRegistry {
+    my (%params) = @_;
+
+    my $data = {};
+    my $values = retrieveKeyValuesFromRemote(
+        %params,
+        path => 'HKEY_LOCAL_MACHINE/' . $params{pathToMSIE}
+    );
+    $data->{version} = $values->{svcVersion} || $values->{Version};
+    $data->{installDate} = '';
+
+    return $data;
 }
 
 1;

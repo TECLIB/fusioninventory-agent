@@ -145,10 +145,12 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     foreach my $object (getWMIObjects(
         class      => 'Win32_SerialPort',
-        properties => [ qw/Name Caption Description/ ]
+        properties => [ qw/Name Caption Description/ ],
+        %$wmiParams
     )) {
         $inventory->addEntry(
             section => 'PORTS',
@@ -163,7 +165,8 @@ sub doInventory {
 
     foreach my $object (getWMIObjects(
         class      => 'Win32_ParallelPort',
-        properties => [ qw/Name Caption Description/ ]
+        properties => [ qw/Name Caption Description/ ],
+        %$wmiParams
     )) {
 
         $inventory->addEntry(
@@ -179,7 +182,8 @@ sub doInventory {
 
     foreach my $object (getWMIObjects(
         class      => 'Win32_PortConnector',
-        properties => [ qw/ConnectorType InternalReferenceDesignator/ ]
+        properties => [ qw/ConnectorType InternalReferenceDesignator/ ],
+        %$wmiParams
     )) {
 
         my $type;
