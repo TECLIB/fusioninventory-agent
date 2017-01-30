@@ -22,7 +22,7 @@ GetOptions(
     'conf-file=s',
     'config=s',
     'debug+',
-    'host',
+    'host|h=s',
     'local|l=s',
     'logger=s',
     'logfile=s',
