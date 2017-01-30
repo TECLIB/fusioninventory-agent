@@ -22,12 +22,14 @@ GetOptions(
     'conf-file=s',
     'config=s',
     'debug+',
+    'help',
     'host|h=s',
     'local|l=s',
     'logger=s',
     'logfile=s',
     'pass|p=s',
     'scan-homedirs',
+    'scan_profiles',
     'server|s=s',
     'tag|t=s',
     'user|u=s',
@@ -93,3 +95,36 @@ if ($EVAL_ERROR) {
 }
 
 exit(0);
+
+
+__END__
+
+=head1 NAME
+
+fusioninventory-wmi - Win32 remote inventory
+
+=head1 SYNOPSIS
+
+fusioninventory-wmi --host <host> --user <user> --pass <pass> [--server server|--local path]
+
+  General options:
+    --help                 this menu
+    --tag tag              tag for the inventoried machine
+
+  Remote machine options:
+    --host hostname        hostname
+    --user username        user name
+    --password xxxx        user password
+
+  Target definition options:
+    -s --server=URI                send tasks result to a server
+    -l --local=PATH                write tasks results locally
+
+=head1 EXAMPLES
+
+    % fusioninventory-wmi --host 172.xx.xxx.xxx --user foo --password bar --local=.
+
+=head1 DESCRIPTION
+
+F<fusioninventory-wmi> creates inventory of remote Win32 machine.
+It uses the WMI interface of the remote server.
