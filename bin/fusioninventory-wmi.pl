@@ -22,11 +22,11 @@ GetOptions(
     'conf-file=s',
     'config=s',
     'debug+',
-    'hostname',
+    'host',
     'local|l=s',
     'logger=s',
     'logfile=s',
-    'password|p=s',
+    'pass|p=s',
     'scan-homedirs',
     'server|s=s',
     'tag|t=s',
@@ -46,9 +46,9 @@ if ($options->{version}) {
 }
 
 pod2usage(-verbose => 0) unless
-    $options->{hostname}      and
+    $options->{host}      and
         $options->{user}      and
-        $options->{password} and
+        $options->{pass} and
         ($options->{local} or $options->{server});
 
 if ($options->{'conf-file'}) {
@@ -70,8 +70,18 @@ if ($OSNAME eq 'MSWin32' && ! $options->{'no-win32-ole-workaround'}) {
 }
 
 my $agent = FusionInventory::Agent->new(%setup);
+
+$options->{tasks} = 'wmi';
+
+$options->{wmi_hostname} = $options->{host};
+delete $options->{host};
+$options->{wmi_user} = $options->{user};
+delete $options->{user};
+$options->{wmi_pass} = $options->{pass};
+delete $options->{pass};
+
 eval {
-    $options->{tasks} = 'wmi';
+
     $agent->init(options => $options);
     $agent->run();
 };
