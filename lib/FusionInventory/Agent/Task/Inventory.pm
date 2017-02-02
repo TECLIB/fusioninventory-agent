@@ -71,6 +71,11 @@ sub run {
     $self->_initModulesList(\%disabled, $params{enabledModules});
     $self->_feedInventory($inventory, \%disabled);
 
+    # for remote WMI inventory, we have to overwrite the device id because it is computed locally
+    if ($params{WMIService}) {
+        $inventory->{deviceid} = $inventory->{content}->{HARDWARE}->{NAME};
+    }
+
     if ($self->{target}->isa('FusionInventory::Agent::Target::Local')) {
         my $path   = $self->{target}->getPath();
         my $format = $self->{target}->{format};
