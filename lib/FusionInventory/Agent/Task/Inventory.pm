@@ -73,7 +73,7 @@ sub run {
 
     # for remote WMI inventory, we have to overwrite the device id because it is computed locally
     if ($params{WMIService}) {
-        $inventory->{deviceid} = $inventory->{content}->{HARDWARE}->{NAME};
+        $self->{deviceid} = $inventory->{content}->{HARDWARE}->{NAME};
     }
 
     if ($self->{target}->isa('FusionInventory::Agent::Target::Local')) {
