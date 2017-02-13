@@ -609,7 +609,9 @@ sub _saveState {
 
 # compute an unique agent identifier, based on host name and current time
 sub _computeDeviceId {
-    my $hostname = getHostname();
+    my (%params) = @_;
+
+    my $hostname = $params{hostname} ? $params{hostname} : getHostname();
 
     my ($year, $month , $day, $hour, $min, $sec) =
         (localtime (time))[5, 4, 3, 2, 1, 0];

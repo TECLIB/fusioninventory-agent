@@ -47,12 +47,6 @@ if ($options->{version}) {
     exit 0;
 }
 
-pod2usage(-verbose => 0) unless
-    $options->{host}      and
-        $options->{user}      and
-        $options->{pass} and
-        ($options->{local} or $options->{server});
-
 if ($options->{'conf-file'}) {
     if ($options->{config}) {
         if ($options->{config} ne 'file') {
