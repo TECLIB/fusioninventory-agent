@@ -19,35 +19,51 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     my ($operatingSystem) = getWMIObjects(
         class      => 'Win32_OperatingSystem',
         properties => [ qw/
             OSLanguage Caption Version SerialNumber Organization RegisteredUser
-            CSDVersion TotalSwapSpaceSize LastBootUpTime
-        / ]
+            CSDVersion TotalSwapSpaceSize LastBootUpTime InstallDate
+        / ],
+        %$wmiParams
     );
 
     my ($computerSystem) = getWMIObjects(
         class      => 'Win32_ComputerSystem',
         properties => [ qw/
             Name Domain Workgroup PrimaryOwnerName TotalPhysicalMemory
-        / ]
+        / ],
+        %$wmiParams
     );
 
     my ($computerSystemProduct) = getWMIObjects(
         class      => 'Win32_ComputerSystemProduct',
-        properties => [ qw/UUID/ ]
+        properties => [ qw/UUID/ ],
+        %$wmiParams
     );
 
+    my $wantedValues = [
+        'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId',
+        'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId4',
+        'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/lanmanserver/Parameters/srvcomment'
+    ];
+    my $values = getRegistryValuesFromWMI(
+        path => $wantedValues,
+        logger => $params{logger},
+        %$wmiParams
+    );
+    my $raw1 = $values->{$wantedValues->[0]};
+    my $raw2 = $values->{$wantedValues->[1]};
+    my $raw3 = $values->{$wantedValues->[2]};
+
     my $key =
-        decodeMicrosoftKey(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId')) ||
-        decodeMicrosoftKey(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/DigitalProductId4'));
-
-    my $description =
-        encodeFromRegistry(getRegistryValue(path => 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/lanmanserver/Parameters/srvcomment'));
-
-    my $arch = is64bit() ? '64-bit' : '32-bit';
+        decodeMicrosoftKey($raw1) ||
+        decodeMicrosoftKey($raw2);
+    my $description = '';
+    $description = encodeFromRegistry($raw3) if $raw3;
+    my $arch = is64bit(%$wmiParams) ? '64-bit' : '32-bit';
 
     my $swap = $operatingSystem->{TotalSwapSpaceSize} ?
         int($operatingSystem->{TotalSwapSpaceSize} / (1024 * 1024)) : undef;
@@ -65,13 +81,21 @@ sub doInventory {
     }
 
     # get the name through native Win32::API, as WMI DB is sometimes broken
-    my $hostname = getHostname(short => 1);
-
+    my $hostname = $wmiParams->{WMIService} ? $computerSystem->{Name} : getHostname(short => 1);
+    my $installDate;
+    if ($operatingSystem->{InstallDate}) {
+        $installDate = $operatingSystem->{InstallDate};
+        if ($installDate =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/) {
+            $installDate = getFormatedDate($1, $2, $3, $4, $5, $6);
+        }
+    } else {
+        $installDate = _getInstallDate(%$wmiParams, logger => $params{logger});
+    }
     $inventory->setOperatingSystem({
         NAME           => "Windows",
         ARCH           => $arch,
-        INSTALL_DATE   => _getInstallDate(),
-        BOOT_TIME      => $boottime,
+        INSTALL_DATE   => $installDate,
+        BOOT_TIME      => $boottime || '',
         KERNEL_VERSION => $operatingSystem->{Version},
         FULL_NAME      => $operatingSystem->{Caption},
         SERVICE_PACK   => $operatingSystem->{CSDVersion},
@@ -98,9 +122,14 @@ sub doInventory {
 }
 
 sub _getInstallDate {
+    my (%params) = @_;
+
     my $installDate = getRegistryValue(
-        path   => 'HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows NT/CurrentVersion/InstallDate'
+        %params,
+        path   => 'HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows NT/CurrentVersion/InstallDate',
+        valueType => FusionInventory::Agent::Tools::Win32::REG_DWORD
     );
+
     return unless $installDate;
 
     my $dec = hex2dec($installDate);

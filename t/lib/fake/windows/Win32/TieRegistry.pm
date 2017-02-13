@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use constant REG_DWORD => 0x4;
-use constant REG_SZ    => 0x7;
+use constant REG_SZ    => 0x1;
 
 our $Registry;
 

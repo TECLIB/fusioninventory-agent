@@ -16,13 +16,15 @@ sub doInventory {
 
     my %seen;
     my $inventory = $params{inventory};
-
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
     foreach my $object (getWMIObjects(
         class      => 'Win32_VideoController',
         properties => [ qw/
             CurrentHorizontalResolution CurrentVerticalResolution VideoProcessor
             AdaptaterRAM Name
-        / ]
+        / ],
+        %$wmiParams
     )) {
 
         my $video = {

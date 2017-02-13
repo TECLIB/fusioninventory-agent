@@ -15,22 +15,37 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    my @envVars = getEnvironmentValues(%params, %$wmiParams);
+    foreach my $envVar (@envVars) {
+        $inventory->addEntry(
+            section => 'ENVS',
+            entry   => $envVar
+        );
+    }
+}
 
+sub getEnvironmentValues {
+    my (%params) = @_;
+
+    my @envVars = ();
     foreach my $object (getWMIObjects(
+        %params,
         class      => 'Win32_Environment',
         properties => [ qw/SystemVariable Name VariableValue/ ]
     )) {
 
         next unless $object->{SystemVariable};
 
-        $inventory->addEntry(
-            section => 'ENVS',
-            entry   => {
-                KEY => $object->{Name},
-                VAL => $object->{VariableValue}
-            }
-        );
+        my $envVar = {
+            KEY => $object->{Name},
+            VAL => $object->{VariableValue}
+        };
+        push @envVars, $envVar;
     }
+
+    return @envVars;
 }
 
 1;

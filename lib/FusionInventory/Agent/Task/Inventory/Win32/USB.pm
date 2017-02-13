@@ -16,8 +16,9 @@ sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-
-    foreach my $device (_getDevices(logger => $params{logger}, datadir => $params{datadir})) {
+    my $wmiParams = {};
+    $wmiParams->{WMIService} = $params{inventory}->{WMIService} ? $params{inventory}->{WMIService} : undef;
+    foreach my $device (_getDevices(logger => $params{logger}, datadir => $params{datadir}, %$wmiParams)) {
         $inventory->addEntry(
             section => 'USBDEVICES',
             entry   => $device
@@ -59,6 +60,7 @@ sub _getDevicesFromWMI {
     my @devices;
 
     foreach my $object (getWMIObjects(
+        @_,
         class      => 'CIM_LogicalDevice',
         properties => [ qw/Caption DeviceID Name/ ]
     )) {

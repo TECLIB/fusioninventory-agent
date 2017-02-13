@@ -49,6 +49,7 @@ sub new {
         confdir => $params{confdir},
         datadir => $params{datadir},
         libdir  => $params{libdir},
+        toolsdir => $params{toolsdir},
         vardir  => $params{vardir},
         sigterm => $params{sigterm},
         targets => [],
@@ -456,6 +457,7 @@ sub _runTaskReal {
         config       => $self->{config},
         confdir      => $self->{confdir},
         datadir      => $self->{datadir},
+        toolsdir     => $self->{toolsdir},
         logger       => $self->{logger},
         target       => $target,
         deviceid     => $self->{deviceid},
@@ -607,7 +609,9 @@ sub _saveState {
 
 # compute an unique agent identifier, based on host name and current time
 sub _computeDeviceId {
-    my $hostname = getHostname();
+    my (%params) = @_;
+
+    my $hostname = $params{hostname} ? $params{hostname} : getHostname();
 
     my ($year, $month , $day, $hour, $min, $sec) =
         (localtime (time))[5, 4, 3, 2, 1, 0];
