@@ -6,8 +6,6 @@ use warnings;
 use FusionInventory::Agent::Tools::Constants;
 use FusionInventory::Agent::Tools;
 
-our $runMeIfTheseChecksFailed = ["FusionInventory::Agent::Task::Inventory::Generic::Firewall::Fedora"];
-
 sub isEnabled {
     my (%params) = @_;
     return 0 if $params{no_category}->{firewall};
