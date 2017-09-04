@@ -149,7 +149,10 @@ my %interface_variables = (
         type => 'constant'
     },
     IFDESCR          => {
-        oid  => '.1.3.6.1.2.1.2.2.1.2',
+        oid  => [
+            '.1.0.8802.1.1.2.1.3.7.1.4',
+            '.1.3.6.1.2.1.2.2.1.2',
+        ],
         type => 'string',
     },
     IFNAME           => {
@@ -196,7 +199,10 @@ my %interface_variables = (
         type => 'count',
     },
     MAC              => {
-        oid  => '.1.3.6.1.2.1.2.2.1.6',
+        oid  => [
+            '.1.0.8802.1.1.2.1.3.7.1.3',
+            '.1.3.6.1.2.1.2.2.1.6',
+        ],
         type => 'mac',
     },
     IFPORTDUPLEX     => {
