@@ -149,10 +149,7 @@ my %interface_variables = (
         type => 'constant'
     },
     IFDESCR          => {
-        oid  => [
-            '.1.0.8802.1.1.2.1.3.7.1.4',
-            '.1.3.6.1.2.1.2.2.1.2',
-        ],
+        oid  => '.1.3.6.1.2.1.2.2.1.2',
         type => 'string',
     },
     IFNAME           => {
@@ -199,10 +196,7 @@ my %interface_variables = (
         type => 'count',
     },
     MAC              => {
-        oid  => [
-            '.1.0.8802.1.1.2.1.3.7.1.3',
-            '.1.3.6.1.2.1.2.2.1.6',
-        ],
+        oid  => '.1.3.6.1.2.1.2.2.1.6',
         type => 'mac',
     },
     IFPORTDUPLEX     => {
@@ -719,6 +713,10 @@ sub _setGenericProperties {
     # (ifIndex, or IFNUMBER in agent output)
     my $ports;
 
+    # mac could be remapped to lldpLocPortId if not different than global one (D-Link swithes case)
+    my $globalmac = $device->{INFO}->{MAC} || '';
+    my $lldpLocPortId = $snmp->walk('.1.0.8802.1.1.2.1.3.7.1.3');
+
     foreach my $key (keys %interface_variables) {
         my $variable = $interface_variables{$key};
         next unless $variable->{oid};
@@ -744,6 +742,14 @@ sub _setGenericProperties {
                 $type eq 'string'   ? _getCanonicalString($raw_value)     :
                 $type eq 'count'    ? _getCanonicalCount($raw_value)      :
                                       $raw_value;
+
+            # Use lldpLocProtId as mac if found mac is exactly the global mac
+            if ($key eq 'MAC' && $value && $value eq $globalmac && $lldpLocPortId->{$suffix}) {
+                my $lldpid = _getCanonicalMacAddress($lldpLocPortId->{$suffix});
+                # Only use it if it really look like a legacy mac address
+                $value = $lldpid if (length($lldpid) == 18);
+            }
+
             $ports->{$suffix}->{$key} = $value
                 if defined $value && $value ne '';
         }
