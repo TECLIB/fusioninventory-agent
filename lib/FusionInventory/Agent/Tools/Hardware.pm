@@ -747,7 +747,7 @@ sub _setGenericProperties {
             if ($key eq 'MAC' && $value && $value eq $globalmac && $lldpLocPortId->{$suffix}) {
                 my $lldpid = _getCanonicalMacAddress($lldpLocPortId->{$suffix});
                 # Only use it if it really look like a legacy mac address
-                $value = $lldpid if (length($lldpid) == 18);
+                $value = $lldpid if ($lldpid && length($lldpid) == 18);
             }
 
             $ports->{$suffix}->{$key} = $value
