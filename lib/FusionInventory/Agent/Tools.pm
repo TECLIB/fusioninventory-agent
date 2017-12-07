@@ -52,7 +52,6 @@ our @EXPORT = qw(
     file2module
     module2file
     runFunction
-    getExpirationTime
     delay
     slurp
 );
