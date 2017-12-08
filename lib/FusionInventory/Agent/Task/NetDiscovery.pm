@@ -15,6 +15,8 @@ use Thread::Queue v2.01;
 use UNIVERSAL::require;
 use XML::TreePP;
 
+use Data::Dumper;
+
 use FusionInventory::Agent::Version;
 use FusionInventory::Agent::Tools;
 use FusionInventory::Agent::Tools::Network;
@@ -23,7 +25,7 @@ use FusionInventory::Agent::XML::Query;
 
 use FusionInventory::Agent::Task::NetDiscovery::Version;
 
-our $VERSION = FusionInventory::Agent::Task::NetDiscovery::Version::VERSION;
+our $VERSION = FusionInventory::Agent::Task::NetDiscovery::Version::VERSION .'-test';
 
 sub isEnabled {
     my ($self, $response) = @_;
@@ -358,6 +360,14 @@ sub _scanAddressByNmap {
         $device ? 'success' : 'no result'
     );
 
+    if ($device && open FH, ">device-$params{ip}-by-nmap.txt") {
+        my $pwd = qx/pwd/;
+        chomp($pwd);
+        $self->{logger}->debug("Dumping to $pwd/device-$params{ip}-by-nmap.txt");
+        print FH Dumper($device);
+        close(FH);
+    }
+
     return $device ? %$device : ();
 }
 
@@ -396,6 +406,14 @@ sub _scanAddressByNetbios {
     $device{MAC} = $ns->mac_address();
     $device{MAC} =~ tr/-/:/;
 
+    if (open FH, ">device-$params{ip}-by-netbios.txt") {
+        my $pwd = qx/pwd/;
+        chomp($pwd);
+        $self->{logger}->debug("Dumping to $pwd/device-$params{ip}-by-netbios.txt");
+        print FH Dumper(\%device);
+        close(FH);
+    }
+
     return %device;
 }
 
@@ -421,6 +439,15 @@ sub _scanAddressBySNMP {
 
         if (ref $device eq 'HASH') {
             $device->{AUTHSNMP} = $credential->{ID};
+
+            if (open FH, ">device-$params{ip}-by-snmp.txt") {
+                my $pwd = qx/pwd/;
+                chomp($pwd);
+                $self->{logger}->debug("Dumping to $pwd/device-$params{ip}-by-snmp.txt");
+                print FH Dumper($device);
+                close(FH);
+            }
+
             return %{$device};
         }
     }
