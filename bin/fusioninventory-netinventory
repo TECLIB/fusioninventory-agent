@@ -77,6 +77,7 @@ if ($options->{file}) {
     push @devices, {
         ID           => $id++,
         FILE         => $_,
+        IP           => shift @{$options->{host}},
         AUTHSNMP_ID  => 1,
         MODELSNMP_ID => 1
     } foreach @{$options->{file}};
@@ -136,8 +137,6 @@ $inventory->{client} =
     FusionInventory::Agent::Task::NetInventory::Client->new(
         control => $options->{control}
     );
-# TODO: need to be dropped the day we will depend on agent >= 2.3.0
-$inventory->{deviceid} = 'foo';
 
 $inventory->run();
 
@@ -280,11 +279,11 @@ Turn the debug mode on. Multiple usage allowed, for additional verbosity.
 
 Run an inventory against a network device, using SNMP version 2c authentication:
 
-    $> fusioninventory-netinventory --host 192.168.0.1
+    $> fusioninventory-netinventory --host 192.168.0.1 \
     --credentials version:2c,community:public
 
 Run an inventory against a network device, using SNMP version 3 authentication
 and forcing its type:
 
-    $> fusioninventory-netinventory --host my.device --type NETWORKING
+    $> fusioninventory-netinventory --host my.device --type NETWORKING \
     --credentials version:3,username:admin,authprotocol:sha,authpassword:s3cr3t

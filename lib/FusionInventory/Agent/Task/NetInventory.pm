@@ -225,7 +225,7 @@ sub _sendMessage {
 
 
    my $message = FusionInventory::Agent::XML::Query->new(
-       deviceid => $self->{deviceid},
+       deviceid => $self->{deviceid} || 'foo',
        query    => 'SNMPQUERY',
        content  => $content
    );
@@ -285,6 +285,7 @@ sub _queryDevice {
         FusionInventory::Agent::SNMP::Mock->require();
         eval {
             $snmp = FusionInventory::Agent::SNMP::Mock->new(
+                ip   => $device->{IP},
                 file => $device->{FILE}
             );
         };

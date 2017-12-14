@@ -304,7 +304,7 @@ sub _sendMessage {
     my ($self, $content) = @_;
 
     my $message = FusionInventory::Agent::XML::Query->new(
-        deviceid => $self->{deviceid},
+        deviceid => $self->{deviceid} || 'foo',
         query    => 'NETDISCOVERY',
         content  => $content
     );
@@ -323,9 +323,9 @@ sub _scanAddress {
     $logger->debug("[thread $id] scanning $params{ip}:");
 
     my %device = (
-        $params{nmap_parameters} ? $self->_scanAddressByNmap(%params)    : (),
+        $INC{'Net/SNMP.pm'}      ? $self->_scanAddressBySNMP(%params)    : (),
         $INC{'Net/NBName.pm'}    ? $self->_scanAddressByNetbios(%params) : (),
-        $INC{'Net/SNMP.pm'}      ? $self->_scanAddressBySNMP(%params)    : ()
+        $params{nmap_parameters} ? $self->_scanAddressByNmap(%params)    : ()
     );
 
     # don't report anything without a minimal amount of information
