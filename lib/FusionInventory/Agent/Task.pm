@@ -21,7 +21,6 @@ sub new {
         datadir      => $params{datadir},
         target       => $params{target},
         deviceid     => $params{deviceid},
-        _is_remote   => 0
     };
     bless $self, $class;
 
@@ -34,13 +33,12 @@ sub abort {
 }
 
 sub getModules {
-    my ($class, $prefix) = @_;
+    my ($self, $task) = @_;
 
-    # allow to be called as an instance method
-    $class = ref $class ? ref $class : $class;
+    $task = 'Inventory' unless $task;
 
     # use %INC to retrieve the root directory for this task
-    my $file = module2file($class);
+    my $file = module2file(__PACKAGE__."::".ucfirst($task));
     my $rootdir = $INC{$file};
     $rootdir =~ s/.pm$//;
     return unless -d $rootdir;
@@ -48,7 +46,6 @@ sub getModules {
     # find a list of modules from files in this directory
     my $root = $file;
     $root =~ s/.pm$//;
-    $root .= "/$prefix" if $prefix;
     my @modules;
     my $wanted = sub {
         return unless -f $_;
@@ -60,12 +57,18 @@ sub getModules {
     return @modules
 }
 
-sub isRemote {
-    my ($self, $remotetask) = @_;
+sub getRemote {
+    my ($self) = @_;
 
-    $self->{_is_remote} = 1 if $remotetask;
+    return $self->{_remote} || '';
+}
 
-    return $self->{_is_remote} != 0;
+sub setRemote {
+    my ($self, $task) = @_;
+
+    $self->{_remote} = $task || '';
+
+    return $self->{_remote};
 }
 
 1;
@@ -118,9 +121,21 @@ This is a method to be implemented by each subclass.
 
 Abort running task immediatly.
 
-=head2 getModules($prefix)
+=head2 getModules($task)
 
-Return a list of modules for this task. All modules installed at the same
-location than this package, belonging to __PACKAGE__ namespace, will be
-returned. If optional $prefix is given, base search namespace will be
-__PACKAGE__/$prefix instead.
+Return a list of modules for the task. All modules installed at the same
+location than this package, belonging to __PACKAGE__::$task namespace, will be
+returned. If not optional $task is given, base search namespace will be
+__PACKAGE__::Inventory instead.
+
+=head2 getRemote()
+
+Method to get the task remote status.
+
+Returns the string set by setRemote() API or an empty string.
+
+=head2 setRemote([$task])
+
+Method to set or reset the task remote status.
+
+Without $task parameter, the API resets the remote status to an empty string.

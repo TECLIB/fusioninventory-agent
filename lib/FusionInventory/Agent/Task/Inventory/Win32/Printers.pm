@@ -3,6 +3,8 @@ package FusionInventory::Agent::Task::Inventory::Win32::Printers;
 use strict;
 use warnings;
 
+use parent 'FusionInventory::Agent::Task::Inventory::Module';
+
 use English qw(-no_match_vars);
 
 use FusionInventory::Agent::Tools::Win32;
@@ -38,6 +40,12 @@ my @errStatus = (
 );
 
 sub isEnabled {
+    my (%params) = @_;
+
+    return !$params{no_category}->{printer};
+}
+
+sub isEnabledForRemote {
     my (%params) = @_;
 
     return !$params{no_category}->{printer};

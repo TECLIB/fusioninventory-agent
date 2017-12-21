@@ -3,6 +3,8 @@ package FusionInventory::Agent::Task::Inventory::Win32::CPU;
 use strict;
 use warnings;
 
+use parent 'FusionInventory::Agent::Task::Inventory::Module';
+
 use English qw(-no_match_vars);
 use Win32;
 
@@ -11,6 +13,12 @@ use FusionInventory::Agent::Tools::Win32;
 use FusionInventory::Agent::Tools::Generic;
 
 sub isEnabled {
+    my (%params) = @_;
+    return 0 if $params{no_category}->{cpu};
+    return 1;
+}
+
+sub isEnabledForRemote {
     my (%params) = @_;
     return 0 if $params{no_category}->{cpu};
     return 1;
@@ -40,7 +48,7 @@ sub doInventory {
 sub _getCPUs {
     my (%params) = @_;
 
-    my $remotewmi = $params{inventory}->getHardware('ARCHNAME') eq 'remote';
+    my $remotewmi = $params{inventory}->getRemote();
 
     my @dmidecodeInfos = $remotewmi || Win32::GetOSName() eq 'Win2003' ?
         () : getCpusFromDmidecode();

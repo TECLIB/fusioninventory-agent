@@ -3,6 +3,8 @@ package FusionInventory::Agent::Task::Inventory::Win32::Softwares;
 use strict;
 use warnings;
 
+use parent 'FusionInventory::Agent::Task::Inventory::Module';
+
 use English qw(-no_match_vars);
 use File::Basename;
 
@@ -13,6 +15,12 @@ use FusionInventory::Agent::Tools::Win32::Constants;
 my $seen = {};
 
 sub isEnabled {
+    my (%params) = @_;
+
+    return !$params{no_category}->{software};
+}
+
+sub isEnabledForRemote {
     my (%params) = @_;
 
     return !$params{no_category}->{software};

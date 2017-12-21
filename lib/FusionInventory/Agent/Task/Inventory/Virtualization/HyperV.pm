@@ -3,6 +3,8 @@ package FusionInventory::Agent::Task::Inventory::Virtualization::HyperV;
 use strict;
 use warnings;
 
+use parent 'FusionInventory::Agent::Task::Inventory::Module';
+
 use English qw(-no_match_vars);
 use UNIVERSAL::require;
 
@@ -13,6 +15,10 @@ use FusionInventory::Agent::Tools::Virtualization;
 our $runAfter = ["FusionInventory::Agent::Task::Inventory::Win32::OS"];
 
 sub isEnabled {
+    return $OSNAME eq 'MSWin32';
+}
+
+sub isEnabledForRemote {
     return $OSNAME eq 'MSWin32';
 }
 

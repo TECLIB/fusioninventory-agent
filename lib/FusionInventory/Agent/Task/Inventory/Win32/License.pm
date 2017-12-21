@@ -3,12 +3,20 @@ package FusionInventory::Agent::Task::Inventory::Win32::License;
 use strict;
 use warnings;
 
+use parent 'FusionInventory::Agent::Task::Inventory::Module';
+
 use English qw(-no_match_vars);
 
 use FusionInventory::Agent::Tools::License;
 use FusionInventory::Agent::Tools::Win32;
 
 sub isEnabled {
+    my (%params) = @_;
+    return 0 if $params{no_category}->{licenseinfo};
+    return 1;
+}
+
+sub isEnabledForRemote {
     my (%params) = @_;
     return 0 if $params{no_category}->{licenseinfo};
     return 1;
@@ -33,56 +41,12 @@ sub doInventory {
         push @licenses, _scanOfficeLicences($officeKey32) if $officeKey32;
     }
 
-    push @licenses, _getWmiSoftwareLicensingProducts();
-
     foreach my $license (@licenses) {
         $inventory->addEntry(
             section => 'LICENSEINFOS',
             entry   => $license
         );
     }
-}
-
-sub _getWmiSoftwareLicensingProducts {
-
-    my @licences;
-
-    foreach my $object (getWMIObjects(
-        moniker    => 'winmgmts:\\\\.\\root\\CIMV2',
-        class      => 'SoftwareLicensingProduct',
-        properties => [ qw/
-            Name Description LicenseStatus PartialProductKey
-            ProductKeyChannel ProductKeyID ProductKeyID2 ApplicationID
-        / ]
-    )) {
-        my $key = $object->{'PartialProductKey'}
-            or next;
-
-        next unless $object->{'LicenseStatus'};
-
-        # Skip operating system license as still set from OS module
-        next if ($object->{'Description'} && $object->{'Description'} =~ /Operating System/i);
-
-        if ($key && length($key) == 5) {
-            $key = sprintf("XXXXX-XXXXX-XXXXX-XXXXX-%s", $key);
-        }
-
-        my $channel = $object->{'ProductKeyChannel'} || '';
-        my $license = {
-            KEY       => $key,
-            PRODUCTID => $object->{'ProductKeyID2'} ||
-                $object->{'ApplicationID'} || $object->{'ProductKeyID'},
-            OEM       => $channel =~ /OEM/i ? 1 : 0,
-            FULLNAME  => $object->{'Description'},
-            NAME      => $object->{'Name'}
-        };
-
-        $license->{TRIAL} = 1 if ($channel && $channel =~ /TRIAL/i);
-
-        push @licences, $license;
-    }
-
-    return @licences;
 }
 
 sub _scanOfficeLicences {

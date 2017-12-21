@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use integer;
 
+use parent 'FusionInventory::Agent::Task::Inventory::Module';
+
 use English qw(-no_match_vars);
 
 use FusionInventory::Agent::Tools;
@@ -15,11 +17,15 @@ sub isEnabled {
     return 1;
 }
 
+sub isEnabledForRemote {
+    return 1;
+}
+
 sub doInventory {
     my (%params) = @_;
 
     my $inventory = $params{inventory};
-    my $remotewmi = $inventory->getHardware('ARCHNAME') eq 'remote';
+    my $remotewmi = $inventory->getRemote();
 
     my ($operatingSystem) = getWMIObjects(
         class      => 'Win32_OperatingSystem',
