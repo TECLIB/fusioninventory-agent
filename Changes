@@ -1,6 +1,10 @@
 Revision history for FusionInventory agent
 
-2.4 not released yet
+2.4.1 not released yet
+
+nothing changed yet
+
+2.4 Fri, 29 Dec 2017
 core:
 * Cleanup confdir use in task so using deprecated etc/softwares folder is no more
   logged in journal
@@ -39,6 +43,8 @@ inventory:
 * Fix #364: [win32] Get antivirus version from software installation and get
   Windows Defender version via WMI
 * Added Windows 10 version support
+* Updated pci.ids to 2017.12.20 version
+* Updated usb.ids to 2017.12.28 version
 
 netdiscovery/netinventory:
 * Bump NetDiscovery & NetInventory task version to 2.5
@@ -50,6 +56,7 @@ netdiscovery/netinventory:
 * Updated sysobject.ids with a lot of new devices support
 * Keep first MAC address found while discovering
 * Try first to select MAC address from SNMP session during SNMP device scan
+* Updated sysobject.ids (tagged fia-2.4 tag on github repository)
 
 deploy:
 * Bump Deploy task version to 2.5
