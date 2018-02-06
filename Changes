@@ -13,6 +13,10 @@ netdiscovery/netinventory:
 * Enhanced Epson printers support, including model name, serial number and firmwares
 * Updated LLDP support
 
+deploy:
+* Bump Deploy task version to 2.6
+* Fix file retention support
+
 2.4 Fri, 29 Dec 2017
 core:
 * Cleanup confdir use in task so using deprecated etc/softwares folder is no more
