@@ -16,6 +16,10 @@ netdiscovery/netinventory:
 * NetInventory task protocol upgrade to fix multithreading scheduling according to
   upgrades done server-side.
 
+deploy:
+* Bump Deploy task version to 2.6
+* Fix file retention support
+
 2.4 Fri, 29 Dec 2017
 core:
 * Cleanup confdir use in task so using deprecated etc/softwares folder is no more
