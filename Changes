@@ -21,6 +21,8 @@ netdiscovery/netinventory:
   that case, we default the DNSHOSTNAME to the scanned ip.
 * NetInventory task protocol upgrade to fix multithreading scheduling according to
   upgrades done server-side.
+* Fix discovery of devices with only ping responding and without found hostname. In
+  that case, we default the DNSHOSTNAME to the scanned ip.
 
 deploy:
 * Bump Deploy task version to 2.6
