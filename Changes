@@ -5,6 +5,9 @@ core:
 * Add task internal events support, used firstly by Deploy task to schedule
   cache disk storage maintenance
 
+inventory:
+* Fix BSD Storages support
+
 netdiscovery/netinventory:
 * Bump NetDiscovery task version to 2.6
 * Bump NetInventory task version to 3.0
