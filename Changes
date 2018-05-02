@@ -5,6 +5,11 @@ core:
 * Add task internal events support, used firstly by Deploy task to schedule
   cache disk storage maintenance
 
+core:
+* Normalized Target class APIs
+* Register planned tasks at target level so target class can filter out
+  unsupported tasks
+
 inventory:
 * Fix BSD Storages support
 
