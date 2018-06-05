@@ -45,7 +45,6 @@ sub new {
         libdir  => $params{libdir},
         vardir  => $params{vardir},
         targets => [],
-        tasks   => []
     };
     bless $self, $class;
 
@@ -92,7 +91,6 @@ sub init {
     my %available = $self->getAvailableTasks(disabledTasks => $config->{'no-task'});
     my @tasks = keys %available;
     my @plannedTasks = $self->computeTaskExecutionPlan(\@tasks);
-    $self->{tasksExecutionPlan} = \@plannedTasks;
 
     my %available_lc = map { (lc $_) => $_ } keys %available;
     if (!@tasks) {
@@ -104,13 +102,24 @@ sub init {
     foreach my $task (keys %available) {
         $logger->debug("- $task: $available{$task}");
     }
-    $logger->debug("Planned tasks:");
-    foreach my $task (@{$self->{tasksExecutionPlan}}) {
-        my $task_lc = lc $task;
-        $logger->debug("- $task: " . $available{$available_lc{$task_lc}});
-    }
 
-    $self->{tasks} = \@tasks;
+    my %planned = ();
+    foreach my $target ($self->getTargets()) {
+        $logger->debug($target->getType() . " target: " . $target->getName());
+
+        # Register planned tasks by target
+        my @planned = $target->plannedTasks(@plannedTasks);
+
+        if (@planned) {
+            $logger->debug("Planned tasks:");
+            foreach my $task (@planned) {
+                my $task_lc = lc $task;
+                $logger->debug("- $task: " . $available{$available_lc{$task_lc}});
+            }
+        } else {
+            $logger->debug("No planned task");
+        }
+    }
 
     $logger->info("Options 'no-task' and 'tasks' are both used. Be careful that 'no-task' always excludes tasks.")
         if ($self->{config}->isParamArrayAndFilled('no-task') && $self->{config}->isParamArrayAndFilled('tasks'));
@@ -176,7 +185,7 @@ sub runTarget {
     # the prolog dialog must be done once for all tasks,
     # but only for server targets
     my $response;
-    if ($target->isa('FusionInventory::Agent::Target::Server')) {
+    if ($target->isType('server')) {
 
         return unless FusionInventory::Agent::HTTP::Client::OCS->require();
 
@@ -216,7 +225,7 @@ sub runTarget {
         }
     }
 
-    foreach my $name (@{$self->{tasksExecutionPlan}}) {
+    foreach my $name ($target->plannedTasks()) {
         eval {
             $self->runTask($target, $name, $response);
         };
@@ -247,7 +256,11 @@ sub runTaskReal {
 
     my $class = "FusionInventory::Agent::Task::$name";
 
-    $class->require();
+    if (!$class->require()) {
+        $self->{logger}->debug2("$name task module does not compile: $@")
+            if $self->{logger};
+        return;
+    }
 
     my $task = $class->new(
         config       => $self->{config},
@@ -453,12 +466,6 @@ sub _makeExecutionPlan {
     }
 
     return @executionPlan;
-}
-
-sub getTasksExecutionPlan {
-    my ($self) = @_;
-
-    return $self->{tasksExecutionPlan};
 }
 
 1;

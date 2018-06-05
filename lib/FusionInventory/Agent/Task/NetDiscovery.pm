@@ -29,7 +29,7 @@ our $VERSION = FusionInventory::Agent::Task::NetDiscovery::Version::VERSION;
 sub isEnabled {
     my ($self, $response) = @_;
 
-    if (!$self->{target}->isa('FusionInventory::Agent::Target::Server')) {
+    if (!$self->{target}->isType('server')) {
         $self->{logger}->debug("NetDiscovery task not compatible with local target");
         return;
     }
@@ -110,7 +110,7 @@ sub run {
            pattern => qr/Nmap version (\d+)\.(\d+)/
        );
        $nmap_parameters = compareVersion($major, $minor, 5, 29) ?
-           "-sP -PP --system-dns --max-retries 1 --max-rtt-timeout 1000ms" :
+           "-sP -PE -PP --system-dns --max-retries 1 --max-rtt-timeout 1000ms" :
            "-sP --system-dns --max-retries 1 --max-rtt-timeout 1000ms"     ;
     } else {
         $self->{logger}->info(
@@ -152,6 +152,8 @@ sub run {
 
         # process each address block
         foreach my $range (@{$job->{ranges}}) {
+            my $ports = $self->_getSNMPPorts($range->{PORT});
+            my $proto = $self->_getSNMPProtocols($range->{PROTOCOL});
             my $block = Net::IP->new(
                 $range->{IPSTART} . '-' . $range->{IPEND}
             );
@@ -200,6 +202,8 @@ sub run {
                         timeout          => $timeout,
                         nmap_parameters  => $nmap_parameters,
                         snmp_credentials => $snmp_credentials,
+                        snmp_ports       => $ports,
+                        snmp_domains     => $proto,
                     );
 
                     $results->enqueue($result) if $result;
@@ -369,6 +373,7 @@ sub _scanAddressByNmap {
     my ($self, %params) = @_;
 
     my $device = _parseNmap(
+        ip      => $params{ip},
         command => "nmap $params{nmap_parameters} $params{ip} -oX -"
     );
 
@@ -423,18 +428,41 @@ sub _scanAddressByNetbios {
 sub _scanAddressBySNMP {
     my ($self, %params) = @_;
 
-    foreach my $credential (@{$params{snmp_credentials}}) {
+    my $tries = [];
+    if ($params{snmp_ports} && @{$params{snmp_ports}}) {
+        foreach my $port (@{$params{snmp_ports}}) {
+            my @cases = map { { port => $port, credential => $_ } } @{$params{snmp_credentials}};
+            push @{$tries}, @cases;
+        }
+    } else {
+        @{$tries} = map { { credential => $_ } } @{$params{snmp_credentials}};
+    }
+    if ($params{snmp_domains} && @{$params{snmp_domains}}) {
+        my @domtries = ();
+        foreach my $domain (@{$params{snmp_domains}}) {
+            my @cases = map { { %{$_}, domain => $domain } } @{$tries};
+            push @domtries, @cases;
+        }
+        $tries = \@domtries;
+    }
+
+    foreach my $try (@{$tries}) {
+        my $credential = $try->{credential};
         my $device = $self->_scanAddressBySNMPReal(
             ip         => $params{ip},
+            port       => $try->{port},
+            domain     => $try->{domain},
             timeout    => $params{timeout},
             credential => $credential
         );
 
         # no result means either no host, no response, or invalid credentials
         $self->{logger}->debug(
-            sprintf "[thread %d] - scanning %s with SNMP, credentials %d: %s",
+            sprintf "[thread %d] - scanning %s%s with SNMP%s, credentials %d: %s",
             threads->tid(),
             $params{ip},
+            $try->{port}   ? ':'.$try->{port}   : '',
+            $try->{domain} ? ' '.$try->{domain} : '',
             $credential->{ID},
             ref $device eq 'HASH' ? 'success' :
                 $device ? "no result, $device" : 'no result'
@@ -457,6 +485,8 @@ sub _scanAddressBySNMPReal {
         $snmp = FusionInventory::Agent::SNMP::Live->new(
             version      => $params{credential}->{VERSION},
             hostname     => $params{ip},
+            port         => $params{port},
+            domain       => $params{domain},
             timeout      => $params{timeout} || 1,
             community    => $params{credential}->{COMMUNITY},
             username     => $params{credential}->{USERNAME},
@@ -495,10 +525,19 @@ sub _parseNmap {
     my $result;
 
     foreach my $host (@{$tree->{nmaprun}[0]{host}}) {
+        # Verify nmap returned host is up, and than use ip as default hostname
+        foreach my $status (@{$host->{status}}) {
+            next unless $status->{'-state'} eq 'up';
+            $result = { DNSHOSTNAME => $params{ip} };
+            last;
+        }
+        next unless $result;
         foreach my $address (@{$host->{address}}) {
             next unless $address->{'-addrtype'} eq 'mac';
             $result->{MAC}           = $address->{'-addr'};
             $result->{NETPORTVENDOR} = $address->{'-vendor'};
+            # We can delete default DNSHOSTNAME when a MAC is found
+            delete $result->{DNSHOSTNAME};
             last;
         }
         foreach my $hostname (@{$host->{hostnames}}) {
@@ -555,6 +594,53 @@ sub _sendResultMessage {
         MODULEVERSION => $VERSION,
         PROCESSNUMBER => $self->{pid}
     });
+}
+
+sub _getSNMPPorts {
+    my ($self, $ports) = @_;
+
+    return unless $ports;
+
+    # Given ports can be an array of strings or just a string and each string
+    # can be a comma separated list of ports
+    my @given_ports = map { split(/\s*,\s*/, $_) }
+        ref($ports) eq 'ARRAY' ? @{$ports} : ($ports) ;
+
+    # Be sure to only keep valid and uniq ports
+    my %ports = map { $_ => 1 } grep { $_ && $_ > 0 && $_ < 65536 } @given_ports;
+
+    return [ sort keys %ports ];
+}
+
+sub _getSNMPProtocols {
+    my ($self, $protocols) = @_;
+
+    return unless $protocols;
+
+    # Supported protocols can be used as '-domain' option for Net::SNMP session
+    my @supported_protocols = (
+        'udp/ipv4',
+        'udp/ipv6',
+        'tcp/ipv4',
+        'tcp/ipv6'
+    );
+
+    # Given protocols can be an array of strings or just a string and each string
+    # can be a comma separated list of protocols
+    my @given_protocols = map { split(/\s*,\s*/, $_) }
+        ref($protocols) eq 'ARRAY' ? @{$protocols} : ($protocols) ;
+
+    my @protocols = ();
+    my %protocols = map { lc($_) => 1 } grep { $_ } @given_protocols;
+
+    # Manage to list and filter protocols to use in @supported_protocols order
+    foreach my $proto (@supported_protocols) {
+        if ($protocols{$proto}) {
+            push @protocols, $proto;
+        }
+    }
+
+    return \@protocols;
 }
 
 1;
