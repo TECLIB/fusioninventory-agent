@@ -433,37 +433,7 @@ sub run {
     return 1;
 }
 
-sub runInternalEvent {
-    my ($self, $event) = @_;
-
-    return unless ($event && $TaskEvents->{$event});
-
-    my $folder = $self->{target}->getStorage()->getDirectory();
-    my $datastore = FusionInventory::Agent::Task::Deploy::Datastore->new(
-        path   => $folder.'/deploy',
-        logger => $self->{logger}
-    );
-
-    my $next = {
-        name    => $event,
-        delay   => $TaskEvents->{$event}
-    };
-
-    if ($event eq 'disk-cleanup') {
-        # Reschedule unless files were purged
-        return $next
-            if $datastore->cleanUp( force => $datastore->diskIsFull() );
-    } else {
-        # Re-schedule cache-cleanup internal event if folders need to be purged later
-        return $next if $datastore->cleanUp( force => 0 );
-        # Finally abort disk-cleanup internal event re-scheduling when we
-        # have nothing more to purge
-        return {
-            name    => 'disk-cleanup',
-            delay   => 0
-        };
-    }
-}
+1;
 
 __END__
 
