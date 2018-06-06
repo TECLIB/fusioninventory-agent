@@ -18,11 +18,6 @@ use FusionInventory::Agent::Task::Deploy::Version;
 
 our $VERSION = FusionInventory::Agent::Task::Deploy::Version::VERSION;
 
-our $TaskEvents = {
-    'cache-cleanup' => 60,
-    'disk-cleanup'  => 1800,
-};
-
 sub isEnabled {
     my ($self) = @_;
 
